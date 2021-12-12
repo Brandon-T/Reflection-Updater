@@ -1,0 +1,446 @@
+package acid.analysers;
+
+import acid.Main;
+import acid.other.Finder;
+import acid.structures.ClassField;
+import acid.structures.ClassInfo;
+import jdk.internal.org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.tree.ClassNode;
+import jdk.internal.org.objectweb.asm.tree.FieldInsnNode;
+import jdk.internal.org.objectweb.asm.tree.MethodNode;
+import jdk.internal.org.objectweb.asm.tree.VarInsnNode;
+
+import java.util.Collection;
+
+/**
+ * Created by Kira on 2014-12-07.
+ */
+public class Model extends Analyser {
+    @Override
+    public ClassNode find(Collection<ClassNode> nodes) {
+        for (ClassNode n : nodes) {
+            if (!n.superName.equals(Main.get("Animable"))) {
+                continue;
+            }
+
+            for (MethodNode m : n.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                    return n;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ClassInfo analyse(ClassNode node) {
+        ClassInfo info = new ClassInfo("Model", node.name);
+        info.putField(findIndicesX(node));
+        info.putField(findIndicesY(node));
+        info.putField(findIndicesZ(node));
+        info.putField(findIndicesLength(node, info.getField("IndicesX")));
+        info.putField(findVerticesX(node));
+        info.putField(findVerticesY(node));
+        info.putField(findVerticesZ(node));
+        info.putField(findVerticesLength(node, info.getField("VerticesX")));
+        info.putField(findTexturedIndicesX(node));
+        info.putField(findTexturedIndicesY(node));
+        info.putField(findTexturedIndicesZ(node));
+        info.putField(findTextureVerticesX(node));
+        info.putField(findTextureVerticesY(node));
+        info.putField(findTextureVerticesZ(node));
+        info.putField(findTexturedVerticesLength(node, info.getField("TexVerticesX")));
+        info.putField(findVertexSkins(node));
+        info.putField(findFaceColors3(node));
+        info.putField(findShadowIntensity(node));
+        info.putField(findFitsSingleTile(node));
+        info.putField(findTranslationMethod(node));
+        info.putField(findRenderAtPointMethod(node));
+        return info;
+    }
+
+    private ClassField findIndicesX(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((VarInsnNode)m.instructions.get(i + 2)).var == 1 && ((VarInsnNode)m.instructions.get(i + 4)).var == 5) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        return new ClassField("IndicesX", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("IndicesX");
+    }
+
+    private ClassField findIndicesY(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((VarInsnNode)m.instructions.get(i + 2)).var == 1 && ((VarInsnNode)m.instructions.get(i + 4)).var == 6) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        return new ClassField("IndicesY", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("IndicesY");
+    }
+
+    private ClassField findIndicesZ(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((VarInsnNode)m.instructions.get(i + 2)).var == 1 && ((VarInsnNode)m.instructions.get(i + 4)).var == 7) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        return new ClassField("IndicesZ", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("IndicesZ");
+    }
+
+    private ClassField findIndicesLength(ClassNode node, ClassField indices) {
+        final int pattern[] = new int[]{Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    FieldInsnNode nodes[] = new FieldInsnNode[3];
+                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
+                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
+                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(indices.getName()) && nodes[0].owner.equals(node.name)) {
+                        return new ClassField("IndicesLength", nodes[1].name, nodes[1].desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("IndicesLength");
+    }
+
+    private ClassField findVerticesX(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ILOAD, Opcodes.IMUL, Opcodes.SIPUSH, Opcodes.IDIV, Opcodes. IASTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(III)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("VerticesX", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("VerticesX");
+    }
+
+    private ClassField findVerticesY(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ILOAD, Opcodes.IMUL, Opcodes.SIPUSH, Opcodes.IDIV, Opcodes. IASTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(III)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("VerticesY", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("VerticesY");
+    }
+
+    private ClassField findVerticesZ(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ILOAD, Opcodes.IMUL, Opcodes.SIPUSH, Opcodes.IDIV, Opcodes. IASTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(III)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("VerticesZ", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("VerticesZ");
+    }
+
+    private ClassField findVerticesLength(ClassNode node, ClassField indices) {
+        final int pattern[] = new int[]{Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    FieldInsnNode nodes[] = new FieldInsnNode[3];
+                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
+                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
+                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(indices.getName()) && nodes[0].owner.equals(node.name)) {
+                        return new ClassField("VerticesLength", nodes[1].name, nodes[1].desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("VerticesLength");
+    }
+
+    private ClassField findTexturedIndicesX(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    if (VarA == 1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        return new ClassField("TexIndicesX", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexIndicesX");
+    }
+
+    private ClassField findTexturedIndicesY(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    if (VarA == 1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        FieldInsnNode j = (FieldInsnNode)m.instructions.get(i + 6);
+                        if (!f.name.equals(j.name)) {
+                            return new ClassField("TexIndicesY", j.name, j.desc);
+                        }
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexIndicesY");
+    }
+
+    private ClassField findTexturedIndicesZ(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.INVOKESTATIC};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    if (VarA == 1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        return new ClassField("TexIndicesZ", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexIndicesZ");
+    }
+
+    private ClassField findTextureVerticesX(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 17) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("TexVerticesX", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexVerticesX");
+    }
+
+    private ClassField findTextureVerticesY(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 18) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("TexVerticesY", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexVerticesY");
+    }
+
+    private ClassField findTextureVerticesZ(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 19) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        return new ClassField("TexVerticesZ", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexVerticesZ");
+    }
+
+    private ClassField findTexturedVerticesLength(ClassNode node, ClassField vertices) {
+        final int pattern[] = new int[]{Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    FieldInsnNode nodes[] = new FieldInsnNode[3];
+                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
+                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
+                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(vertices.getName()) && nodes[0].owner.equals(node.name)) {
+                        return new ClassField("TexVerticesLength", nodes[1].name, nodes[1].desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("TexVerticesLength");
+    }
+
+    private ClassField findVertexSkins(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(I[IIII)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((FieldInsnNode)m.instructions.get(i + 1)).desc.equals("[[I")) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        return new ClassField("Skins", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("Skins");
+    }
+
+    private ClassField findFaceColors3(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.IASTORE};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((FieldInsnNode)m.instructions.get(i + 5)).desc.equals("[I") && ((VarInsnNode)m.instructions.get(i + 6)).var == 9) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
+                        return new ClassField("FaceColors3", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("FaceColors3");
+    }
+
+    private ClassField findShadowIntensity(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ISTORE, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD};
+        for (MethodNode m : node.methods) {
+            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        return new ClassField("ShadowIntensity", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("ShadowIntensity");
+    }
+
+    private ClassField findFitsSingleTile(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IF_ICMPGE, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFEQ};
+        for (MethodNode m : node.methods) {
+            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                    if (f.desc.equals("Z")) {
+                        return new ClassField("FitsSingleTile", f.name, f.desc);
+                    }
+                }
+            }
+        }
+
+        //November 9th, 2017.
+        final int[] pattern2 = new int[]{Opcodes.ILOAD, Opcodes.IFEQ, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFEQ, Opcodes.ILOAD, Opcodes.ISTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                int i = new Finder(m).findPattern(pattern2);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
+                    if (f.desc.equals("Z")) {
+                        return new ClassField("FitsSingleTile", f.name, f.desc);
+                    }
+                }
+            }
+        }
+
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals("()V")) {
+                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 4);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    if (f.desc.equals("Z")) {
+                        return new ClassField("FitsSingleTile", f.name, f.desc);
+                    }
+                }
+            }
+        }
+        return new ClassField("FitsSingleTile");
+    }
+
+    private ClassField findTranslationMethod(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.DUP2, Opcodes.IALOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.IASTORE};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals("(III)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                if (i != -1) {
+                    return new ClassField("*Translate", m.name, m.desc);
+                }
+            }
+        }
+        return new ClassField("*Translate");
+    }
+
+    private ClassField findRenderAtPointMethod(ClassNode node) {
+        for (MethodNode m : node.methods) {
+            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                return new ClassField("*RenderAtPoint", m.name, m.desc);
+            }
+        }
+        return new ClassField("*RenderAtPoint");
+    }
+}
