@@ -10,10 +10,6 @@ import java.util.HashMap;
 public class JarDownloader {
     private final HashMap<String, String> parameters = new HashMap<>();
 
-    public JarDownloader(String url, String gamePack) {
-        this(url, gamePack);
-    }
-
     public JarDownloader(String world, String gamePack) {
         try {
             HTTPSocket socket = new HTTPSocket(world + "/jav_config.ws");

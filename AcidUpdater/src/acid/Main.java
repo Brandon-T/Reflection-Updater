@@ -40,7 +40,7 @@ public class Main {
     }
 
     private static int getLatestRevision(String url, int currentVersion) {
-        url = url.replace("http://", "")
+        url = url.replace("http://", "");
         for (int i = 0; i < 100; ++i) {
             try {
                 Socket socket = new Socket(url, 43594);

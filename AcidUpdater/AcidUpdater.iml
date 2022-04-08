@@ -8,8 +8,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Refactor_191" level="project" />
-    <orderEntry type="library" name="191" level="project" />
-    <orderEntry type="library" name="199" level="project" />
   </component>
 </module>
