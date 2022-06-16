@@ -241,7 +241,7 @@ public class Model extends Analyser {
     }
 
     private ClassField findTexturedIndicesZ(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.INVOKESTATIC};
+        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Finder.INVOCATION};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
@@ -381,24 +381,10 @@ public class Model extends Analyser {
     }
 
     private ClassField findFitsSingleTile(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IF_ICMPGE, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFEQ};
+        int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LLOAD};
         for (MethodNode m : node.methods) {
-            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+            if (m.desc.equals("(IIIIIIIIJ)V")) {
                 int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
-                    if (f.desc.equals("Z")) {
-                        return new ClassField("FitsSingleTile", f.name, f.desc);
-                    }
-                }
-            }
-        }
-
-        //November 9th, 2017.
-        final int[] pattern2 = new int[]{Opcodes.ILOAD, Opcodes.IFEQ, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFEQ, Opcodes.ILOAD, Opcodes.ISTORE};
-        for (MethodNode m : node.methods) {
-            if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
-                int i = new Finder(m).findPattern(pattern2);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.desc.equals("Z")) {
@@ -408,14 +394,17 @@ public class Model extends Analyser {
             }
         }
 
+        pattern = new int[]{Opcodes.ALOAD, Finder.CONSTANT, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 4);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     if (f.desc.equals("Z")) {
                         return new ClassField("FitsSingleTile", f.name, f.desc);
                     }
+
+                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }

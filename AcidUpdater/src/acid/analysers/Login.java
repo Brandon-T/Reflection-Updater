@@ -20,7 +20,7 @@ public class Login extends Analyser {
                 continue;
             }
 
-            int indexedRGB_count = 0, indexedRGB_array_count = 0, string_array_count = 0, bool_count = 0;
+            int indexedRGB_count = 0, string_count = 0, string_array_count = 0, bool_count = 0;
             String indexedRGBField = Main.get("IndexedRGB");
 
             for (FieldNode field : node.fields) {
@@ -28,8 +28,8 @@ public class Login extends Analyser {
                     ++indexedRGB_count;
                 }
 
-                if (hasAccess(field, Opcodes.ACC_STATIC) && field.desc.equals(String.format("[L%s;", indexedRGBField))) {
-                    ++indexedRGB_array_count;
+                if (hasAccess(field, Opcodes.ACC_STATIC) && field.desc.equals("Ljava/lang/String;")) {
+                    ++string_count;
                 }
 
                 if (hasAccess(field, Opcodes.ACC_STATIC) && field.desc.equals("[Ljava/lang/String;")) {
@@ -41,7 +41,7 @@ public class Login extends Analyser {
                 }
             }
 
-            if (indexedRGB_count >= 2 && indexedRGB_array_count >= 1 && string_array_count >= 2 && bool_count >= 4) {
+            if (indexedRGB_count >= 2 && string_count >= 4 && string_array_count >= 2 && bool_count >= 4) {
                 return node;
             }
         }

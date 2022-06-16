@@ -88,9 +88,9 @@ public class AnimationSequence extends Analyser {
         int[] pattern = new int[]{Opcodes.PUTSTATIC, Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 while (i != -1) {
-                    if (m.instructions.get(i + 5) instanceof FieldInsnNode && ((IntInsnNode) m.instructions.get(i + 3)).operand == 100) {
+                    if (m.instructions.get(i + 5) instanceof FieldInsnNode && !((FieldInsnNode)m.instructions.get(i)).desc.equals("Z") && ((IntInsnNode) m.instructions.get(i + 3)).operand == 100) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
                         return new ClassField("FrameCache", f.name, f.desc);
                     }

@@ -47,7 +47,7 @@ public class Widget extends Analyser {
         info.putField(findItemStackSizes(node, info.getField("Items")));
         info.putField(findItemAmount(node));
         info.putField(findSpriteID(node));
-        info.putField(findTextureID(node));
+        info.putField(findTextureID(node, info.getField("SpriteID")));
         info.putField(findActions(node));
         info.putField(findActionType(node));
         info.putField(findType(node));
@@ -199,15 +199,16 @@ public class Widget extends Analyser {
     }
 
     private ClassField findItemStackSizes(ClassNode node, ClassField items) {
+        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD};
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
-                int i = new Finder(m).findNext(0, Opcodes.GETFIELD);
+                int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     if (!f.name.equals(items.getName())) {
                         return new ClassField("ItemStackSizes", f.name, f.desc);
                     }
-                    i = new Finder(m).findNext(i + 1, Opcodes.GETFIELD);
+                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
@@ -236,7 +237,7 @@ public class Widget extends Analyser {
     }
 
     private ClassField findSpriteID(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
+        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(Z)L%s;", Main.get("ImageRGB")))) {
                 int i = new Finder(m).findPattern(pattern);
@@ -250,10 +251,22 @@ public class Widget extends Analyser {
                 }
             }
         }
+
+        pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals(String.format("(Z)L%s;", Main.get("SpriteMask")))) {
+                int i = new Finder(m).findPattern(pattern);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                    return new ClassField("SpriteID", f.name, f.desc, multi);
+                }
+            }
+        }
         return new ClassField("SpriteID");
     }
 
-    private ClassField findTextureID(ClassNode node) {
+    private ClassField findTextureID(ClassNode node, ClassField spriteID) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(Z)L%s;", Main.get("ImageRGB")))) {
@@ -261,12 +274,31 @@ public class Widget extends Analyser {
                 while (i != -1) {
                     if (((VarInsnNode)m.instructions.get(i + 4)).var == 3) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        if (!f.name.equals(findSpriteID(node).getName())) { //TextureID comes after SpriteID
+                        if (!f.name.equals(spriteID.getName())) { //TextureID comes after SpriteID
                             long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
                             return new ClassField("TextureID", f.name, f.desc, multi);
                         }
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals(String.format("(Z)L%s;", Main.get("SpriteMask")))) {
+                int i = new Finder(m).findPattern(pattern, 0, false);
+                while (i != -1) {
+                    int j = new Finder(m).findNext(i + 1, Opcodes.ISTORE, false);
+                    if (j != -1) {
+                        if (((VarInsnNode) m.instructions.get(j)).var == 3) {
+                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                            if (!f.name.equals(spriteID.getName())) {
+                                long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                                return new ClassField("TextureID", f.name, f.desc, multi);
+                            }
+                        }
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1, false);
                 }
             }
         }
@@ -351,13 +383,24 @@ public class Widget extends Analyser {
     }
 
     private ClassField findAbsoluteX(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 9);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("AbsoluteX", f.name, f.desc, multi);
+        Collection<ClassNode> nodes = Main.getClasses();
+
+        final int[] prefixPattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.FALOAD};
+        final int[] pattern = new int[]{Opcodes.FMUL, Opcodes.F2I, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+
+        for (ClassNode n : nodes) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals(String.format("(IL%s;IIIII[F)L%s;", node.name, node.name))) {
+                    int i = new Finder(m).findPattern(prefixPattern);
+                    while (i != -1) {
+                        int j = new Finder(m).findPattern(pattern, i);
+                        if (j != -1) {
+                            FieldInsnNode f = (FieldInsnNode)m.instructions.get(j + 4);
+                            long multi = Main.findMultiplier(f.owner, f.name);
+                            return new ClassField("AbsoluteX", f.name, f.desc, multi);
+                        }
+                        i = new Finder(m).findPattern(prefixPattern, i + 1);
+                    }
                 }
             }
         }
@@ -366,13 +409,24 @@ public class Widget extends Analyser {
     }
 
     private ClassField findAbsoluteY(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 10);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("AbsoluteY", f.name, f.desc, multi);
+        Collection<ClassNode> nodes = Main.getClasses();
+
+        final int[] prefixPattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.FALOAD};
+        final int[] pattern = new int[]{Opcodes.FMUL, Opcodes.F2I, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+
+        for (ClassNode n : nodes) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals(String.format("(IL%s;IIIII[F)L%s;", node.name, node.name))) {
+                    int i = new Finder(m).findPattern(prefixPattern);
+                    while (i != -1) {
+                        int j = new Finder(m).findPattern(pattern, i);
+                        if (j != -1) {
+                            FieldInsnNode f = (FieldInsnNode)m.instructions.get(j + 4);
+                            long multi = Main.findMultiplier(f.owner, f.name);
+                            return new ClassField("AbsoluteY", f.name, f.desc, multi);
+                        }
+                        i = new Finder(m).findPattern(prefixPattern, i + 1);
+                    }
                 }
             }
         }
@@ -438,17 +492,6 @@ public class Widget extends Analyser {
     }
 
     private ClassField findWidth(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 15);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("Width", f.name, f.desc, multi);
-                }
-            }
-        }
-
         Collection<ClassNode> nodes = Main.getClasses();
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Finder.OPTIONAL, Opcodes.IADD, Opcodes.ISTORE};
         for (ClassNode n : nodes) {
@@ -470,17 +513,6 @@ public class Widget extends Analyser {
     }
 
     private ClassField findHeight(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 16);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("Height", f.name, f.desc, multi);
-                }
-            }
-        }
-
         Collection<ClassNode> nodes = Main.getClasses();
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Finder.OPTIONAL, Opcodes.IADD, Opcodes.ISTORE};
         for (ClassNode n : nodes) {

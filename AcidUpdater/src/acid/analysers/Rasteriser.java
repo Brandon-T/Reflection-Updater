@@ -27,10 +27,21 @@ public class Rasteriser extends Analyser {
                 }
             }
 
+            int draw_rectangle_method = 0;
+            int draw_rectangle_alpha_method = 0;
+
             for (MethodNode m : n.methods) {
-                if (m.desc.equals("(IIIII)V") && hasAccess(m, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC) && int_arr_count == 1) {
-                    return n;
+                if (m.desc.equals("(IIIII)V") && hasAccess(m, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC)) {
+                    ++draw_rectangle_method;
                 }
+
+                if (m.desc.equals("(IIIIII)V") && hasAccess(m, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC)) {
+                    ++draw_rectangle_alpha_method;
+                }
+            }
+
+            if (draw_rectangle_method >= 4 && draw_rectangle_alpha_method >= 3 && int_arr_count == 1) {
+                return n;
             }
         }
         return null;
