@@ -40,6 +40,7 @@ public class ObjectDefinition extends Analyser {
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("ObjectDefinition", node.name);
         info.putField(findID(node));
+        info.putField(new ClassField("AnimationID"));
         info.putField(findCache(node));
         info.putField(findModelCache(node));
         info.putField(findModelIDs(node));
@@ -50,6 +51,8 @@ public class ObjectDefinition extends Analyser {
         info.putField(findTransformationVarbit(node));
         info.putField(findTransformationVarp(node));
         info.putField(findGetModelMethod(node));
+
+        info.setField(findAnimationID(node, info.getField("TransformationVarp")));
         return info;
     }
 
@@ -69,6 +72,26 @@ public class ObjectDefinition extends Analyser {
             }
         }
         return new ClassField("ID");
+    }
+
+    private ClassField findAnimationID(ClassNode node, ClassField transformationVarp) {
+        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
+        for (MethodNode m : node.methods) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+                int i = new Finder(m).findPattern(pattern, 0, false);
+                while(i != -1) {
+                    if ((int)((LdcInsnNode)m.instructions.get(i + 4)).cst == 65535) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        if (!f.name.equals(transformationVarp.getName())) {
+                            long multi = Main.findMultiplier(f.owner, f.name);
+                            return new ClassField("AnimationID", f.name, f.desc, multi);
+                        }
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1, false);
+                }
+            }
+        }
+        return new ClassField("AnimationID");
     }
 
     private ClassField findCache(ClassNode node) {

@@ -63,7 +63,7 @@ public class ExceptionRemover extends Deobfuscator {
     }
 
     private int findNextException(MethodNode method, int[] pattern, String exceptionName) {
-        int i = new DeprecatedFinder(method).findPattern(pattern);
+        int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
         while (i != -1) {
             for (int j = i; j < i + pattern.length; ++j) {
                 if (method.instructions.get(j) instanceof MethodInsnNode) {
@@ -72,7 +72,7 @@ public class ExceptionRemover extends Deobfuscator {
                     }
                 }
             }
-            i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+            i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
         }
         return -1;
     }

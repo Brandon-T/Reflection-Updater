@@ -1,6 +1,7 @@
 package acid.analysers;
 
 import acid.Main;
+import acid.other.DeprecatedFinder;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
@@ -28,13 +29,18 @@ public class Item extends Analyser {
             }
 
             int method_count = 0;
+            int constructor_count = 0;
             for (MethodNode m : n.methods) {
                 if (m.desc.equals(String.format("()L%s;", Main.get("Model")))) {
                     ++method_count;
                 }
+
+                if (m.name.equals("<init>") && m.desc.equals("()V")) {
+                    ++constructor_count;
+                }
             }
 
-            if (int_count == 2 && method_count > 0) {
+            if (int_count >= 2 && method_count == 1 && constructor_count == 1) {
                 return n;
             }
         }
@@ -53,7 +59,7 @@ public class Item extends Analyser {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.OPTIONAL, Opcodes.IMUL, Finder.OPTIONAL, Opcodes.INVOKESTATIC};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("()L%s;", Main.get("Model")))) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new DeprecatedFinder(m).findPattern(pattern, 0, true);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;

@@ -26,17 +26,11 @@ public class Main {
     static ClassAnalyser analyser = null;
 
     public static void main(String[] args) {
-        String url = "http://world.game.com";
-        analyser = new ClassAnalyser(url, String.format("%d.jar", getLatestRevision(url,202)), true);
-//        analyser = new ClassAnalyser(url, String.format("%d.jar", 202), true);
-        //analyser = new ClassAnalyser(url, String.format("%s.jar", "Android"), true);
-        analyser.analyse();
+        String url = "http://oldschool1.runescape.com";
+        analyser = new ClassAnalyser(url, String.format("%d.jar", getLatestRevision(url, 222)), true);
         //analyser.print();
         analyser.printSimbaNative();
-        //analyser.refactor(String.format("Refactor_%d.jar", getLatestRevision(191)));
-
-//
-//        System.out.println("COUNT: " + countInstructionsToField("bb", "<clinit>", "aj", Opcodes.PUTSTATIC
+//        analyser.refactor(String.format("Refactor_%d.jar", 222));
     }
 
     private static int getLatestRevision(String url, int currentVersion) {

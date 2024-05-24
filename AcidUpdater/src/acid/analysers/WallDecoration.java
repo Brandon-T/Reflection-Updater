@@ -20,8 +20,8 @@ public class WallDecoration extends Analyser {
         ClassNode n = Main.getClassNode("Region");
         if (n != null) {
             for (MethodNode m : n.methods) {
-                if (m.desc.matches(String.format("\\(IIIIL%s;L%s;IIII(I|J)I\\)V", Main.get("Animable"), Main.get("Animable")))) {
-                    for (AbstractInsnNode i : m.instructions.toArray()) {
+                if (m.desc.equals(String.format("(IIIIL%s;L%s;IIIIJI)V", Main.get("Animable"), Main.get("Animable")))) {
+                    for (AbstractInsnNode i : m.instructions) {
                         if (i instanceof FieldInsnNode) {
                             FieldInsnNode f = (FieldInsnNode) i;
                             if (f.desc.equals("I") && !f.owner.matches("(I|S|B|J|Z)")) {

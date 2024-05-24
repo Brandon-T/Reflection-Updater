@@ -55,7 +55,7 @@ public class ReturnRemover extends Deobfuscator {
     }
 
     private void findReplaceException(MethodNode method, int[] pattern) {
-        int i = new DeprecatedFinder(method).findPattern(pattern);
+        int i = new Finder(method).findPattern(pattern);
         while (i != -1) {
             if (isReturn(method.instructions.get(i + pattern.length).getOpcode())) {
                 LabelNode jmp = findNextJump(method, i, pattern.length);
@@ -70,7 +70,7 @@ public class ReturnRemover extends Deobfuscator {
 
                 ++removal_count;
             }
-            i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+            i = new Finder(method).findPattern(pattern, i + 1);
         }
     }
 

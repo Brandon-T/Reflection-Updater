@@ -61,7 +61,7 @@ public class Rasteriser extends Analyser {
     private ClassField findPixels(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("([III)V")) {
+            if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
@@ -75,7 +75,7 @@ public class Rasteriser extends Analyser {
     private ClassField findWidth(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("([III)V")) {
+            if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 1) {
@@ -92,7 +92,7 @@ public class Rasteriser extends Analyser {
     private ClassField findHeight(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("([III)V")) {
+            if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 2) {
@@ -108,7 +108,7 @@ public class Rasteriser extends Analyser {
 
     private ClassField findCreateRasteriserMethod(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("([III)V")) {
+            if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 return new ClassField("*CreateRasteriser", m.name, m.desc);
             }
         }
@@ -117,7 +117,7 @@ public class Rasteriser extends Analyser {
 
     private ClassField findSetCoordinatesMethod(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("([III)V")) {
+            if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKESTATIC);
                 if (i != -1) {
                     MethodInsnNode n = (MethodInsnNode)m.instructions.get(i);

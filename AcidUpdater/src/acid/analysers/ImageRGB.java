@@ -79,7 +79,8 @@ public class ImageRGB extends Analyser {
                 while(i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 2) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
-                        return new ClassField("Width", f.name, f.desc);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("Width", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -96,7 +97,8 @@ public class ImageRGB extends Analyser {
                 while(i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 3) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
-                        return new ClassField("Height", f.name, f.desc);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("Height", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -113,7 +115,8 @@ public class ImageRGB extends Analyser {
                 while(i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 2) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                        return new ClassField("MaxWidth", f.name, f.desc);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("MaxWidth", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -130,7 +133,8 @@ public class ImageRGB extends Analyser {
                 while(i != -1) {
                     if (((VarInsnNode)m.instructions.get(i)).var == 3) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                        return new ClassField("MaxHeight", f.name, f.desc);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("MaxHeight", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }

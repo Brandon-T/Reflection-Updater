@@ -159,18 +159,18 @@ public class Normaliser extends Deobfuscator {
         };
 
         for (int[] pattern : patterns) {
-            int i = new DeprecatedFinder(method).findPattern(pattern);
+            int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
             while(i != -1) {
                 ++multi_total;
-                i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+                i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
         }
 
         for (int[] pattern : fixed_patterns) {
-            int i = new DeprecatedFinder(method).findPattern(pattern);
+            int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
             while(i != -1) {
                 ++multi_total;
-                i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+                i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
         }
     }
@@ -227,18 +227,18 @@ public class Normaliser extends Deobfuscator {
         };
 
         for (int[] pattern : patterns) {
-            int i = new DeprecatedFinder(method).findPattern(pattern);
+            int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
             while(i != -1) {
                 ++arithmetic_total;
-                i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+                i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
         }
 
         for (int[] pattern : fixed_patterns) {
-            int i = new DeprecatedFinder(method).findPattern(pattern);
+            int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
             while(i != -1) {
                 ++arithmetic_total;
-                i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+                i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
         }
     }

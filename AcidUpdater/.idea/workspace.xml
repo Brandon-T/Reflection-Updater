@@ -2,148 +2,68 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b204c7f-c9ce-4e12-b454-ae3f0e474380" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/AcidUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AcidUpdater.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/Acid.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Analyser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Animable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/AnimableNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Animation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationFrames.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationSequence.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationSkeleton.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Boundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/BufferedConnection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Cache.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CacheableNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/ClassData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CollisionMap.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CombatInfo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CombatInfo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CombatInfoHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/CombatInfoList.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Entity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Font.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/GameShell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/GraphicsBuffer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/GroundDecoration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/HashTable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/ImageRGB.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/IndexedImage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Interactable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Item.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/ItemDefinition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/ItemNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/IterableHashTable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Keyboard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/LinkedList.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Login.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Model.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/NPC.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/NPCDefinition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/NameInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Node.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/NodeDeque.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/ObjectDefinition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Other.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Player.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/PlayerDefinition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Queue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Rasteriser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Rasteriser3D.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Region.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/SceneTile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Stream.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/TradingPost.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Typeface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/VarbitDefinition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Varcs.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Varps.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/WallDecoration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/Widget.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/analysers/WidgetNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/classloaders/ClassNodeLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/AggressiveParameterRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/AndroidMethodRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/ClassRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/DeadCodeRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/Deobfuscator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/ExceptionRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/FieldRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/FullDeobfuscation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/MethodRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/Normaliser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/ParameterRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/ReturnRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/TryCatchRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deobfuscator/TryCatchRemover2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deprecated/FieldRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/deprecated/Normaliser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/interpreters/IndexInterpreter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/interpreters/IndexValue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/interpreters/ParameterPrinter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/interpreters/SimpleIndexInterpreter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/AbstractClassAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/AbstractMethodAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/IClassAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/IDynamicClassAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/IStaticClassAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/MethodTraceAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/BasicFlowGraph.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/DeadCodeRemover.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/IndexFlowGraph.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/Node.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/SourceFlowGraph.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/analysis/StackAnalyser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/commons/ClassCheckWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/commons/DynamicModifier.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/commons/SimpleFieldVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/commons/SimpleMethodVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/delegators/AbstractClassDelegator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/delegators/AbstractMethodDelegator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/delegators/IClassDelegator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/delegators/IDynamicClassDelegator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/delegators/IStaticClassDelegator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/visitors/AbstractClassVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/visitors/AbstractMethodVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/visitors/IClassVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/visitors/IDynamicClassVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/modifiers/visitors/IStaticClassVisitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/ClassAnalyser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/DeprecatedFinder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/Finder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/HTTPSocket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/InstructionPrinter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/JarDownloader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/JarParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/Renamer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/Utilities.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXArgument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXHeader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXImplementation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXUtilities.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/other/deobfuscators/run.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/structures/ClassField.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/structures/ClassInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/acid/visitors/ClassCheckWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/Reflection-Updater.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Refactor_214.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/patched.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/AcidUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/AcidUpdater.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AcidUpdater.iml" beforeDir="false" afterPath="$PROJECT_DIR$/AcidUpdater.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/Acid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/Acid.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/AnimableNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/AnimableNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Animation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Animation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/AnimationFrames.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationFrames.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/AnimationSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationSequence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/AnimationSkeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/AnimationSkeleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/CombatInfoList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/CombatInfoList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Entity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Entity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Font.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Font.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/IndexedImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/IndexedImage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Interactable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Interactable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Item.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/ItemNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/ItemNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/IterableHashTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/IterableHashTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Keyboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Keyboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Login.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Model.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/NPC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/NPC.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/NPCDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/NPCDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/NameInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/NameInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/NodeDeque.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/NodeDeque.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/ObjectDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/ObjectDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Queue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Queue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Region.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Region.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/SpriteMask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/SpriteMask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/TradingPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/GrandExchange.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/VarbitDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/VarbitDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Varcs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Varcs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Varps.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Varps.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/analysers/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/analysers/Widget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/deobfuscator/AndroidMethodRemover.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/deobfuscator/AndroidMethodRemover.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/deobfuscator/DeadCodeRemover.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/deobfuscator/DeadCodeRemover.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/deobfuscator/TryCatchRemover2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/deobfuscator/TryCatchRemover2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/interpreters/ParameterPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/interpreters/ParameterPrinter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/modifiers/adapters/MethodTraceAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/modifiers/adapters/MethodTraceAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/ClassAnalyser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/ClassAnalyser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/DeprecatedFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/DeprecatedFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/Finder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/Finder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/InstructionPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/InstructionPrinter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/JarParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/JarParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/Renamer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/Renamer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/cxx/CXXArgument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXArgument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/cxx/CXXHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXHeader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/cxx/CXXImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXImplementation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/cxx/CXXMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/other/cxx/CXXUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/other/cxx/CXXUtilities.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/acid/structures/ClassInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/acid/structures/ClassInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/../LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -154,9 +74,6 @@
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
-  </component>
-  <component name="FavoritesManager">
-    <favorites_list name="AcidUpdater" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -169,30 +86,31 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1Ph19e4WmPAAKWNWd1ffAJBKSjJ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent">
-    <property name="GoToClass.includeLibraries" value="false" />
-    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="LayoutCode.rearrangeEntries" value="true" />
-    <property name="LayoutCode.rearrangeEntriesJava" value="false" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="MemberChooser.showClasses" value="true" />
-    <property name="MemberChooser.sorted" value="false" />
-    <property name="SearchEverywhereHistoryKey" value="`&#9;null&#9;null" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Gamepacks/Deobs" />
-    <property name="project.structure.last.edited" value="Libraries" />
-    <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
-    <property name="recentsLimit" value="5" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/brandon/Documents/Code/Reflection-Updater/AcidUpdater/Gamepacks/Deobs&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Gamepacks/Deobs" />
+      <recent name="$PROJECT_DIR$/Gamepacks/Originals" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Gamepacks/Originals" />
@@ -202,76 +120,69 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager">
-    <configuration default="true" type="AndroidRunConfigurationType">
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
       <option name="ARTIFACT_NAME" value="" />
       <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
       <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
       <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="INSPECTION_WITHOUT_ACTIVITY_RESTART" value="false" />
       <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
       <option name="DEBUGGER_TYPE" value="Java" />
       <Java />
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
-      <method v="2">
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-      </method>
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2" />
     </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType">
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
       <option name="TESTING_TYPE" value="0" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
       <option name="METHOD_NAME" value="" />
       <option name="CLASS_NAME" value="" />
       <option name="PACKAGE_NAME" value="" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
       <option name="EXTRA_OPTIONS" value="" />
+      <option name="INCLUDE_GRADLE_EXTRA_OPTIONS" value="true" />
+      <option name="RETENTION_ENABLED" value="No" />
+      <option name="RETENTION_MAX_SNAPSHOTS" value="2" />
+      <option name="RETENTION_COMPRESS_SNAPSHOTS" value="false" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="INSPECTION_WITHOUT_ACTIVITY_RESTART" value="false" />
       <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
       <option name="DEBUGGER_TYPE" value="Java" />
       <Java />
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
       </Profilers>
-      <method v="2">
-        <option name="Make" enabled="true" />
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet">
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -312,36 +223,8 @@
       <option name="WORKING_DIRECTORY" value="C:\Users\Kira\IdeaProjects\AcidUpdater" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
       <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <module name="" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -365,6 +248,7 @@
       </method>
     </configuration>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>

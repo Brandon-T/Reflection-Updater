@@ -25,6 +25,7 @@ public class ClassAnalyser {
     private LinkedHashMap<String, ClassInfo> found = null;
     private ArrayList<Analyser> analysers = null;
     private boolean is_android = false;
+    private boolean didAnalyse = false;
 
 
 
@@ -39,8 +40,16 @@ public class ClassAnalyser {
     }
 
     public ClassAnalyser analyse() {
+        if (didAnalyse) {
+            return this;
+        }
+
+        didAnalyse = true;
+
         found.clear();
         analysers.stream().forEach(a -> {
+            //System.out.println("Analysing: " + a.getClass().getSimpleName());
+
             ClassNode n = a.find(classes);
             if (n != null) {
                 ClassInfo info = a.analyse(n);
@@ -53,6 +62,7 @@ public class ClassAnalyser {
     }
 
     public void print() {
+        this.analyse();
         found.forEach((key, value) -> System.out.println(value));
     }
 
@@ -73,6 +83,8 @@ public class ClassAnalyser {
     }
 
     public void printSimbaNative() {
+        this.analyse();
+
         final String[] result = {""};
         found.forEach((key, value) -> {
             result[0] += value.toSimbaNativeString() + "\n";
@@ -93,6 +105,8 @@ public class ClassAnalyser {
     }
 
     public void refactor(String jar) {
+        this.analyse();
+
         getFound().forEach((key, value) -> {
             value.refactor(getClasses());
         });
@@ -120,6 +134,8 @@ public class ClassAnalyser {
         analysers.add(new ImageRGB());
         analysers.add(new GraphicsBuffer());
         analysers.add(new Font());
+        analysers.add(new SpriteMask());
+        analysers.add(new PacketWriter());
         analysers.add(new Keyboard());
         analysers.add(new GameShell());
         analysers.add(new Stream());
@@ -127,14 +143,15 @@ public class ClassAnalyser {
         analysers.add(new CollisionMap());
         analysers.add(new NameInfo());
         analysers.add(new Animable());
-        analysers.add(new Region());
         analysers.add(new AnimableNode());
+        analysers.add(new Region());
         analysers.add(new Boundary());
         analysers.add(new WallDecoration());
         analysers.add(new GroundDecoration());
-        analysers.add(new Interactable());
+        analysers.add(new GameObject());
+        analysers.add(new GraphicsObject());
         analysers.add(new SceneTile());
-        analysers.add(new TradingPost());
+        analysers.add(new GrandExchangeOffer());
         analysers.add(new Model());
         analysers.add(new AnimationSequence());
         analysers.add(new AnimationFrames());
@@ -150,8 +167,10 @@ public class ClassAnalyser {
         analysers.add(new PlayerDefinition());
         analysers.add(new Player());
         analysers.add(new ObjectDefinition());
+        analysers.add(new Projectile());
         analysers.add(new WidgetNode());
         analysers.add(new Widget());
+        analysers.add(new WidgetHolder());
         analysers.add(new ItemDefinition());
         analysers.add(new Item());
         analysers.add(new ItemNode());
@@ -159,6 +178,7 @@ public class ClassAnalyser {
         analysers.add(new Varps());
         analysers.add(new Varcs());
         analysers.add(new VarbitDefinition());
+        analysers.add(new GameInstance());
         analysers.add(new Client());
         analysers.add(new Other());
         return this;
@@ -261,6 +281,22 @@ public class ClassAnalyser {
         });
     }
 
+    public final void findFieldDescription(String fieldDesc) {
+        classes.stream().forEach(n -> {
+            n.methods.stream().forEach(m -> {
+                for (AbstractInsnNode a : m.instructions.toArray()) {
+                    if (a instanceof FieldInsnNode) {
+                        FieldInsnNode f = (FieldInsnNode) a;
+
+                        if (f.desc.equals(fieldDesc)) {
+                            System.out.println("Class: " + n.name + "  Method -> " + m.name + "  " + m.desc + " Field -> " + f.name);
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     public final void findMethod(String className, String superName, String name, String desc) {
         classes.stream().forEach(n -> {
             n.methods.stream().forEach(m -> {
@@ -313,7 +349,7 @@ public class ClassAnalyser {
         for (ClassNode n : classes) {
             for (MethodNode m : n.methods) {
                 long multi = new Finder(m).findMultiplier(owner, field);
-                if (multi != 0 && multi % 2 != 0) {
+                if (multi != 0 && multi != 1 && multi % 2 != 0) {
                     multipliers.add(multi);
                 }
             }
@@ -330,7 +366,7 @@ public class ClassAnalyser {
                 highest = key;
             }
         }
-        return highest;
+        return highest == 0 ? 1 : highest;
     }
 
     private final boolean findSuperField(ClassNode node, String owner) {

@@ -48,12 +48,12 @@ public abstract class Deobfuscator {
         int total_moved = 0;
         ArrayList<AbstractInsnNode> instructions = new ArrayList<>(Arrays.asList(method.instructions.toArray()));
 
-        int i = new DeprecatedFinder(method).findPattern(pattern);
+        int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
         while (i != -1) {
             instructions.add(i + moveTo, instructions.get(i + moveFrom));
             instructions.remove(i + moveFrom);
             ++total_moved;
-            i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+            i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
         }
         method.instructions.clear();
         instructions.stream().forEachOrdered(e -> method.instructions.add(e));
@@ -76,7 +76,7 @@ public abstract class Deobfuscator {
         int total_moved = 0;
         ArrayList<AbstractInsnNode> instructions = new ArrayList<>(Arrays.asList(method.instructions.toArray()));
 
-        int i = new DeprecatedFinder(method).findPattern(pattern);
+        int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
         while (i != -1) {
             int j = new DeprecatedFinder(method).findNext(i + pattern.length, next);
             if (j != -1) {
@@ -84,7 +84,7 @@ public abstract class Deobfuscator {
                 instructions.remove(i + moveFrom);
                 ++total_moved;
             }
-            i = new DeprecatedFinder(method).findPattern(pattern, i + 1);
+            i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
         }
         method.instructions.clear();
         instructions.stream().forEachOrdered(e -> method.instructions.add(e));

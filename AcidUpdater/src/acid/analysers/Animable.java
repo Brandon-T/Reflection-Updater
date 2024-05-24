@@ -31,7 +31,7 @@ public class Animable extends Analyser {
             }
 
             for (MethodNode m : n.methods) {
-                if (m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                if (m.desc.equals("(IIIIIIIIIJ)V")) {
                     ++method_count;
                 } else if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.contains(Main.get("Stream"))) {
                     method_count = 0;

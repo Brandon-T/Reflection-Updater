@@ -57,12 +57,12 @@ public class Entity extends Analyser {
         info.putField(findQueueLength(node));
         info.putField(findLocalX(node, info.getField("QueueX")));
         info.putField(findLocalY(node, info.getField("QueueY")));
-        info.putField(findCombatCycle(node));
+        //info.putField(findCombatCycle(node));
         info.putField(findInteractingIndex(node));
         //info.putField(findRotation(node));
         info.putField(new ClassField("Orientation"));
         info.putField(findIsWalking(node));
-        info.putField(findTargetIndex(node));
+        //info.putField(findTargetIndex(node));
 
         if (Main.get("CombatInfo2") != null) {
             info.putField(findCombatInfoList(node));
@@ -76,7 +76,7 @@ public class Entity extends Analyser {
         info.putField(findSpotAnimation(node));
         info.putField(findSpotAnimationFrame(node));
         info.putField(findSpotAnimationFrameCycle(node));
-        info.putField(findGraphicsId(node));
+        //info.putField(findGraphicsId(node));
         return info;
     }
 
@@ -95,20 +95,10 @@ public class Entity extends Analyser {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL});
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                    return new ClassField("AnimationID", f.name, f.desc, multi);
-                }
-            }
-        }
-
-        //November 8th, 2017:
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 28);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("AnimationID", f.name, f.desc, multi);
+                    if (f.desc.equals("I")) {
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                        return new ClassField("AnimationID", f.name, f.desc, multi);
+                    }
                 }
             }
         }
@@ -148,44 +138,14 @@ public class Entity extends Analyser {
     }
 
     private ClassField findAnimationFrame(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 29);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("AnimationFrame", f.name, f.desc, multi);
-                }
-            }
-        }
         return new ClassField("AnimationFrame");
     }
 
     private ClassField findMovementSequence(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 25);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("MovementSequence", f.name, f.desc, multi);
-                }
-            }
-        }
         return new ClassField("MovementSequence");
     }
 
     private ClassField findMovementFrame(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 26);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("MovementFrame", f.name, f.desc, multi);
-                }
-            }
-        }
         return new ClassField("MovementFrame");
     }
 
@@ -209,7 +169,7 @@ public class Entity extends Analyser {
             if ((m.desc.equals("(IIIB)V") || m.desc.equals("(IIII)V") || m.desc.equals("(IIIIII)V")) && hasAccess(m, Opcodes.ACC_FINAL)) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 1) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 2) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         return new ClassField("HitDamages", f.name, f.desc);
                     }
@@ -226,7 +186,7 @@ public class Entity extends Analyser {
             if ((m.desc.equals("(IIIB)V") || m.desc.equals("(IIII)V") || m.desc.equals("(IIIIII)V")) && hasAccess(m, Opcodes.ACC_FINAL)) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 2) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         return new ClassField("HitTypes", f.name, f.desc);
                     }
@@ -568,19 +528,33 @@ public class Entity extends Analyser {
     }
 
     private ClassField findInteractingIndex(ClassNode node) {
+        ClassNode gameInstance = new GameInstance().find(Main.getClasses());
+        if (gameInstance == null) {
+            return new ClassField("InteractingIndex");
+        }
+
+        //dh.cz
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD, Opcodes.ISUB, Opcodes.AALOAD};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1, Finder.COMPARISON};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;)V", node.name))) {
+                if (m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        if ((((int) ((LdcInsnNode) m.instructions.get(i + 4)).cst == 0x8000))) {
+                        if (((VarInsnNode)m.instructions.get(i + 4)).var == 4) {
                             long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
                             return new ClassField("InteractingIndex", f.name, f.desc, multi);
                         }
                         i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+
+                    i = new Finder(m).findPattern(pattern2);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                        return new ClassField("InteractingIndex", f.name, f.desc, multi);
                     }
                 }
             }
@@ -681,19 +655,24 @@ public class Entity extends Analyser {
 
     private ClassField findCombatInfoHealthScale(ClassNode node) {
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, Finder.OPTIONAL, Opcodes.SIPUSH};
+
+        ClassNode gameInstance = new GameInstance().find(nodes);
+        if (gameInstance == null) {
+            return new ClassField("HealthScale");
+        }
+
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.IDIV, Opcodes.ISTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;IIIII)V", node.name))) {
-                    int i = new Finder(m).findPattern(pattern, 0, false);
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;L%s;IIIII)V", gameInstance.name, node.name))) {
+                    int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
-                        int j = new Finder(m).findNext(i + 1, Opcodes.SIPUSH, false);
-                        if (j != -1 && ((IntInsnNode) m.instructions.get(j)).operand == 255) {
-                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        if (f.owner.equals(Main.get("CombatInfo2"))) {
                             long multi = Main.findMultiplier(f.owner, f.name);
                             return new ClassField("HealthScale", f.name, f.desc, multi);
                         }
-                        i = new Finder(m).findPattern(pattern, i + 1, false);
+                        i = new Finder(m).findPattern(pattern, i + 1);
                     }
                 }
             }
@@ -711,10 +690,16 @@ public class Entity extends Analyser {
 
     private ClassField findSpotAnimationFrameCycle(ClassNode node) {
         Collection<ClassNode> nodes = Main.getClasses();
+
+        ClassNode gameInstance = new GameInstance().find(nodes);
+        if (gameInstance == null) {
+            return new ClassField("SpotAnimationFrameCycle");
+        }
+
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;)V", node.name))) {
+                if (m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         if (((VarInsnNode) m.instructions.get(i + 4)).var == 3 || ((VarInsnNode) m.instructions.get(i + 4)).var == 4) {

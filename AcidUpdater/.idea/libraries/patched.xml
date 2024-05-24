@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="patched">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Gamepacks/Deobs/patched.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

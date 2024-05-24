@@ -24,7 +24,10 @@ public class Model extends Analyser {
             }
 
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.matches("\\(IIIIIIII(I|J)\\)V")) {
+                //(IIIIIIIFFFIII)V
+                //([[IIIIZI)Lkb;
+                //(IIIIIII)V
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIIIIIIIJ)V")) {
                     return n;
                 }
             }
@@ -116,12 +119,11 @@ public class Model extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    FieldInsnNode nodes[] = new FieldInsnNode[3];
-                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
-                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
-                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
-                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(indices.getName()) && nodes[0].owner.equals(node.name)) {
-                        return new ClassField("IndicesLength", nodes[1].name, nodes[1].desc);
+                    FieldInsnNode verticesLength = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode indicesLength = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode texVerticesLength = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (!verticesLength.name.equals(indicesLength.name) && !indicesLength.name.equals(texVerticesLength.name) && verticesLength.owner.equals(node.name) && indicesLength.owner.equals(node.name) && texVerticesLength.owner.equals(node.name)) {
+                        return new ClassField("IndicesLength", indicesLength.name, indicesLength.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -187,12 +189,11 @@ public class Model extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    FieldInsnNode nodes[] = new FieldInsnNode[3];
-                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
-                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
-                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
-                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(indices.getName()) && nodes[0].owner.equals(node.name)) {
-                        return new ClassField("VerticesLength", nodes[1].name, nodes[1].desc);
+                    FieldInsnNode verticesLength = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode indicesLength = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode texVerticesLength = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (!verticesLength.name.equals(indicesLength.name) && !indicesLength.name.equals(texVerticesLength.name) && verticesLength.owner.equals(node.name) && indicesLength.owner.equals(node.name) && texVerticesLength.owner.equals(node.name)) {
+                        return new ClassField("VerticesLength", verticesLength.name, verticesLength.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -202,14 +203,14 @@ public class Model extends Analyser {
     }
 
     private ClassField findTexturedIndicesX(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Finder.INVOCATION};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 2)).var;
                     if (VarA == 1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
                         return new ClassField("TexIndicesX", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -220,18 +221,15 @@ public class Model extends Analyser {
     }
 
     private ClassField findTexturedIndicesY(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Finder.INVOCATION};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 6)).var;
                     if (VarA == 1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                        FieldInsnNode j = (FieldInsnNode)m.instructions.get(i + 6);
-                        if (!f.name.equals(j.name)) {
-                            return new ClassField("TexIndicesY", j.name, j.desc);
-                        }
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
+                        return new ClassField("TexIndicesY", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -241,14 +239,14 @@ public class Model extends Analyser {
     }
 
     private ClassField findTexturedIndicesZ(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Finder.INVOCATION};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Finder.INVOCATION};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    int VarA = ((VarInsnNode)m.instructions.get(i + 3)).var;
+                    int VarA = ((VarInsnNode)m.instructions.get(i + 10)).var;
                     if (VarA == 1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 9);
                         return new ClassField("TexIndicesZ", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -264,7 +262,7 @@ public class Model extends Analyser {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 17) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 21) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
                         return new ClassField("TexVerticesX", f.name, f.desc);
                     }
@@ -281,7 +279,7 @@ public class Model extends Analyser {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 18) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 22) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
                         return new ClassField("TexVerticesY", f.name, f.desc);
                     }
@@ -298,7 +296,7 @@ public class Model extends Analyser {
             if (m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 19) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 23) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
                         return new ClassField("TexVerticesZ", f.name, f.desc);
                     }
@@ -315,12 +313,11 @@ public class Model extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    FieldInsnNode nodes[] = new FieldInsnNode[3];
-                    nodes[0] = (FieldInsnNode)m.instructions.get(i);
-                    nodes[1] = (FieldInsnNode)m.instructions.get(i + 2);
-                    nodes[2] = (FieldInsnNode)m.instructions.get(i + 4);
-                    if (nodes[0].name.equals(nodes[2].name) && nodes[0].name.equals(vertices.getName()) && nodes[0].owner.equals(node.name)) {
-                        return new ClassField("TexVerticesLength", nodes[1].name, nodes[1].desc);
+                    FieldInsnNode verticesLength = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode indicesLength = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode texVerticesLength = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (!verticesLength.name.equals(indicesLength.name) && !indicesLength.name.equals(texVerticesLength.name) && verticesLength.owner.equals(node.name) && indicesLength.owner.equals(node.name) && texVerticesLength.owner.equals(node.name)) {
+                        return new ClassField("TexVerticesLength", texVerticesLength.name, texVerticesLength.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }

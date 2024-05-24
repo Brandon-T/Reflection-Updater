@@ -20,7 +20,7 @@ public class GroundDecoration extends Analyser {
         ClassNode n = Main.getClassNode("Region");
         if (n != null) {
             for (MethodNode m : n.methods) {
-                if (m.desc.matches(String.format("\\(IIIIL%s;(I|J)I\\)V", Main.get("Animable")))) {
+                if (m.desc.equals(String.format("(IIIIL%s;JI)V", Main.get("Animable")))) {
                     for (AbstractInsnNode i : m.instructions.toArray()) {
                         if (i instanceof FieldInsnNode) {
                             FieldInsnNode f = (FieldInsnNode) i;

@@ -31,13 +31,7 @@ public class NPCDefinition extends Analyser {
                 }
             }
 
-            for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;IL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
-                    ++model_method_count;
-                }
-            }
-
-            if (str_count == 1 && str_arr_count == 1 && short_arr_count == 4 && model_method_count > 0) {
+            if (str_count == 1 && str_arr_count == 1 && short_arr_count >= 4) {
                 return n;
             }
         }
@@ -58,6 +52,9 @@ public class NPCDefinition extends Analyser {
         info.putField(findModelTileSize(node));
         info.putField(findModelScaleWidth(node));
         info.putField(findModelScaleHeight(node));
+        info.putField(findTransformVarbit(node));
+        info.putField(findTransformVarp(node));
+        info.putField(findDefinitionCache(node));
         return info;
     }
 
@@ -81,8 +78,8 @@ public class NPCDefinition extends Analyser {
 
     private ClassField findID(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;IL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
-                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD, Finder.OPTIONAL, Opcodes.IMUL, Opcodes.I2L, Opcodes.INVOKEVIRTUAL, Opcodes.CHECKCAST});
+            if (m.desc.matches(String.format("\\(L%s;IL%s;IL[A-z]{0,2};\\)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD, Finder.OPTIONAL, Opcodes.IMUL, Opcodes.I2L});
                 if (i != -1) {
                     long multi = 0;
                     if (m.instructions.get(i + 1) instanceof LdcInsnNode) {
@@ -99,12 +96,17 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findModelIDs(ClassNode node) {
+        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.IASTORE};
         for (MethodNode m : node.methods) {
-            int i = new Finder(m).findPattern(new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.ICONST_0, Opcodes.INVOKESTATIC, Opcodes.AASTORE});
-            if (i != -1 && ((VarInsnNode)m.instructions.get(i + 3)).var == 10) {
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                return new ClassField("ModelIDs", f.name, f.desc);
+            int i = new Finder(m).findPattern(pattern);
+            while (i != -1) {
+                if (((VarInsnNode)m.instructions.get(i + 2)).var == 5) {
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    return new ClassField("ModelIDs", f.name, f.desc);
+                }
+                i = new Finder(m).findPattern(pattern, i + 1);
             }
+
         }
         return new ClassField("ModelIDs");
     }
@@ -151,14 +153,13 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findModelCache(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
-        String desc = String.format("(L%s;IL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model"));
+        final int pattern[] = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(desc)) {
+            if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    if (((FieldInsnNode)m.instructions.get(i)).desc.equals(String.format("L%s;", Main.get("Cache")))) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    if (((IntInsnNode)m.instructions.get(i + 2)).operand == 50) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         return new ClassField("ModelCache", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -190,7 +191,7 @@ public class NPCDefinition extends Analyser {
     private ClassField findModelScaleWidth(ClassNode node) {
         final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;IL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
+            if (m.desc.matches(String.format("\\(L%s;IL%s;IL[A-z]{0,2};\\)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
@@ -206,7 +207,7 @@ public class NPCDefinition extends Analyser {
     private ClassField findModelScaleHeight(ClassNode node) {
         final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;IL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
+            if (m.desc.matches(String.format("\\(L%s;IL%s;IL[A-z]{0,2};\\)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 6);
@@ -217,5 +218,17 @@ public class NPCDefinition extends Analyser {
         }
 
         return new ClassField("ModelScaleHeight");
+    }
+
+    private ClassField findTransformVarbit(ClassNode node) {
+        return new ClassField("TransformVarbit");
+    }
+
+    private ClassField findTransformVarp(ClassNode node) {
+        return new ClassField("TransformVarp");
+    }
+
+    private ClassField findDefinitionCache(ClassNode node) {
+        return new ClassField("DefinitionCache");
     }
 }

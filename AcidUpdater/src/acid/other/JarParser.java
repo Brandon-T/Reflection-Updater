@@ -92,7 +92,8 @@ public class JarParser {
                     "com/jagex3",
                     "com/jagex/mobilesdk",
                     "com/jagex/oldscape/android",
-                    "com/jagex/oldscape/osrenderer"
+                    "com/jagex/oldscape/osrenderer",
+                    "org"
             });
 
              if (bad_files.stream().anyMatch(e -> entry.getName().startsWith(e))) {

@@ -363,6 +363,8 @@ public class ClassInfo {
             simbaMap.put("Player_Model", "Player_Model");
             simbaMap.put("Player_Visible", "Player_Visible");
 
+            simbaMap.put("GameInstance", "GameInstance");
+
             simbaMap.put("Client", "Client");
             simbaMap.put("Client_GameCycle", "Client_LoopCycle");
             simbaMap.put("Client_MenuOptions", "Client_MenuOptions");
@@ -419,7 +421,7 @@ public class ClassInfo {
 
             simbaMap.put("Region", "Region");
             simbaMap.put("Region_Tiles", "Region_SceneTiles");
-            simbaMap.put("Region_InteractableObjects", "Region_InteractableObjects");
+            simbaMap.put("Region_GameObjects", "Region_GameObjects");
 
             simbaMap.put("Boundary", "BoundaryObject");
             simbaMap.put("Boundary_ID", "BoundaryObject_ID");
@@ -471,7 +473,7 @@ public class ClassInfo {
             simbaMap.put("SceneTile", "SceneTile");
             simbaMap.put("SceneTile_Boundary", "SceneTile_BoundaryObject");
             simbaMap.put("SceneTile_SceneTile", "SceneTile_SceneTileObject");
-            simbaMap.put("SceneTile_Interactables", "SceneTile_GameObject");
+            simbaMap.put("SceneTile_Interactables", "SceneTile_GameObjects");
             simbaMap.put("SceneTile_WallDecoration", "SceneTile_WallDecoration");
             simbaMap.put("SceneTile_GroundDecoration", "SceneTile_GroundDecoration");
             simbaMap.put("SceneTile_SceneX", "SceneTile_SceneX");

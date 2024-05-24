@@ -41,7 +41,7 @@ public class IndexedImage extends Analyser {
 
     private ClassField findPixels(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals("[I")) {
+            if (f.desc.equals("[B")) {
                 return new ClassField("Pixels", f.name, f.desc);
             }
         }
@@ -50,7 +50,7 @@ public class IndexedImage extends Analyser {
 
     private ClassField findPalette(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals("[B")) {
+            if (f.desc.equals("[I")) {
                 return new ClassField("Palette", f.name, f.desc);
             }
         }

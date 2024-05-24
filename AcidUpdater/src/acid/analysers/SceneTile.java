@@ -89,16 +89,14 @@ public class SceneTile extends Analyser {
     }
 
     private ClassField findX(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
-        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
-
-        for (MethodNode m : n.methods) {
-            if (m.desc.equals(String.format("(L%s;Z)V", node.name))) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 4) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
-                        long multi = (int) ((LdcInsnNode)m.instructions.get(i + 1)).cst;
+                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                        long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("SceneX", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -109,16 +107,14 @@ public class SceneTile extends Analyser {
     }
 
     private ClassField findY(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
-        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
-
-        for (MethodNode m : n.methods) {
-            if (m.desc.equals(String.format("(L%s;Z)V", node.name))) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 5) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
-                        long multi = (int) ((LdcInsnNode)m.instructions.get(i + 1)).cst;
+                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                        long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("SceneY", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -129,19 +125,14 @@ public class SceneTile extends Analyser {
     }
 
     private ClassField findPlane(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
-        final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
-
-        for (MethodNode m : n.methods) {
-            if (m.desc.equals(String.format("(L%s;Z)V", node.name))) {
+        final int[] pattern = new int[]{Opcodes.PUTFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 7) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
-                        long multi = (int) ((LdcInsnNode)m.instructions.get(i + 1)).cst;
-                        return new ClassField("Plane", f.name, f.desc, multi);
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
+                if(i != -1) {
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("Plane", f.name, f.desc, multi);
                 }
             }
         }

@@ -7,6 +7,7 @@ import acid.structures.ClassInfo;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
@@ -65,6 +66,17 @@ public class PlayerDefinition extends Analyser {
     }
 
     private ClassField findGender(ClassNode node) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals("()V")) {
+                final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
+                int i = new Finder(m).findPattern(pattern);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    return new ClassField("Gender", f.name, f.desc);
+                }
+            }
+        }
+
         for (FieldNode f : node.fields) {
             if (f.desc.equals("Z")) {
                 return new ClassField("IsFemale", f.name, f.desc);
@@ -99,10 +111,11 @@ public class PlayerDefinition extends Analyser {
 
     public ClassField findEquipment(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("()I")) {
-                int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.BIPUSH, Opcodes.IALOAD, Opcodes.ICONST_5, Opcodes.ISHL});
+            if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;)V", node.name))) {
+                int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ARRAYLENGTH};
+                int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
                     return new ClassField("Equipment", f.name, f.desc);
                 }
             }

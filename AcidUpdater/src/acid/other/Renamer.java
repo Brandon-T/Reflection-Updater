@@ -171,13 +171,13 @@ public class Renamer {
             return true;
         }
 
-        while(true) {
+        while(current != null ) {
             if (current.name.equals(parent) || current.superName.equals(parent)) {
                 return true;
             }
 
             current = loadAnyClass(current.superName);
-            if (current.name.equals("java/lang/Object")) {
+            if (current != null && current.name.equals("java/lang/Object")) {
                 break;
             }
         }

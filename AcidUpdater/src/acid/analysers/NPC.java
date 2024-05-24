@@ -35,8 +35,12 @@ public class NPC extends Analyser {
         info.putField(findDefinition(node));
         Main.getInfo("Entity").putField(findEntityHeight(node));
         Main.getInfo("Entity").setField(findEntityAnimationID(node));
+        Main.getInfo("Entity").setField(findEntityAnimationDelay(node));
         Main.getInfo("Entity").setField(findEntityQueueTraversed(node));
         Main.getInfo("Entity").setField(findEntityQueueLength(node));
+        Main.getInfo("Entity").setField(findEntityAnimationFrame(node));
+        Main.getInfo("Entity").setField(findEntityMovementSequence(node));
+        Main.getInfo("Entity").setField(findEntityMovementFrame(node));
         info.putField(findGetModel(node));
         Main.getInfo("NPCDefinition").setField(findModelTileSize(node));
         Main.getInfo("NPCDefinition").setField(findCombatLevel(node));
@@ -89,10 +93,39 @@ public class NPC extends Analyser {
                 }
             }
 
+            // Search getModel()
+            for (MethodNode m : node.methods) {
+                if (m.desc.equals(String.format("()L%s;", Main.get("Model"))) && hasAccess(m, Opcodes.ACC_FINAL)) {
+                    int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1});
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                        return new ClassField("AnimationID", f.name, f.desc, multi);
+                    }
+                }
+            }
+
             return new ClassField("AnimationID");
         }
 
         return Main.getInfo("Entity").getField("AnimationID");
+    }
+
+    private ClassField findEntityAnimationDelay(ClassNode node) {
+        if (Main.getInfo("Entity").getField("AnimationDelay").getName().equals("N/A")) {
+            // Search getModel()
+            for (MethodNode m : node.methods) {
+                if (m.desc.equals(String.format("()L%s;", Main.get("Model"))) && hasAccess(m, Opcodes.ACC_FINAL)) {
+                    int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_0});
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                        return new ClassField("AnimationDelay", f.name, f.desc, multi);
+                    }
+                }
+            }
+        }
+        return Main.getInfo("Entity").getField("AnimationDelay");
     }
 
     private ClassField findEntityQueueTraversed(ClassNode node) {
@@ -135,6 +168,76 @@ public class NPC extends Analyser {
         return Main.getInfo("Entity").getField("QueueLength");
     }
 
+    private ClassField findEntityAnimationFrame(ClassNode node) {
+        if (Main.getInfo("Entity").getField("AnimationFrame").getName().equals("N/A")) {
+            final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+            for (MethodNode m : node.methods) {
+                if (m.desc.equals(String.format("()L%s;", Main.get("Model"))) && hasAccess(m, Opcodes.ACC_FINAL)) {
+                    int i = new Finder(m).findPattern(pattern);
+                    while (i != -1) {
+                        if (m.instructions.get(i + 2) instanceof FieldInsnNode) {
+                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                            if (((VarInsnNode) m.instructions.get(i)).var == 2) {
+                                long multi = (int) ((LdcInsnNode) m.instructions.get(i + 3)).cst;
+                                return new ClassField("AnimationFrame", f.name, f.desc, multi);
+                            }
+                        }
+                        i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+                }
+            }
+            return new ClassField("AnimationFrame");
+        }
+
+        return Main.getInfo("Entity").getField("AnimationFrame");
+    }
+
+    private ClassField findEntityMovementSequence(ClassNode node) {
+        if (Main.getInfo("Entity").getField("MovementSequence").getName().equals("N/A")) {
+            final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1};
+            for (MethodNode m : node.methods) {
+                if (m.desc.equals(String.format("()L%s;", Main.get("Model"))) && hasAccess(m, Opcodes.ACC_FINAL)) {
+                    int i = new Finder(m).findPattern(pattern);
+                    while (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        if (!f.name.equals(Main.getInfo("Entity").getField("AnimationID").getName())) {
+                            long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                            return new ClassField("MovementSequence", f.name, f.desc, multi);
+                        }
+                       i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+                }
+            }
+            return new ClassField("MovementSequence");
+        }
+
+        return Main.getInfo("Entity").getField("MovementSequence");
+    }
+
+    private ClassField findEntityMovementFrame(ClassNode node) {
+        if (Main.getInfo("Entity").getField("MovementFrame").getName().equals("N/A")) {
+            final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD};
+            for (MethodNode m : node.methods) {
+                if (m.desc.equals(String.format("()L%s;", Main.get("Model"))) && hasAccess(m, Opcodes.ACC_FINAL)) {
+                    int i = new Finder(m).findPattern(pattern);
+                    while (i != -1) {
+                        if (m.instructions.get(i + 2) instanceof FieldInsnNode) {
+                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                            if (((VarInsnNode) m.instructions.get(i)).var == 3) {
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("MovementFrame", f.name, f.desc, multi);
+                            }
+                        }
+                        i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+                }
+            }
+            return new ClassField("MovementFrame");
+        }
+
+        return Main.getInfo("Entity").getField("MovementFrame");
+    }
+
     private ClassField findModelTileSize(ClassNode node) {
         final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_1};
         for (MethodNode m : node.methods) {
@@ -157,7 +260,7 @@ public class NPC extends Analyser {
             final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL};
             for (ClassNode n : nodes) {
                 for (MethodNode m : n.methods) {
-                    if (m.desc.equals(String.format("(L%s;III)V", node.name))) {
+                    if (m.desc.equals(String.format("(L%s;IIII)V", node.name))) {
                         int i = new Finder(m).findPattern(pattern);
                         while (i != -1) {
                             FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);

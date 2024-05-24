@@ -1,6 +1,7 @@
 package acid.analysers;
 
 import acid.Main;
+import acid.other.DeprecatedFinder;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
@@ -32,29 +33,31 @@ public class Animation extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("Animation", node.name);
-        Arrays.stream(fieldFields(node)).forEachOrdered(info::putField);
+        Arrays.asList(fieldFields(node)).stream().forEach(info::putField);
+        info.putField(findSkeleton(node));
         return info;
+    }
+
+    private ClassField findSkeleton(ClassNode node) {
+        for (FieldNode f : node.fields) {
+            if (f.desc.equals(String.format("L%s;", Main.get("AnimationSkeleton")))) {
+                return new ClassField("Skeleton", f.name, f.desc);
+            }
+        }
+        return new ClassField("Skeleton");
     }
 
     private ClassField[] fieldFields(ClassNode node) {
         ClassField[] fields = {
                 new ClassField("FrameCount"),
-                new ClassField("TransformY"),
-                new ClassField("TransformX"),
                 new ClassField("Frames"),
-                new ClassField("TransformZ"),
-                new ClassField("Skeleton")
+                new ClassField("TransformX"),
+                new ClassField("TransformY"),
+                new ClassField("TransformZ")
         };
 
         int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.PUTFIELD};
         int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.NEWARRAY, Opcodes.PUTFIELD};
-
-        for (FieldNode f : node.fields) {
-            if (f.desc.equals(String.format("L%s;", Main.get("AnimationSkeleton")))) {
-                fields[5] = new ClassField(fields[5].getId(), f.name, f.desc);
-                break;
-            }
-        }
 
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
@@ -73,9 +76,8 @@ public class Animation extends Analyser {
                     return fields;
                 }
 
-                i = 0;
-                for (int j = 1; j < 5; ++j) {
-                    i = new Finder(m).findPattern(pattern2, i + 1, false);
+                for (int j = 1; j < fields.length; ++j) {
+                    i = new DeprecatedFinder(m).findPattern(pattern2, i + 1, false);
                     if (i != -1) {
                         if (((VarInsnNode) m.instructions.get(i + 1)).var == 7 && ((FieldInsnNode) m.instructions.get(i + 3)).desc.equals("[I")) {
                             FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);

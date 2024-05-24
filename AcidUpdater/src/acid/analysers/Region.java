@@ -1,13 +1,11 @@
 package acid.analysers;
 
+import acid.Main;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.tree.ClassNode;
-import jdk.internal.org.objectweb.asm.tree.FieldInsnNode;
-import jdk.internal.org.objectweb.asm.tree.FieldNode;
-import jdk.internal.org.objectweb.asm.tree.MethodNode;
+import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.util.Collection;
 
@@ -18,14 +16,25 @@ public class Region extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals("java/lang/Object") || hasAccess(n, Opcodes.ACC_FINAL)) {
+            if (!n.superName.equals(Main.get("Animable"))) {
                 continue;
             }
 
+            int int_array_fields = 0;
+            int int_fields = 0;
+
             for (FieldNode f : n.fields) {
-                if (f.desc.equals("[[[[Z")) {
-                    return n;
+                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[[[I")) {
+                    ++int_array_fields;
                 }
+
+                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("I")) {
+                    ++int_fields;
+                }
+            }
+
+            if (int_array_fields == 2 && int_fields >= 6) {
+                return n;
             }
         }
         return null;
@@ -35,14 +44,14 @@ public class Region extends Analyser {
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("Region", node.name);
         info.putField(findTiles(node));
-        info.putField(findInteractableObjects(node));
+        info.putField(findGameObjects(node));
         return info;
     }
 
     private ClassField findTiles(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.MULTIANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(III[[[I)V")) {
+            if (m.name.equals("<init>") && (m.desc.equals("(III[[[I)V") || m.desc.equals("(IIIII[[[I)V"))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
@@ -53,17 +62,32 @@ public class Region extends Analyser {
         return new ClassField("Tiles");
     }
 
-    private ClassField findInteractableObjects(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.SIPUSH, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
+    private ClassField findGameObjects(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.BIPUSH, Opcodes.ANEWARRAY, Opcodes.PUTSTATIC};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.SIPUSH, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(III[[[I)V")) {
+            if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
-                    return new ClassField("InteractableObjects", f.name, f.desc);
+                while (i != -1) {
+                    if (((IntInsnNode)m.instructions.get(i)).operand == 100) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                        return new ClassField("GameObjects", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+
+            if (m.name.equals("<init>")) {
+                int i = new Finder(m).findPattern(pattern2);
+                while (i != -1) {
+                    if (((IntInsnNode)m.instructions.get(i + 1)).operand == 5000) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
+                        return new ClassField("GameObjects", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern2, i + 1);
                 }
             }
         }
-        return new ClassField("InteractableObjects");
+        return new ClassField("GameObjects");
     }
 }

@@ -16,30 +16,29 @@ public class Queue extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals("java/lang/Object")) {
+            if (!n.superName.equals("java/lang/Object") || !n.interfaces.contains("java/lang/Iterable")) {
                 continue;
             }
 
             int cnode_count = 0;
+            int other_fields_count = 0;
             for (FieldNode f : n.fields) {
                 if (f.desc.equals(String.format("L%s;", Main.get("CacheableNode"))) && !hasAccess(f, Opcodes.ACC_STATIC)) {
                     ++cnode_count;
+                } else {
+                    ++other_fields_count;
                 }
             }
 
             int mnode_count = 0;
             for (MethodNode m : n.methods) {
-                if (m.desc.equals("()V") && !m.name.equals("<init>") && !hasAccess(m, Opcodes.ACC_STATIC)) {
+                if (m.desc.equals("()V") && m.name.equals("<init>")) {
                     mnode_count += 1;
                 }
             }
 
-            for (MethodNode m : n.methods) {
-                if (m.desc.equals("()V") && m.name.equals("<init>")) {
-                    if (cnode_count >= 1 && mnode_count == 1) {
-                        return n;
-                    }
-                }
+            if (other_fields_count == 0 && cnode_count >= 1 && mnode_count == 1) {
+                return n;
             }
         }
         return null;

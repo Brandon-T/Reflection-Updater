@@ -4,7 +4,10 @@ import jdk.internal.org.objectweb.asm.Label;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Kira on 2014-12-16.
@@ -17,7 +20,7 @@ public class InstructionPrinter {
     }
 
     public static void printInstructions(MethodNode method, int start, int end) {
-        System.out.println("METHOD: " + method.name + method.desc);
+        System.out.println(String.format("METHOD: %s %s%s", getAccess(method.access), method.name, method.desc));
         System.out.println("--------------------------------------\n");
         printInstructions(method.instructions.toArray(), start, end);
         System.out.println("}");
@@ -110,6 +113,27 @@ public class InstructionPrinter {
 
     public static String get(int opcode) {
         return code_map.get(opcode);
+    }
+
+    private static String getAccess(int access) {
+        LinkedHashMap<Integer, String> code_map = new LinkedHashMap<>();
+        code_map.put(Opcodes.ACC_PUBLIC, "public");
+        code_map.put(Opcodes.ACC_PRIVATE, "private");
+        code_map.put(Opcodes.ACC_PROTECTED, "protected");
+        code_map.put(Opcodes.ACC_STATIC, "static");
+        code_map.put(Opcodes.ACC_FINAL, "final");
+        code_map.put(Opcodes.ACC_NATIVE, "native");
+        code_map.put(Opcodes.ACC_ABSTRACT, "abstract");
+
+        ArrayList<String> accesses = new ArrayList<>();
+
+        for (Map.Entry<Integer, String> entry : code_map.entrySet()) {
+            if ((access & entry.getKey()) != 0) {
+                accesses.add(entry.getValue());
+            }
+        }
+
+        return String.join(" ", accesses);
     }
 
     static {

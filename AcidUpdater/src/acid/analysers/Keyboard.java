@@ -15,7 +15,7 @@ public class Keyboard extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals("java/lang/Object") || !hasAccess(n, Opcodes.ACC_FINAL)) {
+            if (!n.superName.equals("java/lang/Object")) {
                 continue;
             }
 

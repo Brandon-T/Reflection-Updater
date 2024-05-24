@@ -16,17 +16,28 @@ public class Rasteriser3D extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Rasteriser"))) {
-                continue;
-            }
-
             int arr = 0;
             for (FieldNode f : n.fields) {
                 if (f.desc.equals("[I") && hasAccess(f, Opcodes.ACC_STATIC)) {
                     ++arr;
                 }
             }
-            if (arr >= 4) {
+
+            boolean found = false;
+            method: for (MethodNode m : n.methods) {
+                int[] pattern = new int[]{Opcodes.LDC, Opcodes.ILOAD, Opcodes.I2D};
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    double value = (Double)((LdcInsnNode)m.instructions.get(i)).cst;
+                    if ((long)value == 65536) {
+                        found = true;
+                        break method;
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+
+            if (arr >= 4 && found) {
                 return n;
             }
         }
