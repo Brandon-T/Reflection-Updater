@@ -216,9 +216,11 @@ public class Player extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 9);
-                    if (f.desc.equals("I")) {
-                        return new ClassField("OverheadPrayerIcon", f.name, f.desc);
+                    if (m.instructions.get(i + 9) instanceof FieldInsnNode) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 9);
+                        if (f.desc.equals("I")) {
+                            return new ClassField("OverheadPrayerIcon", f.name, f.desc);
+                        }
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -310,21 +312,44 @@ public class Player extends Analyser {
     }
 
     private ClassField findEntitySpotAnimationFrame(ClassNode node) {
-        Function<FieldInsnNode, Boolean> hasEntityParent = (FieldInsnNode f) -> {
-            return Main.getClassNode("Entity").fields.stream().filter(field -> field.name.equals(f.name)).count() > 0;
+        Function<FieldInsnNode, FieldNode> getEntityParent = (FieldInsnNode f) -> {
+            return Main.getClassNode("Entity").fields.stream().filter(field -> field.name.equals(f.name)).findFirst().get();
         };
 
         final int[] pattern = new int[]{Opcodes.INVOKESTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKEVIRTUAL};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("()L%s;", Main.get("Model")))) {
                 int i = new DeprecatedFinder(m).findPattern(pattern, 0, false);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                    if (f.owner.equals(Main.get("Entity")) || hasEntityParent.apply(f)) {
+                    if (f.owner.equals(Main.get("Entity"))) {
                         int multi = (int)((LdcInsnNode)m.instructions.get(i + 3)).cst;
                         return new ClassField("SpotAnimationFrame", f.name, f.desc, multi);
                     }
+
+                    FieldNode ff = getEntityParent.apply(f);
+                    if (ff != null) {
+                        long multi = Main.findMultiplier(Main.get("Entity"), ff.name);
+                        return new ClassField("SpotAnimationFrame", ff.name, ff.desc, multi);
+                    }
                     i = new Finder(m).findPattern(pattern, i + 1, false);
+                }
+
+                i = new DeprecatedFinder(m).findPattern(pattern2, 0, false);
+                while (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    if (f.owner.equals(Main.get("Entity"))) {
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("SpotAnimationFrame", f.name, f.desc, multi);
+                    }
+
+                    FieldNode ff = getEntityParent.apply(f);
+                    if (ff != null) {
+                        long multi = Main.findMultiplier(Main.get("Entity"), ff.name);
+                        return new ClassField("SpotAnimationFrame", ff.name, ff.desc, multi);
+                    }
+                    i = new Finder(m).findPattern(pattern2, i + 1, false);
                 }
             }
         }

@@ -1,13 +1,16 @@
 package acid.analysers;
 
 import acid.Main;
+import acid.other.DeprecatedFinder;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Projectile extends Analyser {
     @Override
@@ -87,7 +90,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
                     return new ClassField("X", f.name, f.desc);
@@ -110,9 +113,9 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 13);
+                List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (nodes != null) {
+                    FieldInsnNode f = (FieldInsnNode)nodes.get(13);
                     return new ClassField("Y", f.name, f.desc);
                 }
             }
@@ -134,9 +137,9 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 7);
+                List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (nodes != null) {
+                    FieldInsnNode f = (FieldInsnNode)nodes.get(7);
                     return new ClassField("Z", f.name, f.desc);
                 }
             }
@@ -175,7 +178,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
                     return new ClassField("SpeedX", f.name, f.desc);
@@ -198,7 +201,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 17);
                     return new ClassField("SpeedY", f.name, f.desc);
@@ -222,7 +225,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 11);
                     return new ClassField("SpeedZ", f.name, f.desc);
@@ -245,7 +248,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 20);
                     return new ClassField("AccelerationZ", f.name, f.desc);
@@ -267,7 +270,7 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)V")) {
-                int i = new Finder(m).findPattern(pattern);
+                int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
                     long multi = Main.findMultiplier(f.owner, f.name);
@@ -290,11 +293,13 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 14);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("Yaw", f.name, f.desc, multi);
+                List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (nodes != null) {
+                    if (nodes.get(14) instanceof FieldInsnNode) {
+                        FieldInsnNode f = (FieldInsnNode) nodes.get(14);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("Yaw", f.name, f.desc, multi);
+                    }
                 }
             }
         }

@@ -54,7 +54,10 @@ public class Normaliser extends Deobfuscator {
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.GETSTATIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
-                {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON}
+                {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
+                {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
+                {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
+                {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DLOAD, Opcodes.DMUL, Opcodes.DSUB, Opcodes.DMUL},
         };
 
         for (int[] pattern : patterns) {
@@ -115,6 +118,13 @@ public class Normaliser extends Deobfuscator {
         for (int[] pattern : patterns) {
             this.arithmetic_count += this.moveInstructions(method, pattern, 0, pattern.length - 2);
         }
+
+        // Swap a set of instructions
+        int pattern[] = new int[]{Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Opcodes.LDC, Finder.MULTIPLY};
+        this.arithmetic_count += this.moveInstructions(method, pattern, 7, 0, 12);
+
+        pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.ARITHMETIC, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.VARIABLE, Finder.MULTIPLY};
+        this.arithmetic_count += this.moveInstructions(method, pattern, 5, 3);
     }
 
 

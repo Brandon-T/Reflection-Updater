@@ -48,10 +48,10 @@ public class Client extends Analyser {
         //info.putField(findCollisionMap(node));
         info.putField(findGrandExchangeOffers(node));
         info.putField(findCameraVertex(node, "X", 1));
-        info.putField(findCameraVertex(node, "Y", 5));
+        info.putField(findCameraVertex(node, "Y", 7));
         info.putField(findCameraVertex(node, "Z", 2));
-        info.putField(findCameraRotation(node, "Pitch", 6, 7));
-        info.putField(findCameraRotation(node, "Yaw", 8, 9));
+        info.putField(findCameraRotation(node, "Pitch", 8, 9));
+        info.putField(findCameraRotation(node, "Yaw", 10, 11));
         //info.putField(findRegion(node));
         info.putField(findIsRegionInstanced(node));
         info.putField(findRegionInstances(node));
@@ -496,7 +496,18 @@ public class Client extends Analyser {
         final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD, Opcodes.ISUB, Opcodes.ISTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance")))) {
+                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance"))) || m.desc.equals(String.format("(L%s;IIIII)V", Main.get("GameInstance")))) {
+                    boolean found = false;
+                    for (AbstractInsnNode insnNode : m.instructions) {
+                        if (insnNode instanceof IntInsnNode && ((IntInsnNode)insnNode).operand == 13056) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        continue;
+                    }
+
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         if (((VarInsnNode)m.instructions.get(i + 3)).var == varIndex && ((VarInsnNode)m.instructions.get(i + 5)).var == varIndex) {
@@ -517,7 +528,18 @@ public class Client extends Analyser {
         final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.IALOAD, Opcodes.ISTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance")))) {
+                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance"))) || m.desc.equals(String.format("(L%s;IIIII)V", Main.get("GameInstance")))) {
+                    boolean found = false;
+                    for (AbstractInsnNode insnNode : m.instructions) {
+                        if (insnNode instanceof IntInsnNode && ((IntInsnNode)insnNode).operand == 13056) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        continue;
+                    }
+
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         if (((VarInsnNode)m.instructions.get(i + 5)).var == varIndexOne || ((VarInsnNode)m.instructions.get(i + 5)).var == varIndexTwo) {
@@ -1208,7 +1230,18 @@ public class Client extends Analyser {
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (hasAccess(m, Opcodes.ACC_STATIC) && hasAccess(m, Opcodes.ACC_FINAL) && m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance")))) {
+                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance"))) || m.desc.equals(String.format("(L%s;IIIII)V", Main.get("GameInstance")))) {
+                    boolean found = false;
+                    for (AbstractInsnNode insnNode : m.instructions) {
+                        if (insnNode instanceof IntInsnNode && ((IntInsnNode)insnNode).operand == 13056) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        continue;
+                    }
+
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         if (((VarInsnNode)m.instructions.get(i + 8)).var == 1) {
@@ -1232,10 +1265,21 @@ public class Client extends Analyser {
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (hasAccess(m, Opcodes.ACC_STATIC) && hasAccess(m, Opcodes.ACC_FINAL) && m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance")))) {
+                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance"))) || m.desc.equals(String.format("(L%s;IIIII)V", Main.get("GameInstance")))) {
+                    boolean found = false;
+                    for (AbstractInsnNode insnNode : m.instructions) {
+                        if (insnNode instanceof IntInsnNode && ((IntInsnNode)insnNode).operand == 13056) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        continue;
+                    }
+
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
-                        if (((VarInsnNode)m.instructions.get(i + 8)).var == 5) {
+                        if (((VarInsnNode)m.instructions.get(i + 8)).var == 7) {
                             FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                             if (f.desc.equals("I")) {
                                 long multi = (int) ((LdcInsnNode) m.instructions.get(i + 1)).cst;
@@ -1256,7 +1300,18 @@ public class Client extends Analyser {
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (hasAccess(m, Opcodes.ACC_STATIC) && hasAccess(m, Opcodes.ACC_FINAL) && m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance")))) {
+                if (m.desc.equals(String.format("(L%s;III)V", Main.get("GameInstance"))) || m.desc.equals(String.format("(L%s;IIIII)V", Main.get("GameInstance")))) {
+                    boolean found = false;
+                    for (AbstractInsnNode insnNode : m.instructions) {
+                        if (insnNode instanceof IntInsnNode && ((IntInsnNode)insnNode).operand == 13056) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        continue;
+                    }
+
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         if (m.instructions.get(i + 2) instanceof FieldInsnNode) {
@@ -1354,13 +1409,17 @@ public class Client extends Analyser {
 
     private ClassField findMenuCount(ClassNode node) {
         int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Finder.COMPARISON};
-        for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                    return new ClassField("MenuCount", f.owner, f.name, f.desc, multi);
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        if (f.owner.equals("client")){
+                            long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                            return new ClassField("MenuCount", f.owner, f.name, f.desc, multi);
+                        }
+                    }
                 }
             }
         }
@@ -1369,15 +1428,32 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuActions(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.ASTORE};
+        int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.ASTORE};
 
-        for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    if (f.desc.equals("[Ljava/lang/String;")) {
-                        return new ClassField("MenuActions", f.owner, f.name, f.desc);
+        for (ClassNode n : new ClassNode[]{node}) {
+            for (MethodNode m : n.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuActions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.ARETURN};
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)Ljava/lang/String;")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuActions", f.owner, f.name, f.desc);
+                        }
                     }
                 }
             }
@@ -1387,15 +1463,31 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuOptions(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.INVOKEVIRTUAL};
+        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.INVOKEVIRTUAL, Finder.COMPARISON2};
 
-        for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
-                    if (f.desc.equals("[Ljava/lang/String;")) {
-                        return new ClassField("MenuOptions", f.owner, f.name, f.desc);
+        for (ClassNode n : new ClassNode[]{node}) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuOptions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)Ljava/lang/String;")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuOptions", f.owner, f.name, f.desc);
+                        }
                     }
                 }
             }
@@ -1422,7 +1514,6 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuX(ClassNode node) {
-        //Collection<ClassNode> nodes = Main.getClasses();
         int pattern[] = new int[]{
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
@@ -1430,9 +1521,9 @@ public class Client extends Analyser {
                 Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
         };
 
-        for (ClassNode n : new ClassNode[]{node}) {
+        for (ClassNode n : Main.getClasses()) {
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                if (m.desc.equals("(II)V")) {
                     int i = new Finder(m).findPattern(pattern, 0, false);
                     while (i != -1) {
                         if (m.instructions.get(i) instanceof VarInsnNode) {
@@ -1443,7 +1534,7 @@ public class Client extends Analyser {
                                 return new ClassField("MenuX", f.owner, f.name, f.desc, multi);
                             }
                         }
-                        i = new Finder(m).findPattern(pattern, i + 1);
+                        i = new Finder(m).findPattern(pattern, i + 1, false);
                     }
                 }
             }
@@ -1471,7 +1562,6 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuY(ClassNode node) {
-        //Collection<ClassNode> nodes = Main.getClasses();
         int pattern[] = new int[]{
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
@@ -1479,9 +1569,9 @@ public class Client extends Analyser {
                 Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
         };
 
-        for (ClassNode n : new ClassNode[]{node}) {
+        for (ClassNode n : Main.getClasses()) {
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                if (m.desc.equals("(II)V")) {
                     int i = new Finder(m).findPattern(pattern, 0, false);
                     while (i != -1) {
                         if (m.instructions.get(i) instanceof VarInsnNode) {
@@ -1492,7 +1582,7 @@ public class Client extends Analyser {
                                 return new ClassField("MenuY", f.owner, f.name, f.desc, multi);
                             }
                         }
-                        i = new Finder(m).findPattern(pattern, i + 1);
+                        i = new Finder(m).findPattern(pattern, i + 1, false);
                     }
                 }
             }
@@ -1520,7 +1610,6 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuWidth(ClassNode node) {
-        //Collection<ClassNode> nodes = Main.getClasses();
         int pattern[] = new int[]{
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
                 Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
@@ -1528,9 +1617,9 @@ public class Client extends Analyser {
                 Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
         };
 
-        for (ClassNode n : new ClassNode[]{node}) {
+        for (ClassNode n : Main.getClasses()) {
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                if (m.desc.equals("(II)V")) {
                     int i = new Finder(m).findPattern(pattern, 0, false);
                     while (i != -1) {
                         if (m.instructions.get(i) instanceof VarInsnNode) {
@@ -1568,12 +1657,11 @@ public class Client extends Analyser {
     }
 
     private ClassField findMenuHeight(ClassNode node) {
-        //Collection<ClassNode> nodes = Main.getClasses();
         int pattern[] = new int[]{Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTSTATIC};
 
-        for (ClassNode n : new ClassNode[]{node}) {
+        for (ClassNode n : Main.getClasses()) {
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                if (m.desc.equals("(II)V")) {
                     int i = new Finder(m).findPattern(pattern);
                     if (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + pattern.length - 1);

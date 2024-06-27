@@ -49,6 +49,8 @@ public class Widget extends Analyser {
         info.putField(findItemAmount(node));
         info.putField(findSpriteID(node));
         info.putField(findTextureID(node, info.getField("SpriteID")));
+        info.putField(findModelID(node));
+        info.putField(findAnimationID(node));
         info.putField(findActions(node));
         info.putField(findActionType(node));
         info.putField(findType(node));
@@ -64,6 +66,7 @@ public class Widget extends Analyser {
         info.putField(findChildren(node));
         info.putField(findBoundsIndex(node));
         info.putField(findWidgetCycle(node));
+        info.putField(findOpacity(node));
         info.putField(findSwapItemsMethod(node));
         return info;
     }
@@ -309,6 +312,14 @@ public class Widget extends Analyser {
             }
         }
         return new ClassField("TextureID");
+    }
+
+    private ClassField findModelID(ClassNode node) {
+        return new ClassField("ModelID");
+    }
+
+    private ClassField findAnimationID(ClassNode node) {
+        return new ClassField("AnimationID");
     }
 
     private ClassField findActions(ClassNode node) {
@@ -588,6 +599,10 @@ public class Widget extends Analyser {
             }
         }
         return new ClassField("WidgetCycle");
+    }
+
+    private ClassField findOpacity(ClassNode node) {
+        return new ClassField("Opacity");
     }
 
     private ClassField findSwapItemsMethod(ClassNode node) {

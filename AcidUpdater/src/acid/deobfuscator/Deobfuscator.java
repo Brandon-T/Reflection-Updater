@@ -1,6 +1,8 @@
 package acid.deobfuscator;
 
 import acid.other.DeprecatedFinder;
+import acid.other.Finder;
+import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.AbstractInsnNode;
 import jdk.internal.org.objectweb.asm.tree.ClassNode;
 import jdk.internal.org.objectweb.asm.tree.MethodNode;
@@ -51,7 +53,7 @@ public abstract class Deobfuscator {
         int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
         while (i != -1) {
             instructions.add(i + moveTo, instructions.get(i + moveFrom));
-            instructions.remove(i + moveFrom);
+            instructions.remove(i + moveFrom + (moveTo < moveFrom ? 1 : 0));
             ++total_moved;
             i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
         }
@@ -61,29 +63,31 @@ public abstract class Deobfuscator {
     }
 
     /**
-     * Moves an instruction from "moveFrom" to "moveTo" for each instance of "pattern to last"
-     * found in "method". After finding "pattern", this function finds the "next" instruction
-     * and performs the movement.
+     * Moves a set of instructions from "moveFrom" to "moveTo" for each instance of "pattern"
+     * found in "method".
      *
      * @param method  Method to search.
      * @param pattern  Pattern to search for.
-     * @param next  Next instruction to be found anywhere after the occurrence of "pattern".
-     * @param moveFrom  Index of the instruction to move.
-     * @param moveTo  Index to place the new instruction.
+     * @param length Amount of instructions to move.
+     * @param moveFrom  Index of the instructions to move.
+     * @param moveTo  Index to place the new instructions.
      * @return
      */
-    protected int moveInstructions(MethodNode method, int[] pattern, int next, int moveFrom, int moveTo) {
+    protected int moveInstructions(MethodNode method, int[] pattern, int length, int moveFrom, int moveTo) {
         int total_moved = 0;
         ArrayList<AbstractInsnNode> instructions = new ArrayList<>(Arrays.asList(method.instructions.toArray()));
 
         int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
         while (i != -1) {
-            int j = new DeprecatedFinder(method).findNext(i + pattern.length, next);
-            if (j != -1) {
-                instructions.add(i + moveTo + (j - i), instructions.get(i + moveFrom));
-                instructions.remove(i + moveFrom);
+            for (int j = 0, offset = 0; j < length; ++j, ++offset) {
+                instructions.add(i + j + moveTo, instructions.get(i + j + moveFrom + (moveTo < moveFrom ? offset : 0)));
+            }
+
+            for (int j = length - 1; j >= 0; --j) {
+                instructions.remove(i + j + moveFrom + (moveTo < moveFrom ? length : 0));
                 ++total_moved;
             }
+
             i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
         }
         method.instructions.clear();

@@ -85,7 +85,7 @@ public class WidgetHolder extends Analyser {
                         int j = new Finder(m).findNext(i + 3, Opcodes.GETFIELD, false);
                         if (j != -1) {
                             FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
-                            int multi = (int) ((LdcInsnNode) m.instructions.get(j + 1)).cst;
+                            long multi = Main.findMultiplier(f.owner, f.name);
                             return new ClassField("TextureID", f.name, f.desc, multi);
                         }
                         i = new Finder(m).findPattern(pattern, i + 1);
