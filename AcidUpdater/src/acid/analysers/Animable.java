@@ -33,7 +33,7 @@ public class Animable extends Analyser {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals("(IIIIIIIIIJ)V")) {
                     ++method_count;
-                } else if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.contains(Main.get("Stream"))) {
+                } else if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.contains(Main.get("Buffer"))) {
                     method_count = 0;
                     break;
                 }

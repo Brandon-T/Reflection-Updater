@@ -35,7 +35,7 @@ public class CombatInfo2 extends Analyser {
             }
 
             for (MethodNode method : node.methods) {
-                if (!hasAccess(method, Opcodes.ACC_STATIC) &&  method.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+                if (!hasAccess(method, Opcodes.ACC_STATIC) &&  method.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                     ++method_count;
                 }
             }

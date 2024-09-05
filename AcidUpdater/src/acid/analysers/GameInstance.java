@@ -17,33 +17,6 @@ public class GameInstance extends Analyser {
                 continue;
             }
 
-            //drawTileMinimap: dt.al.bk
-            //getFloorDecorationTag: dt.al.bn
-            //getObjectDefinition: ij.al
-
-            //nf.jd = static "GameInstance" Ldt;
-            //dt.aw = Tiles[][][]???
-            //dt.af = PathX???;
-            //dt.aa = PathY???;
-            //cj.ko = WorldToScreen
-            //bm.kp = getTileHeight(...)
-            //client.regions = ey.jr
-            //client.dr = isInInstance?
-            //client.rw = Resizable
-            //client.rb = RootWidgetCount
-
-            //au.ms.am * -1273931853 = LocalPlayer.plane
-            //client.na = menuOpCodes
-            //client.vl * -248147819 = ViewPortOffsetX
-            //client.vc * 1122470769 = ViewPortOffsetY
-
-            //boolean client.lp() = shouldLeftClickOpenMenu
-            //client.ld(int var1, int var2) = openMenu
-            //.at = player.combatLevel
-
-            //jy = Region/Scene
-            //boolean jy.ax(...) = newGameObject
-
             int int_array_fields = 0;
             int int_3d_array_fields = 0;
             int byte_3d_array_fields = 0;

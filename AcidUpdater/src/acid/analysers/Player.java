@@ -9,6 +9,7 @@ import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -40,7 +41,7 @@ public class Player extends Analyser {
         ClassInfo info = new ClassInfo("Player", node.name);
         info.putField(findName(node));
         info.putField(findModel(node));
-        info.putField(findVisible(node));
+        info.putField(findIsHidden(node));
         info.putField(findDefinition(node));
         info.putField(findCombatLevel(node));
         info.putField(findActions(node));
@@ -50,7 +51,6 @@ public class Player extends Analyser {
         info.putField(findIsAnimating(node));
         info.putField(findGetModel(node));
         //Main.getInfo("Entity").setField(findEntityAnimationFrames(node));
-        Main.getInfo("Entity").setField(findEntitySpotAnimation(node));
         Main.getInfo("Entity").setField(findEntitySpotAnimationFrame(node));
         //Main.getInfo("Model").putField(findModelFitsSingleTile(node));
         info.putField(findOverheadPKIcon(node));
@@ -84,21 +84,21 @@ public class Player extends Analyser {
         return new ClassField("Model");
     }
 
-    private ClassField findVisible(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.PUTFIELD, Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_0, Finder.COMPARISON, Opcodes.GETSTATIC};
+    private ClassField findIsHidden(ClassNode node) {
+        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     if (f.desc.equals("Z")) {
-                        return new ClassField("isHidden", f.name, f.desc);
+                        return new ClassField("IsHidden", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("isHidden");
+        return new ClassField("IsHidden");
     }
 
     private ClassField findDefinition(ClassNode node) {
@@ -148,14 +148,14 @@ public class Player extends Analyser {
 
     private ClassField findIndex(ClassNode node) {
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;Z)V", node.name))) {
+                if (m.desc.equals(String.format("(L%s;Z)V", Main.get("PacketBuffer")))) {
                     int i = new Finder(m).findPattern(pattern);
                     if (i != -1) {
-                        long multi = (int) ((LdcInsnNode)m.instructions.get(i + 6)).cst;
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                        long multi = Main.findMultiplier(f.owner, f.desc);
                         return new ClassField("Index", f.name, f.desc, multi);
                     }
                 }
@@ -190,12 +190,13 @@ public class Player extends Analyser {
         };
 
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.desc.equals("I")) {
-                        return new ClassField("OverheadSkulledIcon", f.name, f.desc);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("OverheadSkulledIcon", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
@@ -205,24 +206,19 @@ public class Player extends Analyser {
     }
 
     private ClassField findOverheadPrayerIcon(ClassNode node) {
-        final int pattern[] = new int[]{
-                //                                                      PK Icon
-                Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD, Opcodes.ALOAD,
-                //                                                                  Prayer Icon
-                Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD
-        };
+        final int pattern[] = new int[]{Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (m.instructions.get(i + 9) instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 9);
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    if (insns.get(6) instanceof FieldInsnNode) {
+                        FieldInsnNode f = (FieldInsnNode) insns.get(6);
                         if (f.desc.equals("I")) {
-                            return new ClassField("OverheadPrayerIcon", f.name, f.desc);
+                            long multi = Main.findMultiplier(f.owner, f.name);
+                            return new ClassField("OverheadPrayerIcon", f.name, f.desc, multi);
                         }
                     }
-                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
@@ -246,7 +242,7 @@ public class Player extends Analyser {
                 }
             }
         }
-        return new ClassField("IsAutoChatting"); //IsAnimating
+        return new ClassField("IsAutoChatting");
     }
 
     private ClassField findEntityOrientation(ClassNode node) {
@@ -287,28 +283,6 @@ public class Player extends Analyser {
             }
         }
         return new ClassField("AnimationFrame");
-    }
-
-    private ClassField findEntitySpotAnimation(ClassNode node) {
-        Function<FieldInsnNode, Boolean> hasEntityParent = (FieldInsnNode f) -> {
-            return Main.getClassNode("Entity").fields.stream().filter(field -> field.name.equals(f.name)).count() > 0;
-        };
-
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC, Opcodes.ALOAD};
-        for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("()L%s;", Main.get("Model")))) {
-                int i = new DeprecatedFinder(m).findPattern(pattern, 0, false);
-                while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
-                    if (f.owner.equals(Main.get("Entity")) || hasEntityParent.apply(f)) {
-                        int multi = (int)((LdcInsnNode)m.instructions.get(i + 2)).cst;
-                        return new ClassField("SpotAnimation", f.name, f.desc, multi);
-                    }
-                    i = new DeprecatedFinder(m).findPattern(pattern, i + 1, false);
-                }
-            }
-        }
-        return new ClassField("SpotAnimation");
     }
 
     private ClassField findEntitySpotAnimationFrame(ClassNode node) {

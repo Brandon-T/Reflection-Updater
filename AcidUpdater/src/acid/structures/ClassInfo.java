@@ -308,9 +308,9 @@ public class ClassInfo {
 
             simbaMap.put("ObjectDefinition", "ObjectDefinition");
 
-            simbaMap.put("Stream", "Buffer");
-            simbaMap.put("Stream_Payload", "Buffer_Payload");
-            simbaMap.put("Stream_CRC", "Buffer_CRC");
+            simbaMap.put("Stream", "Stream");
+            simbaMap.put("Stream_Payload", "Stream_Payload");
+            simbaMap.put("Stream_CRC", "Stream_CRC");
 
             simbaMap.put("Widget", "Widget");
             simbaMap.put("Widget_Children", "Widget_Children");

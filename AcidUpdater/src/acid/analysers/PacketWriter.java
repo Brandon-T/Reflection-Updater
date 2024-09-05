@@ -50,13 +50,13 @@ public class PacketWriter extends Analyser {
                     int value = ((IntInsnNode)m.instructions.get(i)).operand;
                     if (value == 5000) {
                         FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                        return new ClassField("Stream", f.name, f.desc);
+                        return new ClassField("Buffer", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("Stream");
+        return new ClassField("Buffer");
     }
 
     ClassField findPacketBuffer(ClassNode node) {

@@ -203,8 +203,10 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 17);
-                    return new ClassField("SpeedY", f.name, f.desc);
+                    if (m.instructions.get(i + 17) instanceof FieldInsnNode) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 17);
+                        return new ClassField("SpeedY", f.name, f.desc);
+                    }
                 }
             }
         }

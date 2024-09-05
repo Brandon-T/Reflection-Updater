@@ -27,8 +27,8 @@ public class Main {
 
     public static void main(String[] args) {
         String url = "http://oldschool1.runescape.com";
-        analyser = new ClassAnalyser(url, String.format("%d.jar", 223), true);
         //analyser.print();
+        analyser = new ClassAnalyser(url, String.format("%d.jar", 224), true);
         analyser.printSimbaNative();
 //        analyser.refactor(String.format("Refactor_%d.jar", 222));
 

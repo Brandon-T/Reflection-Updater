@@ -118,12 +118,13 @@ public class GraphicsObject extends Analyser {
     }
 
     ClassField findStartCycle(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.IMUL, Opcodes.PUTFIELD};
+        final int pattern[] = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("StartCycle", f.name, f.desc, multi);
                 }

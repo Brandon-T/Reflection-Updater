@@ -100,7 +100,7 @@ public class ItemDefinition extends Analyser {
 
     private ClassField findGroundActions(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKEVIRTUAL);
                 while (i != -1) {
                     if (((MethodInsnNode)m.instructions.get(i)).name.contains("equals")) {
@@ -122,7 +122,7 @@ public class ItemDefinition extends Analyser {
 
     private ClassField findActions(ClassNode node, ClassField actions) {
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
                     if (a instanceof FieldInsnNode) {
                         FieldInsnNode f = (FieldInsnNode)a;

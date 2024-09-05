@@ -77,7 +77,7 @@ public class ObjectDefinition extends Analyser {
     private ClassField findAnimationID(ClassNode node, ClassField transformationVarp) {
         final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 while(i != -1) {
                     if ((int)((LdcInsnNode)m.instructions.get(i + 4)).cst == 65535) {

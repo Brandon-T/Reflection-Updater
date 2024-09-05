@@ -51,11 +51,13 @@ public class Region extends Analyser {
     private ClassField findTiles(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.MULTIANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && (m.desc.equals("(III[[[I)V") || m.desc.equals("(IIIII[[[I)V"))) {
+            if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
-                    return new ClassField("Tiles", f.name, f.desc);
+                    if (f.desc.startsWith("[[[")) {
+                        return new ClassField("Tiles", f.name, f.desc);
+                    }
                 }
             }
         }

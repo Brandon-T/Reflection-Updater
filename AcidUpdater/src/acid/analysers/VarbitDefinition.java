@@ -36,11 +36,11 @@ public class VarbitDefinition extends Analyser {
             }
 
             for (MethodNode m : n.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                     ++method_stream_int_count;
                 }
 
-                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                     ++method_stream_count;
                 }
             }
@@ -73,7 +73,7 @@ public class VarbitDefinition extends Analyser {
 
     private ClassField findBase(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 0);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
@@ -87,7 +87,7 @@ public class VarbitDefinition extends Analyser {
 
     private ClassField findStartBit(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 1);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
@@ -101,7 +101,7 @@ public class VarbitDefinition extends Analyser {
 
     private ClassField findEndBit(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 2);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);

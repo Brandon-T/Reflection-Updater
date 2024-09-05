@@ -1,6 +1,7 @@
 package acid.analysers;
 
 import acid.Main;
+import acid.other.DeprecatedFinder;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
@@ -9,6 +10,7 @@ import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Kira on 2014-12-07.
@@ -48,8 +50,8 @@ public class Client extends Analyser {
         //info.putField(findCollisionMap(node));
         info.putField(findGrandExchangeOffers(node));
         info.putField(findCameraVertex(node, "X", 1));
-        info.putField(findCameraVertex(node, "Y", 7));
-        info.putField(findCameraVertex(node, "Z", 2));
+        info.putField(findCameraVertex(node, "Y", 2));
+        info.putField(findCameraVertex(node, "Z", 7));
         info.putField(findCameraRotation(node, "Pitch", 8, 9));
         info.putField(findCameraRotation(node, "Yaw", 10, 11));
         //info.putField(findRegion(node));
@@ -81,14 +83,15 @@ public class Client extends Analyser {
         info.putField(findMapAngle(node));
         //info.putField(findMapScale(node));
         //info.putField(findMapOffset(node));
-        info.putField(findMenuCount(node));
-        info.putField(findMenuActions(node));
-        info.putField(findMenuOptions(node));
+        info.putField(findMenu(node));
+//        info.putField(findMenuCount(node));
+//        info.putField(findMenuActions(node));
+//        info.putField(findMenuOptions(node));
         info.putField(findIsMenuOpen(node));
-        info.putField(findMenuX(node));
-        info.putField(findMenuY(node));
-        info.putField(findMenuWidth(node));
-        info.putField(findMenuHeight(node));
+//        info.putField(findMenuX(node));
+//        info.putField(findMenuY(node));
+//        info.putField(findMenuWidth(node));
+//        info.putField(findMenuHeight(node));
         info.putField(findIsResizable(node));
         info.putField(findCurrentLevels(node));
         info.putField(findRealLevels(node));
@@ -401,14 +404,12 @@ public class Client extends Analyser {
         for (ClassNode n : Main.getClasses()) {
             for (MethodNode m : n.methods) {
                 if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                    int i = new Finder(m).findPattern(pattern);
-                    while (i != -1) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                    List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                    if (insns != null) {
+                        FieldInsnNode f = (FieldInsnNode) insns.get(4);
                         if (f.owner.equals(node.name) && f.desc.equals("Z")) {
                             return new ClassField("IsLoading", f.name, f.desc);
                         }
-
-                        i = new Finder(m).findPattern(pattern, i + 1);
                     }
                 }
             }
@@ -1405,6 +1406,17 @@ public class Client extends Analyser {
         }
 
         return new ClassField("MapOffset");
+    }
+
+    private ClassField findMenu(ClassNode node) {
+        String menuName = Main.get("Menu");
+        for (FieldNode f : node.fields) {
+            if (f.desc.equals(String.format("L%s;", menuName))) {
+                return new ClassField("Menu", f.name, f.desc);
+            }
+        }
+
+        return new ClassField("Menu");
     }
 
     private ClassField findMenuCount(ClassNode node) {

@@ -9,6 +9,7 @@ import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Kira on 2014-12-16.
@@ -74,7 +75,7 @@ public class Widget extends Analyser {
     private ClassField findName(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.BIPUSH};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new DeprecatedFinder(m).findPattern(pattern, 0, false);
                 while (i != -1) {
                     if (m.instructions.get(i + 3) instanceof FieldInsnNode) {
@@ -113,7 +114,7 @@ public class Widget extends Analyser {
     private ClassField findID(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     if ((int)((LdcInsnNode)m.instructions.get(i + 4)).cst == -65536) {
@@ -131,7 +132,7 @@ public class Widget extends Analyser {
     private ClassField findParentID(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.IADD, Finder.OPTIONAL, Opcodes.IMUL, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
                     FieldInsnNode f = null;
@@ -246,28 +247,23 @@ public class Widget extends Analyser {
     }
 
     private ClassField findSpriteID(ClassNode node) {
-        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
-        for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(Z)L%s;", Main.get("ImageRGB")))) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 4)).var == 3) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                        return new ClassField("SpriteID", f.name, f.desc, multi);
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
-                }
-            }
-        }
+        int[] pattern = new int[]{
+                Opcodes.ICONST_5,
+                Finder.COMPARISON,
 
-        pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1};
+                // SpriteID
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD,
+
+                // TextureID
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD
+        };
+
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(Z)L%s;", Main.get("SpriteMask")))) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(7);
+                    long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("SpriteID", f.name, f.desc, multi);
                 }
             }
@@ -276,38 +272,24 @@ public class Widget extends Analyser {
     }
 
     private ClassField findTextureID(ClassNode node, ClassField spriteID) {
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE};
-        for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(Z)L%s;", Main.get("ImageRGB")))) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 4)).var == 3) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        if (!f.name.equals(spriteID.getName())) { //TextureID comes after SpriteID
-                            long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                            return new ClassField("TextureID", f.name, f.desc, multi);
-                        }
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
-                }
-            }
-        }
+        int[] pattern = new int[]{
+                Opcodes.ICONST_5,
+                Finder.COMPARISON,
+
+                // SpriteID
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD,
+
+                // TextureID
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD
+        };
 
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(Z)L%s;", Main.get("SpriteMask")))) {
-                int i = new Finder(m).findPattern(pattern, 0, false);
-                while (i != -1) {
-                    int j = new Finder(m).findNext(i + 1, Opcodes.ISTORE, false);
-                    if (j != -1) {
-                        if (((VarInsnNode) m.instructions.get(j)).var == 3) {
-                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                            if (!f.name.equals(spriteID.getName())) {
-                                long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                                return new ClassField("TextureID", f.name, f.desc, multi);
-                            }
-                        }
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1, false);
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(13);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("TextureID", f.name, f.desc, multi);
                 }
             }
         }
@@ -323,7 +305,7 @@ public class Widget extends Analyser {
     }
 
     private ClassField findActions(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ACONST_NULL};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFNULL};
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(ILjava/lang/String;)V")) {
                 int i = new Finder(m).findPattern(pattern);
@@ -342,7 +324,7 @@ public class Widget extends Analyser {
     private ClassField findActionType(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_5, Opcodes.IF_ICMPEQ};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
@@ -357,7 +339,7 @@ public class Widget extends Analyser {
     private ClassField findType(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_3};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);

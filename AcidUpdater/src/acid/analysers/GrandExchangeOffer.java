@@ -100,7 +100,7 @@ public class GrandExchangeOffer extends Analyser {
 
     private ClassField findFieldInfo(ClassNode node, String name, int index) {
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;Z)V", Main.get("Stream")))) {
+            if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;Z)V", Main.get("Buffer")))) {
                 int i = 0;
                 int j = new Finder(m).findNext(0, Opcodes.PUTFIELD, false);
                 while(j != -1) {

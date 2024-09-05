@@ -533,24 +533,12 @@ public class Entity extends Analyser {
             return new ClassField("InteractingIndex");
         }
 
-        //dh.cz
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD, Opcodes.ISUB, Opcodes.AALOAD};
-        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1, Finder.COMPARISON};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.AALOAD, Opcodes.ASTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
                     int i = new Finder(m).findPattern(pattern);
-                    while (i != -1) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        if (((VarInsnNode)m.instructions.get(i + 4)).var == 4) {
-                            long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                            return new ClassField("InteractingIndex", f.name, f.desc, multi);
-                        }
-                        i = new Finder(m).findPattern(pattern, i + 1);
-                    }
-
-                    i = new Finder(m).findPattern(pattern2);
                     if (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
@@ -681,6 +669,46 @@ public class Entity extends Analyser {
     }
 
     private ClassField findSpotAnimation(ClassNode node) {
+        Collection<ClassNode> nodes = Main.getClasses();
+
+        ClassNode gameInstance = new GameInstance().find(nodes);
+        if (gameInstance == null) {
+            return new ClassField("SpotAnimation");
+        }
+
+        final int[] pattern = new int[]{
+                Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL,
+                Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISUB, Opcodes.ISTORE,
+                Opcodes.GETSTATIC
+        };
+
+        for (ClassNode n : nodes) {
+            for (MethodNode m : n.methods) {
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        FieldInsnNode ff = (FieldInsnNode)m.instructions.get(i + 5);
+                        if (f.owner.equals(node.name) && ff.owner.equals(node.name)) {
+                            int multi = (int) ((LdcInsnNode) m.instructions.get(i + 6)).cst;
+                            return new ClassField("SpotAnimation", ff.name, ff.desc, multi);
+                        }
+                    }
+                }
+
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", node.name))) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        FieldInsnNode ff = (FieldInsnNode)m.instructions.get(i + 5);
+                        if (f.owner.equals(node.name) && ff.owner.equals(node.name)) {
+                            int multi = (int) ((LdcInsnNode) m.instructions.get(i + 6)).cst;
+                            return new ClassField("SpotAnimation", ff.name, ff.desc, multi);
+                        }
+                    }
+                }
+            }
+        }
         return new ClassField("SpotAnimation");
     }
 
@@ -696,18 +724,35 @@ public class Entity extends Analyser {
             return new ClassField("SpotAnimationFrameCycle");
         }
 
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD};
+        final int[] pattern = new int[]{
+                Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL,
+                Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISUB, Opcodes.ISTORE,
+                Opcodes.GETSTATIC
+        };
+
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
-                    int i = new Finder(m).findPattern(pattern);
-                    while (i != -1) {
-                        if (((VarInsnNode) m.instructions.get(i + 4)).var == 3 || ((VarInsnNode) m.instructions.get(i + 4)).var == 4) {
-                            FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        FieldInsnNode ff = (FieldInsnNode)m.instructions.get(i + 5);
+                        if (f.owner.equals(node.name) && ff.owner.equals(node.name)) {
                             int multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
                             return new ClassField("SpotAnimationFrameCycle", f.name, f.desc, multi);
                         }
-                        i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+                }
+
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", node.name))) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        FieldInsnNode ff = (FieldInsnNode)m.instructions.get(i + 5);
+                        if (f.owner.equals(node.name) && ff.owner.equals(node.name)) {
+                            int multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                            return new ClassField("SpotAnimationFrameCycle", f.name, f.desc, multi);
+                        }
                     }
                 }
             }

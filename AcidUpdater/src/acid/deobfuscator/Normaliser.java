@@ -55,6 +55,7 @@ public class Normaliser extends Deobfuscator {
                 {Finder.CONSTANT, Opcodes.GETSTATIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY, Finder.COMPARISON},
+                {Opcodes.LDC, Finder.VARIABLE, Finder.VARIABLE, Finder.ARITHMETIC, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DLOAD, Opcodes.DMUL, Opcodes.DSUB, Opcodes.DMUL},
@@ -125,6 +126,9 @@ public class Normaliser extends Deobfuscator {
 
         pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.ARITHMETIC, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.VARIABLE, Finder.MULTIPLY};
         this.arithmetic_count += this.moveInstructions(method, pattern, 5, 3);
+
+//        pattern = new int[]{Opcodes.LDC, Finder.VARIABLE, Finder.VARIABLE, Finder.ARITHMETIC, Finder.MULTIPLY, Opcodes.PUTFIELD};
+//        this.arithmetic_count += this.moveInstructions(method, pattern, 0, 5);
     }
 
 

@@ -1,6 +1,7 @@
 package acid.analysers;
 
 import acid.Main;
+import acid.other.DeprecatedFinder;
 import acid.other.Finder;
 import acid.structures.ClassField;
 import acid.structures.ClassInfo;
@@ -8,6 +9,7 @@ import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Kira on 2014-12-08.
@@ -135,7 +137,7 @@ public class NPCDefinition extends Analyser {
     private ClassField findVisible(ClassNode node) {
         final int pattern[] = new int[]{Opcodes.ILOAD, Finder.CONSTANT, Finder.COMPARISON, Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 while (i != -1) {
                     if (m.instructions.get(i + 1) instanceof IntInsnNode && ((IntInsnNode) m.instructions.get(i + 1)).operand == 99) {
@@ -172,7 +174,7 @@ public class NPCDefinition extends Analyser {
     private ClassField findTransformations(ClassNode node) {
         final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Stream")))) {
+            if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1 && ((VarInsnNode) m.instructions.get(i + 2)).var == 6 && (int)((LdcInsnNode) m.instructions.get(i + 4)).cst == 65535) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
@@ -221,14 +223,54 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findTransformVarbit(ClassNode node) {
+        final int[] pattern = new int[]{
+                Opcodes.ICONST_M1, Opcodes.ISTORE,
+                Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ICONST_M1
+        };
+
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("()L%s;", node.name))) {
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode)insns.get(3);
+                    int multi = (int)((LdcInsnNode)insns.get(4)).cst;
+                    return new ClassField("TransformVarbit", f.name, f.desc, multi);
+                }
+            }
+        }
         return new ClassField("TransformVarbit");
     }
 
     private ClassField findTransformVarp(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.IALOAD, Opcodes.ISTORE};
+
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("()L%s;", node.name))) {
+                int i = new Finder(m).findPattern(pattern);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    int multi = (int)((LdcInsnNode)m.instructions.get(i + 3)).cst;
+                    return new ClassField("TransformVarp", f.name, f.desc, multi);
+                }
+            }
+        }
         return new ClassField("TransformVarp");
     }
 
     private ClassField findDefinitionCache(ClassNode node) {
+        final int pattern[] = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<clinit>")) {
+                int i = new Finder(m).findPattern(pattern);
+                while(i != -1) {
+                    if (((IntInsnNode)m.instructions.get(i + 2)).operand == 64) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                        return new ClassField("DefinitionCache", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
         return new ClassField("DefinitionCache");
     }
 }

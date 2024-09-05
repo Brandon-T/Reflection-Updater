@@ -68,21 +68,20 @@ public class PlayerDefinition extends Analyser {
     private ClassField findGender(ClassNode node) {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
-                final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
+                final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
                 int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                    return new ClassField("Gender", f.name, f.desc);
+                while (i != -1) {
+                    if (((FieldInsnNode) m.instructions.get(i + 2)).desc.equals("I")) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                        return new ClassField("Gender", f.name, f.desc);
+                    }
+
+                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
 
-        for (FieldNode f : node.fields) {
-            if (f.desc.equals("Z")) {
-                return new ClassField("IsFemale", f.name, f.desc);
-            }
-        }
-        return new ClassField("IsFemale");
+        return new ClassField("Gender");
     }
 
     private ClassField findAnimatedModelID(ClassNode node) {

@@ -138,7 +138,8 @@ public class ClassAnalyser {
         analysers.add(new PacketWriter());
         analysers.add(new Keyboard());
         analysers.add(new GameShell());
-        analysers.add(new Stream());
+        analysers.add(new Buffer());
+        analysers.add(new PacketBuffer());
         analysers.add(new BufferedConnection());
         analysers.add(new CollisionMap());
         analysers.add(new NameInfo());
@@ -153,8 +154,8 @@ public class ClassAnalyser {
         analysers.add(new SceneTile());
         analysers.add(new GrandExchangeOffer());
         analysers.add(new Model());
-        analysers.add(new AnimationSequence());
         analysers.add(new AnimationFrames());
+        analysers.add(new AnimationSequence());
         analysers.add(new AnimationSkeleton());
         analysers.add(new Animation());
         analysers.add(new CombatInfo1());
@@ -179,6 +180,7 @@ public class ClassAnalyser {
         analysers.add(new Varcs());
         analysers.add(new VarbitDefinition());
         analysers.add(new GameInstance());
+        analysers.add(new Menu());
         analysers.add(new Client());
         analysers.add(new Other());
         return this;

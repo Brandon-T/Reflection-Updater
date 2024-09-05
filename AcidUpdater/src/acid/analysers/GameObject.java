@@ -13,7 +13,6 @@ import java.util.Collection;
  * Created by Kira on 2014-12-14.
  */
 public class GameObject extends Analyser {
-    private MethodNode method = null;
 
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
@@ -35,7 +34,6 @@ public class GameObject extends Analyser {
                         if (i instanceof FieldInsnNode) {
                             FieldInsnNode f = (FieldInsnNode) i;
                             if (f.desc.equals("I") && !f.owner.matches("(I|S|B|J|Z)")) {
-                                this.method = m;
                                 return Main.getClass(f.owner);
                             }
                         }
