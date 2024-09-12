@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2015-01-09.
+ * Created by Brandon on 2015-01-09.
  */
 public class Normaliser extends Deobfuscator {
     private int multi_total = 0;
@@ -39,7 +39,7 @@ public class Normaliser extends Deobfuscator {
 
     private void reorderMultipliers(MethodNode method) {
         //Move(pattern[0], pattern[pattern.length - 1]);
-        int patterns[][] = new int[][]{
+        int[][] patterns = new int[][]{
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETFIELD, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETSTATIC, Finder.MULTIPLY},
@@ -78,7 +78,7 @@ public class Normaliser extends Deobfuscator {
 
     private void reorderArithmetic(MethodNode method) {
         //Move(pattern[0], pattern[pattern.length - 1]);
-        int patterns[][] = new int[][]{
+        int[][] patterns = new int[][]{
                 {Finder.CONSTANT, Finder.VARIABLE, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.GETSTATIC, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.COMPARISON},
@@ -121,7 +121,7 @@ public class Normaliser extends Deobfuscator {
         }
 
         // Swap a set of instructions
-        int pattern[] = new int[]{Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Opcodes.LDC, Finder.MULTIPLY};
+        int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Opcodes.LDC, Finder.MULTIPLY};
         this.arithmetic_count += this.moveInstructions(method, pattern, 7, 0, 12);
 
         pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.ARITHMETIC, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.VARIABLE, Finder.MULTIPLY};
@@ -132,9 +132,8 @@ public class Normaliser extends Deobfuscator {
     }
 
 
-
     private void countMultipliers(MethodNode method) {
-        int patterns[][] = new int[][]{
+        int[][] patterns = new int[][]{
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETFIELD, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETSTATIC, Finder.MULTIPLY},
@@ -154,7 +153,7 @@ public class Normaliser extends Deobfuscator {
                 {Opcodes.ALOAD, Opcodes.LDC, Finder.VARIABLE, Opcodes.LMUL}
         };
 
-        int fixed_patterns[][] = new int[][]{
+        int[][] fixed_patterns = new int[][]{
                 {Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY},
                 {Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.GETFIELD, Opcodes.LDC, Finder.MULTIPLY},
                 {Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY},
@@ -174,7 +173,7 @@ public class Normaliser extends Deobfuscator {
 
         for (int[] pattern : patterns) {
             int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
-            while(i != -1) {
+            while (i != -1) {
                 ++multi_total;
                 i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
@@ -182,7 +181,7 @@ public class Normaliser extends Deobfuscator {
 
         for (int[] pattern : fixed_patterns) {
             int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
-            while(i != -1) {
+            while (i != -1) {
                 ++multi_total;
                 i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
@@ -190,7 +189,7 @@ public class Normaliser extends Deobfuscator {
     }
 
     public void countArithmetic(MethodNode method) {
-        int patterns[][] = new int[][]{
+        int[][] patterns = new int[][]{
                 {Finder.CONSTANT, Finder.VARIABLE, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.GETSTATIC, Finder.COMPARISON},
                 {Finder.CONSTANT, Opcodes.ALOAD, Opcodes.GETFIELD, Finder.COMPARISON},
@@ -215,7 +214,7 @@ public class Normaliser extends Deobfuscator {
                 {Finder.CONSTANT, Opcodes.ALOAD, Finder.WILDCARD, Finder.CONSTANT, Finder.ARITHMETIC, Finder.MULTIPLY, Opcodes.PUTFIELD}
         };
 
-        int fixed_patterns[][] = new int[][]{
+        int[][] fixed_patterns = new int[][]{
                 {Finder.VARIABLE, Finder.CONSTANT, Finder.COMPARISON},
                 {Opcodes.GETSTATIC, Finder.CONSTANT, Finder.COMPARISON},
                 {Opcodes.ALOAD, Opcodes.GETFIELD, Finder.CONSTANT, Finder.COMPARISON},
@@ -242,7 +241,7 @@ public class Normaliser extends Deobfuscator {
 
         for (int[] pattern : patterns) {
             int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
-            while(i != -1) {
+            while (i != -1) {
                 ++arithmetic_total;
                 i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }
@@ -250,7 +249,7 @@ public class Normaliser extends Deobfuscator {
 
         for (int[] pattern : fixed_patterns) {
             int i = new DeprecatedFinder(method).findPattern(pattern, 0, true);
-            while(i != -1) {
+            while (i != -1) {
                 ++arithmetic_total;
                 i = new DeprecatedFinder(method).findPattern(pattern, i + 1, true);
             }

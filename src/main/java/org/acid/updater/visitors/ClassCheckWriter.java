@@ -6,7 +6,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 /**
- * Created by Kira on 2015-01-12.
+ * Created by Brandon on 2015-01-12.
  */
 public class ClassCheckWriter extends ClassVisitor {
     private boolean debug;

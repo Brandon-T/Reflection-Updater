@@ -9,10 +9,11 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public abstract class Analyser {
     public abstract ClassNode find(Collection<ClassNode> nodes);
+
     public abstract ClassInfo analyse(ClassNode node);
 
     public boolean hasAccess(ClassNode node, int access) {
@@ -33,7 +34,7 @@ public abstract class Analyser {
 
     private final boolean findSuperField(ClassNode node, String owner) {
         ClassNode n = node;
-        while(n != null && !n.superName.equals("java/lang/Object") && !n.superName.contains("java")) {
+        while (n != null && !n.superName.equals("java/lang/Object") && !n.superName.contains("java")) {
             if (n.superName.equals(owner)) {
                 return true;
             }

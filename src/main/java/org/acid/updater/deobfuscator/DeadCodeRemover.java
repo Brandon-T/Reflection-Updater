@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class DeadCodeRemover extends Deobfuscator {
     private int totalInstructions;
-    private HashMap<MethodNode, BasicFlowGraph> graphs;
+    private final HashMap<MethodNode, BasicFlowGraph> graphs;
 
     public DeadCodeRemover(Collection<ClassNode> classes) {
         super(classes);

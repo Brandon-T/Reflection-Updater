@@ -3,7 +3,7 @@ package org.acid.updater.modifiers.visitors;
 import org.objectweb.asm.ClassVisitor;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public abstract class AbstractMethodVisitor extends AbstractClassVisitor {
     public AbstractMethodVisitor(ClassVisitor visitor, int access, String name, String desc, boolean add) {

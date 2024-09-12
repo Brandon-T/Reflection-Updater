@@ -3,10 +3,11 @@ package org.acid.updater.other;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class DeprecatedFinder {
     public static final int WILDCARD = -3;
@@ -19,62 +20,21 @@ public class DeprecatedFinder {
     public static final int ARITHMETIC = -10;
     public static final int MULTIPLY = -11;
     public static final int INVOCATION = -12;
-    private InsnList instructions = null;
-    private MethodNode m;
+    private final InsnList instructions;
 
     public DeprecatedFinder(MethodNode method) {
-        this.m = method;
         this.instructions = method.instructions;
     }
 
-    public int findPrev(int start, int code, boolean skip_goto) {
-        for (int i = start; i >= 0; --i) {
-            if (instructions.get(i).getOpcode() == code) {
-                return i;
-            }
-
-            if (isSpecialType(code, instructions.get(i).getOpcode())) {
-                return i;
-            }
-
-            if (!skip_goto && instructions.get(i).getOpcode() == Opcodes.GOTO) {
-                i = instructions.indexOf(((JumpInsnNode)instructions.get(i)).label);
-                --i;
-            }
-        }
-        return -1;
-    }
-
-    public int findNext(int start, int code) {
-        return findNext(start, code, true);
-    }
-
-    public int findNext(int start, int code, boolean skip_goto) {
-        for (int i = start; i < instructions.size(); ++i) {
-            if (instructions.get(i).getOpcode() == code) {
-                return i;
-            }
-
-            if (isSpecialType(code, instructions.get(i).getOpcode())) {
-                return i;
-            }
-
-            if (!skip_goto && instructions.get(i).getOpcode() == Opcodes.GOTO) {
-                i = instructions.indexOf(((JumpInsnNode)instructions.get(i)).label);
-            }
-        }
-        return -1;
-    }
-
-    public int findPattern(int pattern[], int start, boolean skip_goto) {
+    public int findPattern(int[] pattern, int start, boolean skip_goto) {
         List<AbstractInsnNode> nodes = findPatternInstructions(pattern, start, skip_goto);
         if (nodes != null) {
-            return instructions.indexOf(nodes.get(0));
+            return instructions.indexOf(nodes.getFirst());
         }
         return -1;
     }
 
-    public List<AbstractInsnNode> findPatternInstructions(int pattern[], int start, boolean skip_goto) {
+    public List<AbstractInsnNode> findPatternInstructions(int[] pattern, int start, boolean skip_goto) {
         int stackSize = instructions.size();
         int patternSize = pattern.length;
         int maxSize = stackSize - patternSize;
@@ -124,23 +84,24 @@ public class DeprecatedFinder {
                         int offset = instructions.indexOf(labelNode);
 
                         // Match the continued pattern after following the GOTO
-                        if (matchPattern(foundInstructions, pattern, i, offset + 1)) {
+                        List<AbstractInsnNode> temp = new ArrayList<>();
+                        if (matchPattern(temp, pattern, i, offset + 1)) {
+                            foundInstructions.addAll(temp);
                             found = true;
                             break;
                         }
 
                         // No pattern was found, so skip over the GOTO + Label and continue matching the rest of the pattern
-                        /*j = offset + 1;
+                        j = offset + 1;
                         instruction = instructions.get(j);
+
                         if (!matchInstruction(pattern[i], instruction)) {
                             found = false;
                             break;
                         }
 
-                        foundInstructions.add(instruction);*/
-
-                        found = false;
-                        break;
+                        foundInstructions.add(instruction);
+                        continue;
                     }
                 }
 
@@ -200,24 +161,22 @@ public class DeprecatedFinder {
     }
 
     private boolean isSpecial(int opcode) {
-        return  opcode <= WILDCARD && opcode >= INVOCATION;
+        return opcode <= WILDCARD && opcode >= INVOCATION;
     }
 
     private boolean isSpecialType(int specialCode, int opcode) {
-        switch(specialCode) {
-            case VARIABLE: return (opcode >= Opcodes.ILOAD && opcode <= Opcodes.DLOAD);
-            case CONSTANT: return ((opcode >= Opcodes.ICONST_M1 && opcode <= Opcodes.ICONST_5) || opcode == Opcodes.BIPUSH || opcode == Opcodes.SIPUSH || opcode == Opcodes.LDC);
-            case NUMERIC: return (isSpecialType(VARIABLE, opcode) || isSpecialType(CONSTANT, opcode));
-            case COMPARISON: return (opcode >= Opcodes.IF_ICMPEQ && opcode <= Opcodes.IF_ACMPNE);
-            case COMPARISON2: return (opcode >= Opcodes.IFEQ && opcode <= Opcodes.IFLE);
-            case ARITHMETIC: return (opcode >= Opcodes.IADD && opcode <= Opcodes.DDIV);
-            case MULTIPLY: return (opcode >= Opcodes.IMUL && opcode <= Opcodes.DMUL);
-            case INVOCATION: return (opcode >= Opcodes.INVOKEVIRTUAL && opcode <= Opcodes.INVOKEDYNAMIC);
-
-            case WILDCARD: return true;
-            case OPTIONAL: return true;
-
-            default: return false;
-        }
+        return switch (specialCode) {
+            case VARIABLE -> (opcode >= Opcodes.ILOAD && opcode <= Opcodes.DLOAD);
+            case CONSTANT ->
+                    ((opcode >= Opcodes.ICONST_M1 && opcode <= Opcodes.ICONST_5) || opcode == Opcodes.BIPUSH || opcode == Opcodes.SIPUSH || opcode == Opcodes.LDC);
+            case NUMERIC -> (isSpecialType(VARIABLE, opcode) || isSpecialType(CONSTANT, opcode));
+            case COMPARISON -> (opcode >= Opcodes.IF_ICMPEQ && opcode <= Opcodes.IF_ACMPNE);
+            case COMPARISON2 -> (opcode >= Opcodes.IFEQ && opcode <= Opcodes.IFLE);
+            case ARITHMETIC -> (opcode >= Opcodes.IADD && opcode <= Opcodes.DDIV);
+            case MULTIPLY -> (opcode >= Opcodes.IMUL && opcode <= Opcodes.DMUL);
+            case INVOCATION -> (opcode >= Opcodes.INVOKEVIRTUAL && opcode <= Opcodes.INVOKEDYNAMIC);
+            case WILDCARD, OPTIONAL -> true;
+            default -> false;
+        };
     }
 }

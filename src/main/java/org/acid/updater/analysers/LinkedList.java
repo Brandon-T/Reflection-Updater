@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
 public class LinkedList extends Analyser {
     @Override
@@ -57,7 +57,7 @@ public class LinkedList extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;)V", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.PUTFIELD});
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                 return new ClassField("Head", f.name, f.desc);
             }
         }

@@ -1,7 +1,10 @@
 package org.acid.updater.other;
 
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +12,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by Kira on 2015-01-08.
+ * Created by Brandon on 2015-01-08.
  */
 public class Renamer {
-    private Collection<ClassNode> classes;
+    private final Collection<ClassNode> classes;
 
     public Renamer(Collection<ClassNode> classes) {
         this.classes = classes;
@@ -76,19 +79,16 @@ public class Renamer {
 
 
                 m.instructions.iterator().forEachRemaining(o -> {
-                    if (o instanceof TypeInsnNode) {
-                        TypeInsnNode t = (TypeInsnNode)o;
+                    if (o instanceof TypeInsnNode t) {
                         if (t.desc.equals(node)) {
                             t.desc = newName;
                         }
-                    } else if (o instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)o;
+                    } else if (o instanceof FieldInsnNode f) {
                         f.desc = f.desc.replace("L" + node + ";", "L" + newName + ";");
                         if (f.owner.equals(node)) {
                             f.owner = newName;
                         }
-                    } else if (o instanceof MethodInsnNode) {
-                        MethodInsnNode mi = (MethodInsnNode)o;
+                    } else if (o instanceof MethodInsnNode mi) {
                         mi.desc = mi.desc.replace("L" + node + ";", "L" + newName + ";");
                         if (mi.owner.equals(node)) {
                             mi.owner = newName;
@@ -118,8 +118,7 @@ public class Renamer {
 
             n.methods.stream().forEach(m -> {
                 m.instructions.iterator().forEachRemaining(o -> {
-                    if (o instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)o;
+                    if (o instanceof FieldInsnNode f) {
                         if (classNames.contains(f.owner) && f.name.equals(name)) {
                             f.name = newName;
                             if (newDesc != null) {
@@ -136,8 +135,7 @@ public class Renamer {
         classes.stream().forEach(n -> {
             n.methods.stream().forEach(m -> {
                 m.instructions.iterator().forEachRemaining(o -> {
-                    if (o instanceof MethodInsnNode) {
-                        MethodInsnNode mi = (MethodInsnNode)o;
+                    if (o instanceof MethodInsnNode mi) {
                         if (mi.owner.equals(owner) && mi.name.equals(name) && mi.desc.equals(desc)) {
                             mi.name = newName;
                             if (newDesc != null) {
@@ -170,7 +168,7 @@ public class Renamer {
             return true;
         }
 
-        while(current != null ) {
+        while (current != null) {
             if (current.name.equals(parent) || current.superName.equals(parent)) {
                 return true;
             }

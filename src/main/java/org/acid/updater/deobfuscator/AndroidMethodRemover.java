@@ -14,7 +14,7 @@ import java.util.Collection;
  * Created by Brandon on 2018-12-09.
  */
 public class AndroidMethodRemover extends Deobfuscator {
-    private ArrayList<Info> usedMethods;
+    private final ArrayList<Info> usedMethods;
     private int total_count = 0, removal_count = 0;
 
     public AndroidMethodRemover(Collection<ClassNode> classes) {
@@ -33,7 +33,7 @@ public class AndroidMethodRemover extends Deobfuscator {
     public void remove() {
         removeUnusedMethods();
         int last_count = removal_count;
-        while(removal_count > 0) {
+        while (removal_count > 0) {
             removal_count = 0;
             usedMethods.clear();
             countUsedMethods();
@@ -82,7 +82,7 @@ public class AndroidMethodRemover extends Deobfuscator {
 
     private boolean isOverriden(ClassNode node, MethodNode method) {
         ClassNode n = node;
-        while(true) {
+        while (true) {
             n = loadAnyClass(n.superName);
             if (n == null) {
                 return false;
@@ -103,8 +103,7 @@ public class AndroidMethodRemover extends Deobfuscator {
 
     private void addInvoked(MethodNode method) {
         method.instructions.iterator().forEachRemaining(i -> {
-            if (i instanceof MethodInsnNode) {
-                MethodInsnNode mi = (MethodInsnNode)i;
+            if (i instanceof MethodInsnNode mi) {
                 if (!mi.owner.contains("java") && !mi.name.equals("<init>") && !mi.name.equals("<clinit>")) {
                     ClassNode owner = loadClass(mi.owner);
                     MethodNode custom_method = new MethodNode(Opcodes.ASM5, method.access, mi.name, mi.desc, null, null);
@@ -174,9 +173,10 @@ public class AndroidMethodRemover extends Deobfuscator {
     }
 
 
-
     private class Info {
-        private String node, name, desc;
+        private final String node;
+        private final String name;
+        private final String desc;
 
         public Info(ClassNode node, MethodNode method) {
             this.node = node.name;
@@ -186,8 +186,7 @@ public class AndroidMethodRemover extends Deobfuscator {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof Info) {
-                Info info = (Info) o;
+            if (o instanceof Info info) {
                 return node.equals(info.node) && name.equals(info.name) && desc.equals(info.desc);
             }
             return false;

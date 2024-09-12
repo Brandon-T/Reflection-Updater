@@ -3,7 +3,7 @@ package org.acid.updater.structures;
 import org.acid.updater.other.Utilities;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class ClassField {
     private String id;
@@ -81,6 +81,6 @@ public class ClassField {
         if (multiplier == 0) {
             return "    " + Utilities.padRight(id, 20) + " ->   " + (owner != null ? owner + "." + name : name);
         }
-        return "    " + Utilities.padRight(id, 20) + " ->   " + Utilities.padRight(owner != null ? owner + "." + name : name, 5) + " *  " + String.valueOf(multiplier);
+        return "    " + Utilities.padRight(id, 20) + " ->   " + Utilities.padRight(owner != null ? owner + "." + name : name, 5) + " *  " + multiplier;
     }
 }

@@ -1,20 +1,18 @@
 package org.acid.updater.other;
 
-import org.acid.updater.analysers.*;
+import org.acid.updater.analysers.LinkedList;
+import org.acid.updater.analysers.Queue;
 import org.acid.updater.analysers.*;
 import org.acid.updater.deobfuscator.FullDeobfuscation;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.tree.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.jar.Manifest;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
 public class ClassAnalyser {
 
@@ -27,7 +25,6 @@ public class ClassAnalyser {
     private ArrayList<Analyser> analysers = null;
     private boolean is_android = false;
     private boolean didAnalyse = false;
-
 
 
     public ClassAnalyser(String url, String jar, boolean deobfuscate) {
@@ -105,6 +102,38 @@ public class ClassAnalyser {
                 result[0];
     }
 
+    public void printPython() {
+        this.analyse();
+
+        final String[] result = {""};
+        List<ClassInfo> found = this.found.values().stream().toList();
+        found.forEach(value -> {
+            if (value == found.getLast()) {
+                result[0] += value.toPythonString(found);
+            } else {
+                result[0] += value.toPythonString(found);
+            }
+        });
+
+        System.out.println(result[0]);
+    }
+
+    public void printJSON() {
+        this.analyse();
+
+        final String[] result = {"["};
+        List<ClassInfo> found = this.found.values().stream().toList();
+        found.forEach(value -> {
+            if (value == found.getLast()) {
+                result[0] += value.toJSONString();
+            } else {
+                result[0] += value.toJSONString() + ",\n";
+            }
+        });
+        result[0] += "]";
+        System.out.println(result[0]);
+    }
+
     public void refactor(String jar) {
         this.analyse();
 
@@ -144,10 +173,10 @@ public class ClassAnalyser {
         analysers.add(new BufferedConnection());
         analysers.add(new CollisionMap());
         analysers.add(new NameInfo());
-        analysers.add(new Animable());
-        analysers.add(new AnimableNode());
-        analysers.add(new Region());
-        analysers.add(new Boundary());
+        analysers.add(new Renderable());
+        analysers.add(new DynamicObject());
+        analysers.add(new Scene());
+        analysers.add(new BoundaryObject());
         analysers.add(new WallDecoration());
         analysers.add(new GroundDecoration());
         analysers.add(new GameObject());
@@ -163,7 +192,7 @@ public class ClassAnalyser {
         analysers.add(new CombatInfo2());
         analysers.add(new CombatInfoList());
         analysers.add(new CombatInfoHolder());
-        analysers.add(new Entity());
+        analysers.add(new Actor());
         analysers.add(new NPCDefinition());
         analysers.add(new NPC());
         analysers.add(new PlayerDefinition());
@@ -260,14 +289,15 @@ public class ClassAnalyser {
         return null;
     }
 
-    public final ArrayList<ClassNode> getClasses() {return classes;}
+    public final ArrayList<ClassNode> getClasses() {
+        return classes;
+    }
 
     public final void findField(String className, String field) {
         classes.stream().forEach(n -> {
             n.methods.stream().forEach(m -> {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode) a;
+                    if (a instanceof FieldInsnNode f) {
 
                         if (field != null) {
                             if ((f.owner.equals(className) || findSuperField(n, className)) && f.name.equals(field)) {
@@ -288,8 +318,7 @@ public class ClassAnalyser {
         classes.stream().forEach(n -> {
             n.methods.stream().forEach(m -> {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode) a;
+                    if (a instanceof FieldInsnNode f) {
 
                         if (f.desc.equals(fieldDesc)) {
                             System.out.println("Class: " + n.name + "  Method -> " + m.name + "  " + m.desc + " Field -> " + f.name);
@@ -328,8 +357,7 @@ public class ClassAnalyser {
         classes.stream().forEach(n -> {
             n.methods.stream().forEach(m -> {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof MethodInsnNode) {
-                        MethodInsnNode f = (MethodInsnNode) a;
+                    if (a instanceof MethodInsnNode f) {
 
                         if (desc != null) {
                             if ((f.owner.equals(className) || findSuperField(n, className)) && f.name.equals(name) && f.desc.equals(desc)) {
@@ -364,7 +392,7 @@ public class ClassAnalyser {
 
         for (long key : unique) {
             cur = Collections.frequency(multipliers, key);
-            if(max < cur){
+            if (max < cur) {
                 max = cur;
                 highest = key;
             }
@@ -374,7 +402,7 @@ public class ClassAnalyser {
 
     private final boolean findSuperField(ClassNode node, String owner) {
         ClassNode n = node;
-        while(n != null && !n.superName.equals("java/lang/Object") && !n.superName.contains("java")) {
+        while (n != null && !n.superName.equals("java/lang/Object") && !n.superName.contains("java")) {
             if (n.superName.equals(owner)) {
                 return true;
             }

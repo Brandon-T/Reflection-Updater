@@ -15,7 +15,7 @@ public class Projectile extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Animable"))) {
+            if (!n.superName.equals(Main.get("Renderable"))) {
                 continue;
             }
 
@@ -60,12 +60,12 @@ public class Projectile extends Analyser {
     }
 
     ClassField findField(ClassNode node, String name, int index) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == index) {
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == index) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField(name, f.name, f.desc, multi);
@@ -78,7 +78,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findX(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //                     X                                                       SpeedX
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD, Opcodes.DDIV, Opcodes.PUTFIELD,
                 // Nonsense
@@ -91,7 +91,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("X", f.name, f.desc);
                 }
             }
@@ -101,7 +101,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findY(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //                     X                                                       SpeedX
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD, Opcodes.DDIV, Opcodes.PUTFIELD,
                 // Nonsense
@@ -114,7 +114,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
                 if (nodes != null) {
-                    FieldInsnNode f = (FieldInsnNode)nodes.get(13);
+                    FieldInsnNode f = (FieldInsnNode) nodes.get(13);
                     return new ClassField("Y", f.name, f.desc);
                 }
             }
@@ -124,7 +124,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findZ(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D,
                 //                    Z
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD,
@@ -138,7 +138,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
                 if (nodes != null) {
-                    FieldInsnNode f = (FieldInsnNode)nodes.get(7);
+                    FieldInsnNode f = (FieldInsnNode) nodes.get(7);
                     return new ClassField("Z", f.name, f.desc);
                 }
             }
@@ -147,15 +147,15 @@ public class Projectile extends Analyser {
     }
 
     ClassField findSpeed(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    MethodInsnNode sqrt = (MethodInsnNode)m.instructions.get(i);
+                    MethodInsnNode sqrt = (MethodInsnNode) m.instructions.get(i);
                     if (sqrt.name.equals("sqrt") && sqrt.desc.equals("(D)D")) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         return new ClassField("Speed", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -166,7 +166,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findSpeedX(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //                     X                                                       SpeedX
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD, Opcodes.DDIV, Opcodes.PUTFIELD,
                 // Nonsense
@@ -179,7 +179,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
                     return new ClassField("SpeedX", f.name, f.desc);
                 }
             }
@@ -189,7 +189,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findSpeedY(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //                     X                                                       SpeedX
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD, Opcodes.DDIV, Opcodes.PUTFIELD,
                 // Nonsense
@@ -200,10 +200,9 @@ public class Projectile extends Analyser {
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
-                int i = new Finder(m).findPattern(pattern, 0, false);
-                if (i != -1) {
-                    if (m.instructions.get(i + 17) instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 17);
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    if (insns.get(17) instanceof FieldInsnNode f) {
                         return new ClassField("SpeedY", f.name, f.desc);
                     }
                 }
@@ -214,7 +213,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findSpeedZ(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D,
                 //                    Z
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD,
@@ -228,7 +227,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 11);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 11);
                     return new ClassField("SpeedZ", f.name, f.desc);
                 }
             }
@@ -237,7 +236,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findAccelerationZ(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D,
                 //                    Z
                 Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.DLOAD,
@@ -251,7 +250,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 20);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 20);
                     return new ClassField("AccelerationZ", f.name, f.desc);
                 }
             }
@@ -260,7 +259,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findPitch(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //    Pitch                                          SpeedZ
                 Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD,
                 //                   Speed
@@ -273,7 +272,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Pitch", f.name, f.desc, multi);
                 }
@@ -283,7 +282,7 @@ public class Projectile extends Analyser {
     }
 
     ClassField findYaw(ClassNode node) {
-        final int pattern[] = new int[]{
+        final int[] pattern = new int[]{
                 //    Pitch                                          SpeedZ
                 Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD,
                 //                   Speed
@@ -296,8 +295,7 @@ public class Projectile extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)V")) {
                 List<AbstractInsnNode> nodes = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
                 if (nodes != null) {
-                    if (nodes.get(14) instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode) nodes.get(14);
+                    if (nodes.get(14) instanceof FieldInsnNode f) {
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Yaw", f.name, f.desc, multi);
                     }
@@ -308,12 +306,12 @@ public class Projectile extends Analyser {
     }
 
     ClassField findIsMoving(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     if (f.desc.equals("Z")) {
                         return new ClassField("IsMoving", f.name, f.desc);
                     }
@@ -325,12 +323,12 @@ public class Projectile extends Analyser {
     }
 
     ClassField findSequenceDefinition(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     return new ClassField("SequenceDefinition", f.name, f.desc);
                 }
             }
@@ -340,12 +338,12 @@ public class Projectile extends Analyser {
 
     ClassField findFrame(ClassNode node) {
         String frameCycleName = "";
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     if (f.desc.equals("I") && !f.name.equals(frameCycleName)) {
                         if (frameCycleName.isEmpty()) {
                             frameCycleName = f.name;
@@ -363,12 +361,12 @@ public class Projectile extends Analyser {
     }
 
     ClassField findFrameCycle(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     if (f.desc.equals("I")) {
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("FrameCycle", f.name, f.desc, multi);

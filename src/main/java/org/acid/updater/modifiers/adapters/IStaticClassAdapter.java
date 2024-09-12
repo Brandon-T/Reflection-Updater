@@ -4,7 +4,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public class IStaticClassAdapter extends IClassAdapter {
     public IStaticClassAdapter(ClassVisitor visitor) {
@@ -13,6 +13,6 @@ public class IStaticClassAdapter extends IClassAdapter {
 
     @Override
     protected void apply(ClassVisitor visitor) {
-        ((ClassNode)visitor).accept(super.getVisitor());
+        ((ClassNode) visitor).accept(super.getVisitor());
     }
 }

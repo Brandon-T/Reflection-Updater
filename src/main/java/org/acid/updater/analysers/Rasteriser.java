@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
 public class Rasteriser extends Analyser {
     @Override
@@ -64,7 +64,7 @@ public class Rasteriser extends Analyser {
             if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Pixels", f.name, f.desc);
                 }
             }
@@ -78,8 +78,8 @@ public class Rasteriser extends Analyser {
             if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    if (((VarInsnNode) m.instructions.get(i)).var == 1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         return new ClassField("Width", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -95,8 +95,8 @@ public class Rasteriser extends Analyser {
             if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 2) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    if (((VarInsnNode) m.instructions.get(i)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         return new ClassField("Height", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -120,7 +120,7 @@ public class Rasteriser extends Analyser {
             if (m.desc.equals("([III)V") || m.desc.equals("([III[F)V")) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKESTATIC);
                 if (i != -1) {
-                    MethodInsnNode n = (MethodInsnNode)m.instructions.get(i);
+                    MethodInsnNode n = (MethodInsnNode) m.instructions.get(i);
                     return new ClassField("*SetCoordinates", n.name, n.desc);
                 }
             }

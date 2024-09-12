@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2015-01-13.
+ * Created by Brandon on 2015-01-13.
  */
 public class FieldRemover extends Deobfuscator {
-    private ArrayList<Info> usedFields;
+    private final ArrayList<Info> usedFields;
     private int total_count = 0, removal_count = 0;
 
     public FieldRemover(Collection<ClassNode> classes) {
@@ -29,7 +29,7 @@ public class FieldRemover extends Deobfuscator {
     public void remove() {
         removeUnusedFields();
         int last_count = removal_count;
-        while(removal_count > 0) {
+        while (removal_count > 0) {
             removal_count = 0;
             usedFields.clear();
             countUsedFields();
@@ -42,8 +42,7 @@ public class FieldRemover extends Deobfuscator {
 
     private void countUsedFields() {
         classes.stream().forEach(c -> c.methods.stream().forEach(m -> m.instructions.iterator().forEachRemaining(i -> {
-            if (i instanceof FieldInsnNode) {
-                FieldInsnNode f = (FieldInsnNode) i;
+            if (i instanceof FieldInsnNode f) {
                 checkAdd(f.owner, f.name, f.desc);
             }
         })));
@@ -69,7 +68,9 @@ public class FieldRemover extends Deobfuscator {
 
 
     private class Info {
-        private String node, name, desc;
+        private final String node;
+        private final String name;
+        private final String desc;
 
         public Info(String node, String name, String desc) {
             this.node = node;
@@ -79,8 +80,7 @@ public class FieldRemover extends Deobfuscator {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof Info) {
-                Info info = (Info) o;
+            if (o instanceof Info info) {
                 return node.equals(info.node) && name.equals(info.name) && desc.equals(info.desc);
             }
             return false;

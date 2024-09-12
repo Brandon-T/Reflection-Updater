@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class Finder {
     public static final int WILDCARD = -3;
@@ -26,6 +26,35 @@ public class Finder {
 
     public Finder(MethodNode method) {
         this.instructions = method.instructions;
+    }
+
+    private static int search(int[] haystack, int[] needle, BiFunction<Integer, Integer, Boolean> predicate) {
+        int first = 0;
+        while (true) {
+            int it = first;
+            for (int s_it = 0; ; ++it, ++s_it) {
+                //Found
+                if (s_it == needle.length) {
+                    return first;
+                }
+
+                //Not Found
+                if (it == haystack.length) {
+                    return -1;
+                }
+
+                //DIRECT MATCH
+                if (predicate != null) {
+                    if (!predicate.apply(haystack[it], needle[s_it])) {
+                        break;
+                    }
+                } else if (haystack[it] != needle[s_it]) {
+                    break;
+                }
+            }
+
+            ++first;
+        }
     }
 
     public int findPrev(int start, int code) {
@@ -58,7 +87,7 @@ public class Finder {
             }
 
             if (!skip_goto && nodes[i].getOpcode() == Opcodes.GOTO) {
-                i = instructions.indexOf(((JumpInsnNode)nodes[i]).label.getNext());
+                i = instructions.indexOf(((JumpInsnNode) nodes[i]).label.getNext());
                 --i;
             }
         }
@@ -77,23 +106,22 @@ public class Finder {
                 }
                 ++count;
                 ++start;
-            }
-            else {
+            } else {
                 break;
             }
         }
         return -1;
     }
 
-    public int findPattern(int sub[]) {
+    public int findPattern(int[] sub) {
         return findPattern(sub, 0);
     }
 
-    public int findPattern(int sub[], int start) {
+    public int findPattern(int[] sub, int start) {
         return findPattern(sub, start, true);
     }
 
-    public int findPattern(int sub[], int start, boolean skip_goto) {
+    public int findPattern(int[] sub, int start, boolean skip_goto) {
         ArrayList<AbstractInsnNode> arr = new ArrayList<>(
                 Arrays.asList(Arrays.copyOfRange(instructions.toArray(), start, instructions.size()))
         );
@@ -107,19 +135,18 @@ public class Finder {
         return result != -1 ? result + start : -1;
     }
 
-    public int matchPatternOld(int sub[], int start, boolean skip_goto) {
-        AbstractInsnNode arr[] = instructions.toArray();
+    public int matchPatternOld(int[] sub, int start, boolean skip_goto) {
+        AbstractInsnNode[] arr = instructions.toArray();
 
         for (int i = start; i < arr.length; ++i) {
             int k = i, l = 0;
 
-            while(k < arr.length && ((arr[k].getOpcode() == Opcodes.GOTO) || arr[k].getOpcode() == sub[l] || isSpecial(sub[l]))) {
+            while (k < arr.length && ((arr[k].getOpcode() == Opcodes.GOTO) || arr[k].getOpcode() == sub[l] || isSpecial(sub[l]))) {
                 if (arr[k].getOpcode() == Opcodes.GOTO) {
                     if (skip_goto) {
                         k = instructions.indexOf(((JumpInsnNode) arr[k]).label);
                         continue;
-                    }
-                    else {
+                    } else {
                         k = instructions.indexOf(((JumpInsnNode) arr[k]).label.getNext());
                     }
                 }
@@ -139,7 +166,8 @@ public class Finder {
                         ++l;
                         continue;
                     } else if ((k + 1 < arr.length) && arr[k + 1].getOpcode() == sub[l + 1]) {
-                        ++k; ++l;
+                        ++k;
+                        ++l;
                         continue;
                     }
                     break;
@@ -165,7 +193,7 @@ public class Finder {
     }
 
     public long findMultiplier(String owner, String field) {
-        int patterns[][] = new int[][] {
+        int[][] patterns = new int[][]{
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD},
                 {Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC},
                 {Opcodes.LDC, Opcodes.GETSTATIC},
@@ -204,10 +232,10 @@ public class Finder {
 
         for (int[] pattern : patterns) {
             Object multi = internal_find.apply(pattern);
-            if (multi instanceof Long && ((long)multi != 0)) {
-                return (long)multi;
-            } else if ((int)multi != 0) {
-                return (int)multi;
+            if (multi instanceof Long && ((long) multi != 0)) {
+                return (long) multi;
+            } else if ((int) multi != 0) {
+                return (int) multi;
             }
         }
 
@@ -215,56 +243,23 @@ public class Finder {
     }
 
     private boolean isSpecial(int opcode) {
-        return  opcode <= WILDCARD && opcode >= INVOCATION;
+        return opcode <= WILDCARD && opcode >= INVOCATION;
     }
 
     private boolean isSpecialType(int specialCode, int opcode) {
-        switch(specialCode) {
-            case VARIABLE: return (opcode >= Opcodes.ILOAD && opcode <= Opcodes.DLOAD);
-            case CONSTANT: return ((opcode >= Opcodes.ICONST_M1 && opcode <= Opcodes.ICONST_5) || opcode == Opcodes.BIPUSH || opcode == Opcodes.SIPUSH || opcode == Opcodes.LDC);
-            case NUMERIC: return (isSpecialType(VARIABLE, opcode) || isSpecialType(CONSTANT, opcode));
-            case COMPARISON: return (opcode >= Opcodes.IF_ICMPEQ && opcode <= Opcodes.IF_ACMPNE);
-            case COMPARISON2: return (opcode >= Opcodes.IFEQ && opcode <= Opcodes.IFLE);
-            case ARITHMETIC: return (opcode >= Opcodes.IADD && opcode <= Opcodes.DDIV);
-            case MULTIPLY: return (opcode >= Opcodes.IMUL && opcode <= Opcodes.DMUL);
-            case INVOCATION: return (opcode >= Opcodes.INVOKEVIRTUAL && opcode <= Opcodes.INVOKEDYNAMIC);
-
-            case WILDCARD: return true;
-            case OPTIONAL: return true;
-
-            default:
-                return false;
-        }
-    }
-
-    private static int search(int[] haystack, int[] needle, BiFunction<Integer, Integer, Boolean> predicate) {
-        int first = 0;
-        while(true) {
-            int it = first;
-            for (int s_it = 0; ; ++it, ++s_it) {
-                //Found
-                if (s_it == needle.length) {
-                    return first;
-                }
-
-                //Not Found
-                if (it == haystack.length) {
-                    return -1;
-                }
-
-                //DIRECT MATCH
-                if (predicate != null) {
-                    if (!predicate.apply(haystack[it], needle[s_it])) {
-                        break;
-                    }
-                }
-                else if (haystack[it] != needle[s_it]) {
-                    break;
-                }
-            }
-
-            ++first;
-        }
+        return switch (specialCode) {
+            case VARIABLE -> (opcode >= Opcodes.ILOAD && opcode <= Opcodes.DLOAD);
+            case CONSTANT ->
+                    ((opcode >= Opcodes.ICONST_M1 && opcode <= Opcodes.ICONST_5) || opcode == Opcodes.BIPUSH || opcode == Opcodes.SIPUSH || opcode == Opcodes.LDC);
+            case NUMERIC -> (isSpecialType(VARIABLE, opcode) || isSpecialType(CONSTANT, opcode));
+            case COMPARISON -> (opcode >= Opcodes.IF_ICMPEQ && opcode <= Opcodes.IF_ACMPNE);
+            case COMPARISON2 -> (opcode >= Opcodes.IFEQ && opcode <= Opcodes.IFLE);
+            case ARITHMETIC -> (opcode >= Opcodes.IADD && opcode <= Opcodes.DDIV);
+            case MULTIPLY -> (opcode >= Opcodes.IMUL && opcode <= Opcodes.DMUL);
+            case INVOCATION -> (opcode >= Opcodes.INVOKEVIRTUAL && opcode <= Opcodes.INVOKEDYNAMIC);
+            case WILDCARD, OPTIONAL -> true;
+            default -> false;
+        };
     }
 
     private int search(ArrayList<AbstractInsnNode> haystack, int[] needle, int start, boolean skip_goto, BiFunction<AbstractInsnNode, Integer, Boolean> predicate) {
@@ -277,7 +272,7 @@ public class Finder {
             return -1;
         };
 
-        for (int i = find.apply(start, needle[0]); i >= 0 && i < haystack.size();) {
+        for (int i = find.apply(start, needle[0]); i >= 0 && i < haystack.size(); ) {
             int it = i;
             int j = 0;
             for (; j < needle.length; ++j, ++it) {
@@ -292,7 +287,7 @@ public class Finder {
                         ++it;
                     } else {
                         //Follow the GOTO pointed by its Label
-                        it = haystack.indexOf(((JumpInsnNode)haystack.get(it)).label.getNext());
+                        it = haystack.indexOf(((JumpInsnNode) haystack.get(it)).label.getNext());
                     }
 
                     if (it == -1 || it >= haystack.size()) {

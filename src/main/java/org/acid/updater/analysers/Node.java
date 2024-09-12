@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class Node extends Analyser {
     @Override

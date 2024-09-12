@@ -5,7 +5,10 @@ import org.acid.updater.other.Finder;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Collection;
 
@@ -48,7 +51,7 @@ public class ItemNode extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("ItemIDs", f.name, f.desc);
                 }
             }
@@ -62,7 +65,7 @@ public class ItemNode extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("ItemQuantities", f.name, f.desc);
                 }
             }

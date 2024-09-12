@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * Created by Kira on 2015-01-08.
+ * Created by Brandon on 2015-01-08.
  */
 public class TryCatchRemover extends Deobfuscator {
     private int try_count = 0, removal_count = 0;
@@ -16,7 +16,7 @@ public class TryCatchRemover extends Deobfuscator {
     }
 
     public TryCatchRemover analyse() {
-        classes.stream().forEach(n -> n.methods.forEach(m -> {
+        classes.forEach(n -> n.methods.forEach(m -> {
             if (m.tryCatchBlocks != null) {
                 try_count += m.tryCatchBlocks.size();
             }
@@ -82,8 +82,7 @@ public class TryCatchRemover extends Deobfuscator {
 
                     for (int j = si + 1; j < se; ++j) {
                         //check to see if any MethodInsnNodes can throw..
-                        if (method.instructions.get(j) instanceof MethodInsnNode) {
-                            MethodInsnNode m = (MethodInsnNode)method.instructions.get(j);
+                        if (method.instructions.get(j) instanceof MethodInsnNode m) {
                             if (m.owner.contains("Exception") || !canRemoveNonThrowingTryCatch(m, i)) {
                                 should_remove = false;
                             }

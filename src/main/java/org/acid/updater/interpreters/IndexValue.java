@@ -4,7 +4,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.Value;
 
 /**
- * Created by Kira on 2015-01-19.
+ * Created by Brandon on 2015-01-19.
  */
 public class IndexValue implements Value {
     private final Type type;
@@ -37,9 +37,9 @@ public class IndexValue implements Value {
 
         if (value instanceof IndexValue) {
             if (this.type == null) {
-                return ((IndexValue)value).type == null;
+                return ((IndexValue) value).type == null;
             }
-            return this.type.equals(((IndexValue)value).type);
+            return this.type.equals(((IndexValue) value).type);
         }
 
         return false;

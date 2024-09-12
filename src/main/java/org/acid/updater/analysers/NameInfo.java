@@ -50,18 +50,18 @@ public class NameInfo extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 0);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     return new ClassField("Name", f.name, f.desc);
                 }
             }
         }
 
-        int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ARETURN};
+        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ARETURN};
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()Ljava/lang/String;")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Name", f.name, f.desc);
                 }
             }
@@ -72,7 +72,7 @@ public class NameInfo extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("Name", f.name, f.desc);
                 }
             }
@@ -86,18 +86,18 @@ public class NameInfo extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTFIELD, 1);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     return new ClassField("DecodedName", f.name, f.desc);
                 }
             }
         }
 
-        int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
+        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.INVOKESTATIC, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("DecodedName", f.name, f.desc);
                 }
             }

@@ -10,14 +10,15 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2015-01-09.
+ * Created by Brandon on 2015-01-09.
  */
 public abstract class Deobfuscator {
     protected final Collection<ClassNode> classes;
 
     /**
      * Analyses and Deobfuscates a given collection of classes.
-     * @param classes  Collection of classes to be analysed and deobfuscated.
+     *
+     * @param classes Collection of classes to be analysed and deobfuscated.
      */
     public Deobfuscator(Collection<ClassNode> classes) {
         this.classes = classes;
@@ -25,6 +26,7 @@ public abstract class Deobfuscator {
 
     /**
      * Analyses the collection of classes for patterns to be changed or removed.
+     *
      * @return Returns an instance of "this".
      */
     public abstract Deobfuscator analyse();
@@ -38,10 +40,10 @@ public abstract class Deobfuscator {
      * Moves an instruction from "moveFrom" to "moveTo" for each instance of "pattern"
      * found in "method".
      *
-     * @param method  Method to search.
+     * @param method   Method to search.
      * @param pattern  Pattern to search for.
-     * @param moveFrom  Index of the instruction to move.
-     * @param moveTo  Index to place the new instruction.
+     * @param moveFrom Index of the instruction to move.
+     * @param moveTo   Index to place the new instruction.
      * @return
      */
     protected int moveInstructions(MethodNode method, int[] pattern, int moveFrom, int moveTo) {
@@ -64,11 +66,11 @@ public abstract class Deobfuscator {
      * Moves a set of instructions from "moveFrom" to "moveTo" for each instance of "pattern"
      * found in "method".
      *
-     * @param method  Method to search.
+     * @param method   Method to search.
      * @param pattern  Pattern to search for.
-     * @param length Amount of instructions to move.
-     * @param moveFrom  Index of the instructions to move.
-     * @param moveTo  Index to place the new instructions.
+     * @param length   Amount of instructions to move.
+     * @param moveFrom Index of the instructions to move.
+     * @param moveTo   Index to place the new instructions.
      * @return
      */
     protected int moveInstructions(MethodNode method, int[] pattern, int length, int moveFrom, int moveTo) {

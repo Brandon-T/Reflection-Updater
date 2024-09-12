@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-09.
+ * Created by Brandon on 2014-12-09.
  */
 public class MethodRemover extends Deobfuscator {
-    private ArrayList<Info> usedMethods;
+    private final ArrayList<Info> usedMethods;
     private int total_count = 0, removal_count = 0;
 
     public MethodRemover(Collection<ClassNode> classes) {
@@ -33,7 +33,7 @@ public class MethodRemover extends Deobfuscator {
     public void remove() {
         removeUnusedMethods();
         int last_count = removal_count;
-        while(removal_count > 0) {
+        while (removal_count > 0) {
             removal_count = 0;
             usedMethods.clear();
             countUsedMethods();
@@ -82,7 +82,7 @@ public class MethodRemover extends Deobfuscator {
 
     private boolean isOverriden(ClassNode node, MethodNode method) {
         ClassNode n = node;
-        while(true) {
+        while (true) {
             n = loadAnyClass(n.superName);
             for (MethodNode m : n.methods) {
                 if (m.name.equals(method.name) && m.desc.equals(method.desc)) {
@@ -99,8 +99,7 @@ public class MethodRemover extends Deobfuscator {
 
     private void addInvoked(MethodNode method) {
         method.instructions.iterator().forEachRemaining(i -> {
-            if (i instanceof MethodInsnNode) {
-                MethodInsnNode mi = (MethodInsnNode)i;
+            if (i instanceof MethodInsnNode mi) {
                 if (!mi.owner.contains("java") && !mi.name.equals("<init>") && !mi.name.equals("<clinit>") && !mi.owner.startsWith("[")) {
                     ClassNode owner = loadClass(mi.owner);
                     MethodNode custom_method = new MethodNode(Opcodes.ASM5, method.access, mi.name, mi.desc, null, null);
@@ -160,9 +159,10 @@ public class MethodRemover extends Deobfuscator {
     }
 
 
-
     private class Info {
-        private String node, name, desc;
+        private final String node;
+        private final String name;
+        private final String desc;
 
         public Info(ClassNode node, MethodNode method) {
             this.node = node.name;
@@ -172,8 +172,7 @@ public class MethodRemover extends Deobfuscator {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof Info) {
-                Info info = (Info) o;
+            if (o instanceof Info info) {
                 return node.equals(info.node) && name.equals(info.name) && desc.equals(info.desc);
             }
             return false;

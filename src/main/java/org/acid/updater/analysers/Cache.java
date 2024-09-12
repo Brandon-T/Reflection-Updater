@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-23.
+ * Created by Brandon on 2014-12-23.
  */
 public class Cache extends Analyser {
     @Override
@@ -75,7 +75,7 @@ public class Cache extends Analyser {
             if (m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     return new ClassField("Remaining", f.name, f.desc);
                 }
             }
@@ -89,7 +89,7 @@ public class Cache extends Analyser {
             if (m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("Capacity", f.name, f.desc);
                 }
             }

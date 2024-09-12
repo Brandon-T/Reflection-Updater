@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-21.
+ * Created by Brandon on 2014-12-21.
  */
 public class BufferedConnection extends Analyser {
     @Override
@@ -21,12 +21,10 @@ public class BufferedConnection extends Analyser {
 
             int isCount = 0, osCount = 0, sockCount = 0;
             for (FieldNode f : n.fields) {
-                if (f.desc.equals("Ljava/io/InputStream;")) {
-                    ++isCount;
-                } else if (f.desc.equals("Ljava/io/OutputStream;")) {
-                    ++osCount;
-                } else if (f.desc.equals("Ljava/net/Socket;")) {
-                    ++sockCount;
+                switch (f.desc) {
+                    case "Ljava/io/InputStream;" -> ++isCount;
+                    case "Ljava/io/OutputStream;" -> ++osCount;
+                    case "Ljava/net/Socket;" -> ++sockCount;
                 }
             }
 
@@ -83,9 +81,9 @@ public class BufferedConnection extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("run") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((MethodInsnNode)m.instructions.get(i + 5)).name.equals("write")) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                while (i != -1) {
+                    if (((MethodInsnNode) m.instructions.get(i + 5)).name.equals("write")) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         return new ClassField("Payload", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -101,7 +99,7 @@ public class BufferedConnection extends Analyser {
             if (m.exceptions.contains("java/io/IOException") && m.desc.equals("([BII)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     if (f.owner.equals(node.name)) {
                         return new ClassField("IsClosed", f.name, f.desc);
                     }
@@ -115,8 +113,7 @@ public class BufferedConnection extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.exceptions.contains("java/io/IOException") && m.desc.equals("()I")) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof MethodInsnNode) {
-                        MethodInsnNode n = (MethodInsnNode)a;
+                    if (a instanceof MethodInsnNode n) {
                         if (n.name.equals("available")) {
                             return new ClassField("*Available", m.name, m.desc);
                         }
@@ -131,8 +128,7 @@ public class BufferedConnection extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.exceptions.contains("java/io/IOException") && m.desc.equals("([BII)V")) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof MethodInsnNode) {
-                        MethodInsnNode n = (MethodInsnNode)a;
+                    if (a instanceof MethodInsnNode n) {
                         if (n.name.equals("read")) {
                             return new ClassField("*Read", m.name, m.desc);
                         }

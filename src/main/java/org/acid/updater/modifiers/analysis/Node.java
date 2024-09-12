@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by Kira on 2015-01-16.
+ * Created by Brandon on 2015-01-16.
  */
 public class Node<V extends Value> extends Frame<V> {
     public Set<Node<V>> successors = new HashSet<>();

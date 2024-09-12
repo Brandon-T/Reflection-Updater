@@ -55,12 +55,12 @@ public class Varps extends Analyser {
     }
 
     private ClassField findMasks(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.BIPUSH, Opcodes.NEWARRAY, Opcodes.PUTSTATIC};
+        final int[] pattern = new int[]{Opcodes.BIPUSH, Opcodes.NEWARRAY, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("Masks", f.name, f.desc);
                 }
             }
@@ -69,12 +69,12 @@ public class Varps extends Analyser {
     }
 
     private ClassField findMain(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.SIPUSH, Opcodes.NEWARRAY, Opcodes.PUTSTATIC, Opcodes.RETURN};
+        final int[] pattern = new int[]{Opcodes.SIPUSH, Opcodes.NEWARRAY, Opcodes.PUTSTATIC, Opcodes.RETURN};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("Main", f.name, f.desc);
                 }
             }

@@ -4,7 +4,8 @@ import org.acid.updater.Main;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 
 import java.util.Collection;
 

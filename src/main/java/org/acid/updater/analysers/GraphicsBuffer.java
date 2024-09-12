@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-15.
+ * Created by Brandon on 2014-12-15.
  */
 public class GraphicsBuffer extends Analyser {
     @Override

@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-10.
+ * Created by Brandon on 2014-12-10.
  */
 public class FullDeobfuscation {
-    private Collection<Deobfuscator> deobfuscators;
-    private DeadCodeRemover deadCodeRemover;
+    private final Collection<Deobfuscator> deobfuscators;
+    private final DeadCodeRemover deadCodeRemover;
 
     public FullDeobfuscation(Collection<ClassNode> classes, boolean is_android) {
         this.deobfuscators = new ArrayList<>();
@@ -35,7 +35,9 @@ public class FullDeobfuscation {
 
     public void remove() {
         deobfuscators.forEach(d -> d.remove());
-        this.deadCodeRemover.analyse().remove();
+        if (deadCodeRemover != null) {
+            this.deadCodeRemover.analyse().remove();
+        }
         System.out.println("Deobfuscation Finished..\n");
     }
 }

@@ -3,9 +3,9 @@ package org.acid.updater.modifiers.adapters;
 import org.objectweb.asm.*;
 
 public class MethodTraceAdapter extends ClassVisitor {
-    private String owner;
-    private String method;
-    private String desc;
+    private final String owner;
+    private final String method;
+    private final String desc;
 
     public MethodTraceAdapter(final ClassVisitor cv, String owner, String method, String desc) {
         super(Opcodes.ASM5, cv);
@@ -24,13 +24,13 @@ public class MethodTraceAdapter extends ClassVisitor {
     }
 
     private class MethodTraceVisitor extends MethodVisitor {
-        private String owner;
-        private String method;
-        private String desc;
+        private final String owner;
+        private final String method;
+        private final String desc;
 
-        private int access;
-        private String name;
-        private String descriptor;
+        private final int access;
+        private final String name;
+        private final String descriptor;
 
         public MethodTraceVisitor(final MethodVisitor mv, String owner, String method, String desc,
                                   final int access, final String name, final String descriptor) {
@@ -110,13 +110,13 @@ public class MethodTraceAdapter extends ClassVisitor {
             int offset = ((this.access & Opcodes.ACC_STATIC) != 0) ? 0 : 1;
 
             int argumentCount = (Type.getArgumentsAndReturnSizes(this.descriptor) >> 2) - 1;
-            Type types[] = Type.getArgumentTypes(this.descriptor);
+            Type[] types = Type.getArgumentTypes(this.descriptor);
 
             mv.visitIntInsn(Opcodes.BIPUSH, argumentCount); //BIPUSH count
             mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object"); //Create new array
 
 
-            for(int i = 0; i < argumentCount; ++i) {
+            for (int i = 0; i < argumentCount; ++i) {
                 Type type = types[i];
                 int opcode = getStackOperand(type);
 
@@ -132,7 +132,7 @@ public class MethodTraceAdapter extends ClassVisitor {
 
             //PRINTING
             mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "err", "Ljava/io/PrintStream;");
-            mv.visitLdcInsn( this.owner + "." + this.name + "(");
+            mv.visitLdcInsn(this.owner + "." + this.name + "(");
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false);
 
             mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "err", "Ljava/io/PrintStream;");

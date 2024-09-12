@@ -4,7 +4,9 @@ import org.acid.updater.other.ClassAnalyser;
 import org.acid.updater.other.Finder;
 import org.acid.updater.other.InstructionPrinter;
 import org.acid.updater.structures.ClassInfo;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,7 +15,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class Main {
 
@@ -21,13 +23,11 @@ public class Main {
 
     public static void main(String[] args) {
         String url = "http://oldschool1.runescape.com";
-        //analyser.print();
-        analyser = new ClassAnalyser(url, String.format("%d.jar", 224), true);
+        int latestRevision = getLatestRevision(url, 225);
+        analyser = new ClassAnalyser(url, String.format("%d.jar", latestRevision), true);
         analyser.printSimbaNative();
-//        analyser.refactor(String.format("Refactor_%d.jar", 222));
-
-        //printMethod("db", "ah");
-        //printMethod("dj", "ak");
+//        analyser.printJSON();
+        //analyser.refactor(String.format("Refactor_%d.jar", 225));
     }
 
     private static int getLatestRevision(String url, int currentVersion) {
@@ -43,7 +43,7 @@ public class Main {
 
                 OutputStream outputStream = socket.getOutputStream();
 //                outputStream.write(packet.array());
-                outputStream.write(new byte[]{15, 0, 0, (byte) (currentVersion >> 8), (byte) currentVersion});
+                outputStream.write(new byte[]{15, 0, 0, (byte) (currentVersion >> 8), (byte) currentVersion, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
                 outputStream.flush();
 
                 if (socket.getInputStream().read() != 6) {
@@ -75,15 +75,14 @@ public class Main {
 
                 if (start != -1) {
                     if (m.instructions.get(start).getOpcode() == code) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(start);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(start);
                         if (f.name.equals(field)) {
                             return count;
                         }
                     }
                     ++count;
                     ++start;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -106,7 +105,7 @@ public class Main {
     }
 
     public static ClassNode getClass(String name) {
-       return analyser.getClass(name);
+        return analyser.getClass(name);
     }
 
     public static ClassNode getClassNode(String name) {

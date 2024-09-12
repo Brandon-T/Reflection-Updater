@@ -4,10 +4,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public abstract class IClassVisitor {
-    private ClassVisitor visitor;
+    private final ClassVisitor visitor;
 
     public IClassVisitor(ClassVisitor visitor) {
         this.visitor = visitor;

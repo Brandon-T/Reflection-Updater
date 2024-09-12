@@ -6,10 +6,10 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class HTTPSocket {
-    private URL url;
+    private final URL url;
 
     public HTTPSocket(String Address) throws IOException {
         url = new URL(Address);
@@ -27,7 +27,7 @@ public class HTTPSocket {
     }
 
     private HttpURLConnection setupConnection(String data, String userAgent, boolean post) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         setProperties(connection, userAgent);
         connection.setRequestMethod(post ? "POST" : "GET");
         connection.setUseCaches(false);

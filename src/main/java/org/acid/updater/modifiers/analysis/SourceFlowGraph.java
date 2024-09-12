@@ -8,12 +8,12 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.*;
 
 /**
- * Created by Kira on 2015-01-16.
+ * Created by Brandon on 2015-01-16.
  */
 public class SourceFlowGraph implements Opcodes {
     String owner;
     MethodNode method;
-    private Analyzer<SourceValue> analyser;
+    private final Analyzer<SourceValue> analyser;
     private Frame<SourceValue>[] frames;
 
     public SourceFlowGraph(String owner, MethodNode method) {
@@ -72,8 +72,7 @@ public class SourceFlowGraph implements Opcodes {
         if (index != -1) {
             MethodInsnNode called = (MethodInsnNode) method.instructions.get(index);
             index = getLastStackIndex(frames[index], method);
-            if (method.instructions.get(index) instanceof MethodInsnNode) {
-                MethodInsnNode mi = (MethodInsnNode) method.instructions.get(index);
+            if (method.instructions.get(index) instanceof MethodInsnNode mi) {
                 index = method.instructions.indexOf(mi);
                 return getFirstStackIndex(frames[index], method, mi.desc) - ((mi.getOpcode() == Opcodes.INVOKESTATIC) ? 0 : 1);
             }

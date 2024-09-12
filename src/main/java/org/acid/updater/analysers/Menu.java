@@ -1,6 +1,7 @@
 package org.acid.updater.analysers;
 
 import org.acid.updater.Main;
+import org.acid.updater.other.DeprecatedFinder;
 import org.acid.updater.other.Finder;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
@@ -8,6 +9,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.Collection;
+import java.util.List;
 
 public class Menu extends Analyser {
     @Override
@@ -119,9 +121,9 @@ public class Menu extends Analyser {
         };
         for (MethodNode m : node.methods) {
             if (m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(1);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("X", f.name, f.desc, multi);
                 }
@@ -140,9 +142,9 @@ public class Menu extends Analyser {
         };
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 6);
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(6);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Y", f.owner, f.name, f.desc, multi);
                 }
@@ -161,9 +163,9 @@ public class Menu extends Analyser {
         };
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 11);
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(11);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Width", f.owner, f.name, f.desc, multi);
                 }
@@ -182,9 +184,9 @@ public class Menu extends Analyser {
         };
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 16);
+                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
+                if (insns != null) {
+                    FieldInsnNode f = (FieldInsnNode) insns.get(16);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Height", f.owner, f.name, f.desc, multi);
                 }

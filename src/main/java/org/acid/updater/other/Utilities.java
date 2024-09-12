@@ -1,17 +1,13 @@
 package org.acid.updater.other;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class Utilities {
 
-    private static Utilities instance = new Utilities();
+    private static final Utilities instance = new Utilities();
 
     private Utilities() {
-    }
-
-    public Utilities getInstance() {
-        return instance;
     }
 
     public static String padRight(String s, int n) {
@@ -52,5 +48,9 @@ public class Utilities {
             padded.insert(0, padChar);
         }
         return padded.toString();
+    }
+
+    public Utilities getInstance() {
+        return instance;
     }
 }

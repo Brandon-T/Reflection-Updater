@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.ClassNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-10.
+ * Created by Brandon on 2014-12-10.
  */
 public class Other extends Analyser {
     @Override

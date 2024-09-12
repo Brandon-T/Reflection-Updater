@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-10.
+ * Created by Brandon on 2014-12-10.
  */
 
 @Deprecated
 public class FieldRemover extends Deobfuscator {
-    private ArrayList<String> usedFields;
     int field_count = 0;
+    private final ArrayList<String> usedFields;
 
     public FieldRemover(Collection<ClassNode> classes) {
         super(classes);
@@ -43,8 +43,7 @@ public class FieldRemover extends Deobfuscator {
         for (ClassNode n : classes) {
             for (MethodNode m : n.methods) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)a;
+                    if (a instanceof FieldInsnNode f) {
                         if (f.owner.equals(node.name) && f.name.equals(field.name)) {
                             return true;
                         }

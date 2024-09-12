@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2015-01-13.
+ * Created by Brandon on 2015-01-13.
  */
 public class GrandExchangeOffer extends Analyser {
     @Override
@@ -21,6 +21,13 @@ public class GrandExchangeOffer extends Analyser {
         for (ClassNode n : nodes) {
             if (!n.superName.equals("java/lang/Object")) {
                 continue;
+            }
+
+            int init_count = 0;
+            for (MethodNode m : n.methods) {
+                if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;Z)V", Main.get("Buffer")))) {
+                    ++init_count;
+                }
             }
 
             int int_count = 0, byte_count = 0;
@@ -32,7 +39,7 @@ public class GrandExchangeOffer extends Analyser {
                 }
             }
 
-            if (byte_count == 1 && int_count == 5) {
+            if (init_count == 1 && byte_count == 1 && int_count == 5) {
                 return n;
             }
         }
@@ -78,14 +85,14 @@ public class GrandExchangeOffer extends Analyser {
     }
 
     private ClassField findQueryIDs(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ACONST_NULL, Opcodes.PUTSTATIC};
+        final int[] pattern = new int[]{Opcodes.ACONST_NULL, Opcodes.PUTSTATIC};
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals("(Ljava/lang/String;)V")) {
                     int i = new Finder(m).findPattern(pattern);
-                    while(i != -1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    while (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         if (f.desc.equals("[S")) {
                             return new ClassField("QueryIDs", f.name, f.desc);
                         }
@@ -103,7 +110,7 @@ public class GrandExchangeOffer extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;Z)V", Main.get("Buffer")))) {
                 int i = 0;
                 int j = new Finder(m).findNext(0, Opcodes.PUTFIELD, false);
-                while(j != -1) {
+                while (j != -1) {
                     if (i == index) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
                         long multi = Main.findMultiplier(f.owner, f.name);

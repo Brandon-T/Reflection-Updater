@@ -13,9 +13,9 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
-public class Animable extends Analyser {
+public class Renderable extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
@@ -48,7 +48,7 @@ public class Animable extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Animable", node.name);
+        ClassInfo info = new ClassInfo("Renderable", node.name);
         info.putField(findModelHeight(node));
         return info;
     }
@@ -57,7 +57,7 @@ public class Animable extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Finder.WILDCARD, Opcodes.PUTFIELD});
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                 long multi = Main.findMultiplier(f.owner, f.name);
                 return new ClassField("ModelHeight", f.name, f.desc, multi);
             }

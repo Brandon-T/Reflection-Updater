@@ -11,13 +11,13 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
 public class Item extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Animable"))) {
+            if (!n.superName.equals(Main.get("Renderable"))) {
                 continue;
             }
 

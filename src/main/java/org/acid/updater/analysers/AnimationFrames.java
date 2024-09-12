@@ -54,7 +54,7 @@ public class AnimationFrames extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(I)Z")) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD});
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                 return new ClassField("Frames", f.name, f.desc);
             }
         }

@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-15.
+ * Created by Brandon on 2014-12-15.
  */
 public class WidgetNode extends Analyser {
     @Override
@@ -52,7 +52,7 @@ public class WidgetNode extends Analyser {
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                        if (((VarInsnNode)m.instructions.get(i + 4)).var == 3) {
+                        if (((VarInsnNode) m.instructions.get(i + 4)).var == 3) {
                             long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
                             return new ClassField("ID", f.name, f.desc, multi);
                         }

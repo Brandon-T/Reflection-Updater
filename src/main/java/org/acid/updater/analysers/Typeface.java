@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-16.
+ * Created by Brandon on 2014-12-16.
  */
 public class Typeface extends Analyser {
     @Override
@@ -84,7 +84,7 @@ public class Typeface extends Analyser {
             if (m.desc.equals("(Ljava/lang/String;IIIII)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if ((double) ((LdcInsnNode)m.instructions.get(i + 3)).cst == 3.0D) {
+                    if ((double) ((LdcInsnNode) m.instructions.get(i + 3)).cst == 3.0D) {
                         return new ClassField("*DrawStringWave", m.name, m.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);

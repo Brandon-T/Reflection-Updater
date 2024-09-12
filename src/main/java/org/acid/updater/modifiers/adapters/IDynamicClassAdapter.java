@@ -4,10 +4,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public class IDynamicClassAdapter extends IClassAdapter {
-    private ClassVisitor nextVisitor;
+    private final ClassVisitor nextVisitor;
 
     public IDynamicClassAdapter(ClassVisitor visitor) {
         super(visitor);
@@ -16,6 +16,6 @@ public class IDynamicClassAdapter extends IClassAdapter {
 
     @Override
     protected void apply(ClassVisitor visitor) {
-        super.inlineCopy((ClassNode)nextVisitor, (ClassNode)visitor);
+        super.inlineCopy((ClassNode) nextVisitor, (ClassNode) visitor);
     }
 }

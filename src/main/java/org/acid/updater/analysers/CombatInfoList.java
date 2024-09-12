@@ -20,18 +20,12 @@ public class CombatInfoList extends Analyser {
                 continue;
             }
 
-            int node_count = 0, method_count = 0;
+            int node_count = 0;
             String nodeField = Main.get("Node");
 
             for (FieldNode field : node.fields) {
                 if (field.desc.equals(String.format("L%s;", nodeField))) {
                     ++node_count;
-                }
-            }
-
-            for (MethodNode m : node.methods) {
-                if (!hasAccess(m, Opcodes.ACC_STATIC)) {
-                    ++method_count;
                 }
             }
 
@@ -54,7 +48,7 @@ public class CombatInfoList extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;)V", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.PUTFIELD});
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                 return new ClassField("Head", f.name, f.desc);
             }
         }

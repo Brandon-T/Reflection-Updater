@@ -11,10 +11,10 @@ import org.objectweb.asm.tree.analysis.Interpreter;
 import java.util.List;
 
 /**
- * Created by Kira on 2015-01-20.
+ * Created by Brandon on 2015-01-20.
  */
 public class SimpleIndexInterpreter extends Interpreter<IndexValue> implements Opcodes {
-    private InsnList instructions;
+    private final InsnList instructions;
 
     public SimpleIndexInterpreter(MethodNode method) {
         super(Opcodes.ASM5);

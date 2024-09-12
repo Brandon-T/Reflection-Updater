@@ -5,14 +5,17 @@ import org.acid.updater.other.Finder;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-21.
+ * Created by Brandon on 2014-12-21.
  */
-public class AnimableNode extends Analyser {
+public class DynamicObject extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         ClassNode gameInstance = new GameInstance().find(nodes);
@@ -21,12 +24,12 @@ public class AnimableNode extends Analyser {
         }
 
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Animable"))) {
+            if (!n.superName.equals(Main.get("Renderable"))) {
                 continue;
             }
 
             for (MethodNode m : n.methods) {
-                if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;IIIIIIIZL%s;)V", gameInstance.name, Main.get("Animable")))) {
+                if (m.name.equals("<init>") && m.desc.equals(String.format("(L%s;IIIIIIIZL%s;)V", gameInstance.name, Main.get("Renderable")))) {
                     return n;
                 }
             }
@@ -36,7 +39,7 @@ public class AnimableNode extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("AnimableNode", node.name);
+        ClassInfo info = new ClassInfo("DynamicObject", node.name);
         info.putField(findField(node, "ID", 2));
         info.putField(findAnimationSequence(node));
         info.putField(findField(node, "Flags", 3));
@@ -54,7 +57,7 @@ public class AnimableNode extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("AnimationSequence", f.name, f.desc);
                 }
             }
@@ -68,7 +71,7 @@ public class AnimableNode extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == index) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == index) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField(fieldName, f.name, f.desc, multi);
@@ -88,15 +91,15 @@ public class AnimableNode extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                    int multi = (int)Main.findMultiplier(f.owner, f.name);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                    int multi = (int) Main.findMultiplier(f.owner, f.name);
                     return new ClassField("AnimationFrame", f.name, f.desc, multi);
                 }
 
                 int j = new Finder(m).findPattern(pattern2);
                 if (j != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(j + 3);
-                    int multi = (int)Main.findMultiplier(f.owner, f.name);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(j + 3);
+                    int multi = (int) Main.findMultiplier(f.owner, f.name);
                     return new ClassField("AnimationFrame", f.name, f.desc, multi);
                 }
             }

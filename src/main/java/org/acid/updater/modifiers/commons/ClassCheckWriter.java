@@ -5,10 +5,10 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 /**
- * Created by Kira on 2015-01-12.
+ * Created by Brandon on 2015-01-12.
  */
 public class ClassCheckWriter extends ClassVisitor {
-    private boolean debug;
+    private final boolean debug;
 
     public ClassCheckWriter(int api, ClassVisitor cv, boolean debug) {
         super(api, new CheckClassAdapter(cv, true));

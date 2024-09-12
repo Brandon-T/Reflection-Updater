@@ -5,10 +5,10 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 public class CXXMethod {
-    private boolean hasPublicAccess;
-    private boolean hasProtectedAccess;
-    private boolean hasStaticAccess;
-    private MethodNode methodNode;
+    private final boolean hasPublicAccess;
+    private final boolean hasProtectedAccess;
+    private final boolean hasStaticAccess;
+    private final MethodNode methodNode;
 
     public CXXMethod(MethodNode methodNode) {
         this.methodNode = methodNode;
@@ -50,11 +50,10 @@ public class CXXMethod {
     }
 
     public String getImplementationSignature(String className) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.generateReturnType()).append(" ");
-        builder.append(className).append("::").append(methodNode.name);
-        builder.append("(").append(this.generateArguments()).append(")");
-        return builder.toString();
+        String builder = this.generateReturnType() + " " +
+                className + "::" + methodNode.name +
+                "(" + this.generateArguments() + ")";
+        return builder;
     }
 
     private String generateReturnType() {
@@ -78,14 +77,12 @@ public class CXXMethod {
                 String elementType = args[i].getType().getElementType().getClassName();
                 if (elementType != null) {
                     argStrings[i] = "Array<" + elementType + ">& ";
-                }
-                else {
+                } else {
                     argStrings[i] = "Array<" + CXXUtilities.normalizeType(args[i].getType()) + ">& ";
                 }
 
                 argStrings[i] = argStrings[i] + args[i].getName() + args[i].getIndex();
-            }
-            else {
+            } else {
                 argStrings[i] = CXXUtilities.normalizeType(args[i].getType()) + " " + args[i].getName() + args[i].getIndex();
             }
         }

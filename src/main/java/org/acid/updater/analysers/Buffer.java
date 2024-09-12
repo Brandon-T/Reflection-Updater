@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
 public class Buffer extends Analyser {
     @Override
@@ -77,7 +77,7 @@ public class Buffer extends Analyser {
             if (m.desc.equals("()I")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 5)).operand == 0xFF) {
+                    if (((IntInsnNode) m.instructions.get(i + 5)).operand == 0xFF) {
                         return new ClassField("*GetUnsignedByte", m.name, m.desc);
                     }
                 }

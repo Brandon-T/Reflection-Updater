@@ -2,21 +2,23 @@ package org.acid.updater.structures;
 
 import org.acid.updater.other.Renamer;
 import org.acid.updater.other.Utilities;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.function.Function;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class ClassInfo {
+    private static LinkedHashMap<String, String> simbaMap;
     private String id;
     private String name;
-    private ArrayList<ClassField> fields;
-    private static LinkedHashMap<String, String> simbaMap;
+    private final ArrayList<ClassField> fields;
 
 
     public ClassInfo(String id, String name) {
@@ -125,16 +127,13 @@ public class ClassInfo {
                 if (field.getMultiplier() != 0) {
                     if (field.getDesc() != null && field.getDesc().length() > 0) {
                         result += " = {" + QuoteString.apply(owner) + ", " + QuoteString.apply(field.getName()) + ", " + QuoteString.apply(field.getDesc()) + ", " + field.getMultiplier() + "};";
-                    }
-                    else {
+                    } else {
                         result += " = {" + QuoteString.apply(owner) + ", " + QuoteString.apply(field.getName()) + ", " + field.getMultiplier() + "};";
                     }
-                }
-                else {
+                } else {
                     if (field.getDesc() != null && field.getDesc().length() > 0) {
                         result += " = {" + QuoteString.apply(owner) + ", " + QuoteString.apply(field.getName()) + ", " + QuoteString.apply(field.getDesc()) + "};";
-                    }
-                    else {
+                    } else {
                         result += " = {" + QuoteString.apply(owner) + ", " + QuoteString.apply(field.getName()) + "};";
                     }
                 }
@@ -180,6 +179,234 @@ public class ClassInfo {
         }
 
         return result;
+    }
+
+    public String toJSONString() {
+        Function<ClassField, String> formatField = (f) -> {
+            if (f.getOwner() != null) {
+                return String.format("""
+                                {
+                                        "name": "%s",
+                                        "cls": "%s",
+                                        "field": "%s",
+                                        "desc": "%s",
+                                        "multiplier": %d
+                                    }""",
+                        f.getId(),
+                        f.getOwner(),
+                        f.getName(),
+                        f.getDesc(),
+                        f.getMultiplier() != 0 ? f.getMultiplier() : 1);
+            }
+            return String.format("""
+                            {
+                                    "name": "%s",
+                                    "cls": null,
+                                    "field": "%s",
+                                    "desc": "%s",
+                                    "multiplier": %d
+                                }""",
+                    f.getId(),
+                    f.getName(),
+                    f.getDesc(),
+                    f.getMultiplier() != 0 ? f.getMultiplier() : 1);
+        };
+
+        String fields = "";
+        for (ClassField f : this.fields) {
+            if (f != this.fields.getFirst()) {
+                fields += "    ";
+            }
+
+            fields += formatField.apply(f);
+
+            if (f != this.fields.getLast()) {
+                fields += ",\n";
+            }
+        }
+
+        String result = String.format("""
+                        {
+                            "name": "%s",
+                            "cls": "%s",
+                            "fields": [%s]
+                        }""",
+                this.getId(),
+                this.getName(),
+                fields);
+
+        return result;
+    }
+
+    public String toPythonString(List<ClassInfo> allClasses) {
+        String fields = "";
+        for (ClassField f : this.fields) {
+            if (!f.getId().contains("*")) {
+                Function<String, String> toSnakeCase = s -> s
+                        .replaceAll("([a-z0-9])([A-Z])", "$1_$2")
+                        .replaceAll("\\s+", "_")
+                        .toLowerCase()
+                        .replaceFirst("^_", "");
+
+                String name = toSnakeCase.apply(f.getId());
+
+                String hook = "";
+                long array_count = f.getDesc().chars().filter(ch -> ch == '[').count();
+
+                if (f.getOwner() != null && !f.getOwner().equals(this.getName()) || this.getName().equals("client")) {
+                    hook = "Hooks.%s.%s.cls, Hooks.%s.%s.field, Hooks.%s.%s.desc".formatted(this.getId(), f.getId(), this.getId(), f.getId(), this.getId(), f.getId());
+                } else {
+                    hook = "Hooks.%s.cls, Hooks.%s.%s.field, Hooks.%s.%s.desc".formatted(this.getId(), this.getId(), f.getId(), this.getId(), f.getId());
+                }
+
+                String def = "";
+                if (f.getDesc().startsWith("Ljava/lang/String;")) {
+                    def += "self.ref.reflect_string(%s)".formatted(hook);
+                } else if (f.getDesc().startsWith("L")) {
+                    def += "self.ref.reflect_object(%s)".formatted(hook);
+                } else if (f.getDesc().contains("[Ljava/lang/String;")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.STRING)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[L")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.OBJECT)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[I")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.INT)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[J")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.LONG)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[C")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.CHAR)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[F")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.FLOAT)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[D")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.DOUBLE)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[B")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.BYTE)".formatted(hook, array_count);
+                } else if (f.getDesc().contains("[Z")) {
+                    def += "self.ref.reflect_array(%s).get_%dd(ReflectType.BOOL)".formatted(hook, array_count);
+                } else if (f.getDesc().startsWith("I")) {
+                    if (f.getMultiplier() == 0 || f.getMultiplier() == 1) {
+                        def += "self.ref.reflect_int(%s)".formatted(hook);
+                    } else {
+                        def += "(self.ref.reflect_int(%s) * Hooks.%s.%s.multiplier) & 0xFFFFFFFF".formatted(hook, this.getId(), f.getId());
+                    }
+                } else if (f.getDesc().startsWith("J")) {
+                    if (f.getMultiplier() == 0 || f.getMultiplier() == 1) {
+                        def += "self.ref.reflect_long(%s)".formatted(hook);
+                    } else {
+                        def += "(self.ref.reflect_long(%s) * Hooks.%s.%s.multiplier) & 0xFFFFFFFFFFFFFFFF".formatted(hook, this.getId(), f.getId());
+                    }
+                } else if (f.getDesc().startsWith("F")) {
+                    def += "self.ref.reflect_float(%s)".formatted(hook);
+                } else if (f.getDesc().startsWith("D")) {
+                    def += "self.ref.reflect_double(%s)".formatted(hook);
+                } else if (f.getDesc().startsWith("C")) {
+                    def += "self.ref.reflect_char(%s)".formatted(hook);
+                } else if (f.getDesc().startsWith("B")) {
+                    def += "self.ref.reflect_byte(%s)".formatted(hook);
+                } else if (f.getDesc().startsWith("Z")) {
+                    def += "self.ref.reflect_bool(%s)".formatted(hook);
+                } else if (f.getDesc().equals("N/A")) {
+                    def += "None";
+                } else {
+                    System.err.println("STARTS WITH: " + f.getDesc());
+                    System.exit(1);
+                }
+
+                String fieldType;
+                String returnType = "";
+                List<ClassInfo> found = allClasses.stream().filter(c -> {
+                    if (f.getDesc().equals("N/A")) {
+                        return false;
+                    }
+
+                    Type type = Type.getType(f.getDesc());
+                    if (type.getDescriptor().startsWith("[") && type.getDimensions() >= 1) {
+                        return c.getName().equals(type.getElementType().getClassName());
+                    }
+
+                    return c.getName().equals(type.getClassName());
+                }).toList();
+
+                if (!found.isEmpty()) {
+                    fieldType = found.getFirst().getId();
+
+                    if (!f.getDesc().startsWith("Ljava/lang/String;") && f.getDesc().startsWith("L")) {
+                        def = "%s(%s)".formatted(fieldType, def);
+                    }
+                } else {
+                    fieldType = "";
+                }
+
+                if (f.getDesc().equals("N/A")) {
+                    returnType = "None";
+                } else {
+                    int dimensions = 0;
+
+                    Type type = Type.getType(f.getDesc());
+                    if (type.getDescriptor().startsWith("[") && type.getDimensions() >= 1) {
+                        dimensions = type.getDimensions();
+                    }
+
+                    for (int i = 0; i < dimensions; ++i) {
+                        returnType += "List[";
+                    }
+
+                    Function<String, String> mapType = (t) -> {
+                        switch (t) {
+                            case "boolean":
+                                return "bool";
+                            case "char":
+                                return "str";
+                            case "byte":
+                                return "int";
+                            case "int":
+                                return "int";
+                            case "long":
+                                return "int";
+                            case "float":
+                                return "float";
+                            case "double":
+                                return "float";
+                            case "java.lang.String":
+                                return "str";
+                            case "java.lang.Map":
+                                return "JavaObject";
+                        }
+                        return fieldType;
+                    };
+
+                    if (!fieldType.isEmpty()) {
+                        returnType += fieldType;
+                    } else if (dimensions > 0) {
+                        returnType += mapType.apply(type.getElementType().getClassName());
+                    } else {
+                        returnType += mapType.apply(type.getClassName());
+                    }
+
+                    for (int i = 0; i < dimensions; ++i) {
+                        returnType += "]";
+                    }
+                }
+
+                if (f.getOwner() != null && !f.getOwner().equals(this.getName()) || this.getName().equals("client")) {
+                    fields += "    @classproperty\n    def %s(self) -> %s:\n        return ".formatted(name, returnType);
+                } else {
+                    fields += "    @property\n    def %s(self) -> %s:\n        return ".formatted(name, returnType);
+                }
+
+                fields += "%s\n\n".formatted(def);
+            }
+        }
+
+        String cls = """
+                from remote_input import ReflectType
+                from Reflection.Internal import Hooks
+                from Reflection import JavaObject
+                
+                
+                class %s(JavaObject):
+                %s
+                """.formatted(this.getId(), fields);
+        return cls;
     }
 
     private String capitalize(String line) {
@@ -274,7 +501,7 @@ public class ClassInfo {
             simbaMap.put("LinkedList_Head", "LinkedList_Head");
             simbaMap.put("LinkedList_Current", "LinkedList_Current");
 
-            simbaMap.put("Entity", "Actor");
+            simbaMap.put("Actor", "Actor");
             simbaMap.put("Entity_AnimationID", "Actor_Animation");
             simbaMap.put("Entity_AnimationDelay", "Actor_AnimationDelay");
             simbaMap.put("Entity_AnimationFrame", "Actor_AnimationFrame");
@@ -342,14 +569,14 @@ public class ClassInfo {
             simbaMap.put("WidgetNode_ID", "WidgetNode_ID");
 
             simbaMap.put("HashTable", "HashTable");
-            simbaMap.put("HashTable_Cache|Buckets", "HashTable_Buckets");
+            simbaMap.put("HashTable_Buckets", "HashTable_Buckets");
             simbaMap.put("HashTable_Capacity", "HashTable_Size");
             simbaMap.put("HashTable_Index", "HashTable_Index");
             simbaMap.put("HashTable_Head", "HashTable_Head");
             simbaMap.put("HashTable_Tail", "HashTable_Tail");
 
             simbaMap.put("IterableHashTable", "IterableHashTable");
-            simbaMap.put("IterableHashTable_Cache|Buckets", "IterableHashTable_Buckets");
+            simbaMap.put("IterableHashTable_Buckets", "IterableHashTable_Buckets");
             simbaMap.put("IterableHashTable_Capacity", "IterableHashTable_Size");
             simbaMap.put("IterableHashTable_Index", "IterableHashTable_Index");
             simbaMap.put("IterableHashTable_Head", "IterableHashTable_Head");

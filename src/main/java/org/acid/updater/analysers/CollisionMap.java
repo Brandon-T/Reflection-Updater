@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-21.
+ * Created by Brandon on 2014-12-21.
  */
 public class CollisionMap extends Analyser {
     @Override
@@ -52,8 +52,8 @@ public class CollisionMap extends Analyser {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == index) {
-                        long multi = (int) ((LdcInsnNode)m.instructions.get(i + 2)).cst;
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == index) {
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
                         return new ClassField(fieldName, f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -69,7 +69,7 @@ public class CollisionMap extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Adjacency", f.name, f.desc);
                 }
             }
@@ -82,7 +82,7 @@ public class CollisionMap extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKEVIRTUAL);
                 while (i != -1) {
-                    MethodInsnNode n = (MethodInsnNode)m.instructions.get(i);
+                    MethodInsnNode n = (MethodInsnNode) m.instructions.get(i);
                     if (n.owner.equals(node.name)) {
                         return new ClassField("*Reset", n.name, n.desc);
                     }

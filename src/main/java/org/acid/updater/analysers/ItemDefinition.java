@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-15.
+ * Created by Brandon on 2014-12-15.
  */
 public class ItemDefinition extends Analyser {
     @Override
@@ -56,8 +56,8 @@ public class ItemDefinition extends Analyser {
             if (m.desc.equals(String.format("(I)L%s;", Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    long multi = (int) ((LdcInsnNode)m.instructions.get(i + 3)).cst;
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 3)).cst;
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("ID", f.name, f.desc, multi);
                 }
             }
@@ -70,8 +70,7 @@ public class ItemDefinition extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)a;
+                    if (a instanceof FieldInsnNode f) {
                         if (f.owner.equals(node.name) && f.desc.equals("Ljava/lang/String;")) {
                             return new ClassField("Name", f.name, f.desc);
                         }
@@ -86,8 +85,7 @@ public class ItemDefinition extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;L%s;)V", node.name, node.name))) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)a;
+                    if (a instanceof FieldInsnNode f) {
                         if (f.desc.equals("Z") && f.owner.equals(node.name)) {
                             return new ClassField("IsMembers", f.name, f.desc);
                         }
@@ -103,7 +101,7 @@ public class ItemDefinition extends Analyser {
             if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKEVIRTUAL);
                 while (i != -1) {
-                    if (((MethodInsnNode)m.instructions.get(i)).name.contains("equals")) {
+                    if (((MethodInsnNode) m.instructions.get(i)).name.contains("equals")) {
                         int j = new Finder(m).findPrev(i, Opcodes.GETFIELD);
                         while (j != -1) {
                             FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
@@ -124,8 +122,7 @@ public class ItemDefinition extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
-                    if (a instanceof FieldInsnNode) {
-                        FieldInsnNode f = (FieldInsnNode)a;
+                    if (a instanceof FieldInsnNode f) {
                         if (f.owner.equals(node.name) && f.desc.equals("[Ljava/lang/String;") && !f.name.equals(actions.getName())) {
                             return new ClassField("Actions", f.name, f.desc);
                         }
@@ -144,8 +141,8 @@ public class ItemDefinition extends Analyser {
                 if (m.desc.equals(String.format("(I)L%s;", node.name))) {
                     int i = new Finder(m).findPattern(pattern);
                     while (i != -1) {
-                        if (((VarInsnNode)m.instructions.get(i + 1)).var == 0) {
-                            FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        if (((VarInsnNode) m.instructions.get(i + 1)).var == 0) {
+                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                             return new ClassField("Cache", f.name, f.desc);
                         }
                         i = new Finder(m).findPattern(pattern, i + 1);
@@ -158,7 +155,7 @@ public class ItemDefinition extends Analyser {
             if (m.desc.equals("<clinit>")) {
                 int i = new Finder(m).findNextInstruction(0, Opcodes.PUTSTATIC, 0);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     return new ClassField("Cache", f.name, f.desc);
                 }
             }

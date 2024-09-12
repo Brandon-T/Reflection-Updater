@@ -7,16 +7,16 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public abstract class AbstractClassAdapter extends ClassNode implements Opcodes {
-    private IClassAdapter adapter;
-    private int access;
-    private String name;
-    private String desc;
-    private String signature;
-    private String[] exceptions;
-    private boolean add;
+    private final IClassAdapter adapter;
+    private final int access;
+    private final String name;
+    private final String desc;
+    private final String signature;
+    private final String[] exceptions;
+    private final boolean add;
     private boolean fieldExists;
     private boolean methodExists;
 

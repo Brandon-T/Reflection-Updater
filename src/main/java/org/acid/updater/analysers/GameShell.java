@@ -11,7 +11,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-22.
+ * Created by Brandon on 2014-12-22.
  */
 public class GameShell extends Analyser {
     @Override
@@ -42,8 +42,8 @@ public class GameShell extends Analyser {
             if (m.desc.contains("(Ljava/lang/String;") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                 for (AbstractInsnNode a : m.instructions.toArray()) {
                     if (a.getOpcode() == Opcodes.LDC) {
-                        LdcInsnNode l = (LdcInsnNode)a;
-                        if (l.cst instanceof String && ((String)l.cst).contains("error")) {
+                        LdcInsnNode l = (LdcInsnNode) a;
+                        if (l.cst instanceof String && ((String) l.cst).contains("error")) {
                             return new ClassField("*Error", m.name, m.desc);
                         }
                     }

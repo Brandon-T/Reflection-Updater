@@ -1,6 +1,8 @@
 package org.acid.updater.deobfuscator;
 
-import org.objectweb.asm.*;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -14,7 +16,7 @@ public class TryCatchRemover2 extends Deobfuscator {
     }
 
     public TryCatchRemover2 analyse() {
-        classes.stream().forEach(n -> n.methods.forEach(m -> {
+        classes.forEach(n -> n.methods.forEach(m -> {
             if (m.tryCatchBlocks != null) {
                 try_count += m.tryCatchBlocks.size();
             }

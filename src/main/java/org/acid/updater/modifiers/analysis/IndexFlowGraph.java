@@ -9,12 +9,12 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.Frame;
 
 /**
- * Created by Kira on 2015-01-20.
+ * Created by Brandon on 2015-01-20.
  */
 public class IndexFlowGraph implements Opcodes {
     String owner;
     MethodNode method;
-    private Analyzer<IndexValue> analyser;
+    private final Analyzer<IndexValue> analyser;
     private Frame<IndexValue>[] frames;
 
     public IndexFlowGraph(String owner, MethodNode method) {

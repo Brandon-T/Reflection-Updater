@@ -33,7 +33,7 @@ public class Animation extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("Animation", node.name);
-        Arrays.asList(fieldFields(node)).stream().forEach(info::putField);
+        Arrays.asList(fieldFields(node)).forEach(info::putField);
         info.putField(findSkeleton(node));
         return info;
     }
@@ -62,8 +62,8 @@ public class Animation extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 7 && ((FieldInsnNode)m.instructions.get(i + 2)).desc.equals("I")) {
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == 7 && ((FieldInsnNode) m.instructions.get(i + 2)).desc.equals("I")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         fields[0] = new ClassField(fields[0].getId(), f.name, f.desc, multi);

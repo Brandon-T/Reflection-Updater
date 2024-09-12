@@ -31,8 +31,7 @@ public class CXXHeader {
             classNode.methods.stream().filter((m) -> (m.access & Opcodes.ACC_PROTECTED) != 0).forEach(m -> {
                 protectedMethods.add(new CXXMethod(m));
             });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

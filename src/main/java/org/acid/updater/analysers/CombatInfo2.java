@@ -24,8 +24,7 @@ public class CombatInfo2 extends Analyser {
             for (FieldNode field : node.fields) {
                 if (field.desc.equals("I") && !hasAccess(field, Opcodes.ACC_STATIC | Opcodes.ACC_FINAL)) {
                     ++int_count;
-                }
-                else if (field.desc.equals("[S") && !hasAccess(field, Opcodes.ACC_STATIC)) {
+                } else if (field.desc.equals("[S") && !hasAccess(field, Opcodes.ACC_STATIC)) {
                     ++short_arr_count;
                 } else if (field.desc.equals("Ljava/lang/String;") && !hasAccess(field, Opcodes.ACC_STATIC)) {
                     ++str_count;
@@ -35,7 +34,7 @@ public class CombatInfo2 extends Analyser {
             }
 
             for (MethodNode method : node.methods) {
-                if (!hasAccess(method, Opcodes.ACC_STATIC) &&  method.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
+                if (!hasAccess(method, Opcodes.ACC_STATIC) && method.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                     ++method_count;
                 }
             }

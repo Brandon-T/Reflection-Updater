@@ -3,7 +3,7 @@ package org.acid.updater.modifiers.delegators;
 import org.objectweb.asm.ClassVisitor;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public class AbstractMethodDelegator extends AbstractClassDelegator {
 

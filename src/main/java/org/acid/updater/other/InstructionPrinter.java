@@ -10,131 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by Kira on 2014-12-16.
+ * Created by Brandon on 2014-12-16.
  */
 public class InstructionPrinter {
     private static final HashMap<Integer, String> code_map = new HashMap<>();
-
-    public InstructionPrinter(MethodNode method) {
-        printInstructions(method, 0, method.instructions.size());
-    }
-
-    public static void printInstructions(MethodNode method, int start, int end) {
-        System.out.println(String.format("METHOD: %s %s%s", getAccess(method.access), method.name, method.desc));
-        System.out.println("--------------------------------------\n");
-        printInstructions(method.instructions.toArray(), start, end);
-        System.out.println("}");
-    }
-
-    public static void printInstructions(AbstractInsnNode instructions[], int start, int end) {
-        boolean is_first_label = true;
-        HashMap<Label, String> label_data = BuildLabelMap(instructions);
-
-        for (int i = start; i < end; ++i) {
-            String value = null;
-            AbstractInsnNode e = instructions[i];
-
-            switch (e.getOpcode()) {
-                case Opcodes.ILOAD:
-                case Opcodes.ALOAD:
-                case Opcodes.ISTORE:
-                case Opcodes.ASTORE:
-                    if (e instanceof VarInsnNode) {
-                        value = '_' + String.valueOf(((VarInsnNode) e).var);
-                    }
-                    break;
-                case Opcodes.BIPUSH:
-                case Opcodes.SIPUSH:
-                    value = "  " + String.valueOf(((IntInsnNode) e).operand);
-                    break;
-                case Opcodes.LDC:
-                    if (((LdcInsnNode) e).cst instanceof String) {
-                        value = "  \"" + String.valueOf(((LdcInsnNode) e).cst) + "\"";
-                    } else {
-                        value = "  " + String.valueOf(((LdcInsnNode) e).cst);
-                    }
-                    break;
-                case Opcodes.GOTO:
-                case Opcodes.IF_ICMPNE:
-                case Opcodes.IF_ICMPEQ:
-                case Opcodes.IF_ICMPGE:
-                case Opcodes.IF_ICMPGT:
-                case Opcodes.IF_ICMPLE:
-                case Opcodes.IF_ICMPLT:
-                case Opcodes.IF_ACMPNE:
-                case Opcodes.IFEQ:
-                case Opcodes.IFGE:
-                case Opcodes.IFGT:
-                case Opcodes.IFLE:
-                case Opcodes.IFLT:
-                case Opcodes.IFNE:
-                case Opcodes.IFNONNULL:
-                case Opcodes.IFNULL:
-                    value = "  " + label_data.get(((JumpInsnNode)e).label.getLabel());
-                    break;
-            }
-
-            if (value != null) {
-                System.out.println("    " + get(e.getOpcode()) + value);
-            } else {
-                if (e instanceof LabelNode && e.getOpcode() == -1) {
-                    System.out.println((is_first_label ? "" : "}\n\n") + label_data.get(((LabelNode)e).getLabel()) + ":\n{");
-                    is_first_label = false;
-                } else if (e instanceof MethodInsnNode) {
-                    MethodInsnNode m = (MethodInsnNode) e;
-                    System.out.println("    " + get(e.getOpcode()) + "   " + m.owner + "/" + m.name + m.desc);
-                } else if (e instanceof FieldInsnNode) {
-                    FieldInsnNode f = (FieldInsnNode) e;
-                    System.out.println("    " + get(e.getOpcode()) + "   " + f.owner + "/" + f.name + " " + f.desc);
-                } else {
-                    System.out.println("    " + get(e.getOpcode()));
-                }
-            }
-        }
-    }
-
-    private static HashMap<Label, String> BuildLabelMap(AbstractInsnNode instructions[]) {
-        HashMap<Label, String> data = new HashMap<>();
-        for (AbstractInsnNode a : instructions) {
-            if (a instanceof LabelNode) {
-                Label l = ((LabelNode) a).getLabel();
-                if (!data.containsKey(l)) {
-                    data.put(l, "L" + data.size());
-                }
-            } else if (a instanceof JumpInsnNode) {
-                Label l = ((JumpInsnNode)a).label.getLabel();
-                if (!data.containsKey(l)) {
-                    data.put(l, "L" + data.size());
-                }
-            }
-        }
-        return data;
-    }
-
-    public static String get(int opcode) {
-        return code_map.get(opcode);
-    }
-
-    private static String getAccess(int access) {
-        LinkedHashMap<Integer, String> code_map = new LinkedHashMap<>();
-        code_map.put(Opcodes.ACC_PUBLIC, "public");
-        code_map.put(Opcodes.ACC_PRIVATE, "private");
-        code_map.put(Opcodes.ACC_PROTECTED, "protected");
-        code_map.put(Opcodes.ACC_STATIC, "static");
-        code_map.put(Opcodes.ACC_FINAL, "final");
-        code_map.put(Opcodes.ACC_NATIVE, "native");
-        code_map.put(Opcodes.ACC_ABSTRACT, "abstract");
-
-        ArrayList<String> accesses = new ArrayList<>();
-
-        for (Map.Entry<Integer, String> entry : code_map.entrySet()) {
-            if ((access & entry.getKey()) != 0) {
-                accesses.add(entry.getValue());
-            }
-        }
-
-        return String.join(" ", accesses);
-    }
 
     static {
         code_map.put(0, "NOP");
@@ -294,5 +173,124 @@ public class InstructionPrinter {
         code_map.put(197, "MULTIANEWARRAY");
         code_map.put(198, "IFNULL");
         code_map.put(199, "IFNONNULL");
+    }
+
+    public InstructionPrinter(MethodNode method) {
+        printInstructions(method, 0, method.instructions.size());
+    }
+
+    public static void printInstructions(MethodNode method, int start, int end) {
+        System.out.printf("METHOD: %s %s%s%n", getAccess(method.access), method.name, method.desc);
+        System.out.println("--------------------------------------\n");
+        printInstructions(method.instructions.toArray(), start, end);
+        System.out.println("}");
+    }
+
+    public static void printInstructions(AbstractInsnNode[] instructions, int start, int end) {
+        boolean is_first_label = true;
+        HashMap<Label, String> label_data = BuildLabelMap(instructions);
+
+        for (int i = start; i < end; ++i) {
+            String value = null;
+            AbstractInsnNode e = instructions[i];
+
+            switch (e.getOpcode()) {
+                case Opcodes.ILOAD:
+                case Opcodes.ALOAD:
+                case Opcodes.ISTORE:
+                case Opcodes.ASTORE:
+                    if (e instanceof VarInsnNode) {
+                        value = '_' + String.valueOf(((VarInsnNode) e).var);
+                    }
+                    break;
+                case Opcodes.BIPUSH:
+                case Opcodes.SIPUSH:
+                    value = "  " + ((IntInsnNode) e).operand;
+                    break;
+                case Opcodes.LDC:
+                    if (((LdcInsnNode) e).cst instanceof String) {
+                        value = "  \"" + ((LdcInsnNode) e).cst + "\"";
+                    } else {
+                        value = "  " + ((LdcInsnNode) e).cst;
+                    }
+                    break;
+                case Opcodes.GOTO:
+                case Opcodes.IF_ICMPNE:
+                case Opcodes.IF_ICMPEQ:
+                case Opcodes.IF_ICMPGE:
+                case Opcodes.IF_ICMPGT:
+                case Opcodes.IF_ICMPLE:
+                case Opcodes.IF_ICMPLT:
+                case Opcodes.IF_ACMPNE:
+                case Opcodes.IFEQ:
+                case Opcodes.IFGE:
+                case Opcodes.IFGT:
+                case Opcodes.IFLE:
+                case Opcodes.IFLT:
+                case Opcodes.IFNE:
+                case Opcodes.IFNONNULL:
+                case Opcodes.IFNULL:
+                    value = "  " + label_data.get(((JumpInsnNode) e).label.getLabel());
+                    break;
+            }
+
+            if (value != null) {
+                System.out.println("    " + get(e.getOpcode()) + value);
+            } else {
+                if (e instanceof LabelNode && e.getOpcode() == -1) {
+                    System.out.println((is_first_label ? "" : "}\n\n") + label_data.get(((LabelNode) e).getLabel()) + ":\n{");
+                    is_first_label = false;
+                } else if (e instanceof MethodInsnNode m) {
+                    System.out.println("    " + get(e.getOpcode()) + "   " + m.owner + "/" + m.name + m.desc);
+                } else if (e instanceof FieldInsnNode f) {
+                    System.out.println("    " + get(e.getOpcode()) + "   " + f.owner + "/" + f.name + " " + f.desc);
+                } else {
+                    System.out.println("    " + get(e.getOpcode()));
+                }
+            }
+        }
+    }
+
+    private static HashMap<Label, String> BuildLabelMap(AbstractInsnNode[] instructions) {
+        HashMap<Label, String> data = new HashMap<>();
+        for (AbstractInsnNode a : instructions) {
+            if (a instanceof LabelNode) {
+                Label l = ((LabelNode) a).getLabel();
+                if (!data.containsKey(l)) {
+                    data.put(l, "L" + data.size());
+                }
+            } else if (a instanceof JumpInsnNode) {
+                Label l = ((JumpInsnNode) a).label.getLabel();
+                if (!data.containsKey(l)) {
+                    data.put(l, "L" + data.size());
+                }
+            }
+        }
+        return data;
+    }
+
+    public static String get(int opcode) {
+        return code_map.get(opcode);
+    }
+
+    private static String getAccess(int access) {
+        LinkedHashMap<Integer, String> code_map = new LinkedHashMap<>();
+        code_map.put(Opcodes.ACC_PUBLIC, "public");
+        code_map.put(Opcodes.ACC_PRIVATE, "private");
+        code_map.put(Opcodes.ACC_PROTECTED, "protected");
+        code_map.put(Opcodes.ACC_STATIC, "static");
+        code_map.put(Opcodes.ACC_FINAL, "final");
+        code_map.put(Opcodes.ACC_NATIVE, "native");
+        code_map.put(Opcodes.ACC_ABSTRACT, "abstract");
+
+        ArrayList<String> accesses = new ArrayList<>();
+
+        for (Map.Entry<Integer, String> entry : code_map.entrySet()) {
+            if ((access & entry.getKey()) != 0) {
+                accesses.add(entry.getValue());
+            }
+        }
+
+        return String.join(" ", accesses);
     }
 }

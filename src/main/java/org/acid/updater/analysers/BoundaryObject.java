@@ -10,21 +10,20 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
-public class Boundary extends Analyser {
+public class BoundaryObject extends Analyser {
     private MethodNode method = null;
 
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         if (n != null) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(IIIIL%s;L%s;IIJI)V", Main.get("Animable"), Main.get("Animable")))) {
+                if (m.desc.equals(String.format("(IIIIL%s;L%s;IIJI)V", Main.get("Renderable"), Main.get("Renderable")))) {
                     for (AbstractInsnNode i : m.instructions.toArray()) {
-                        if (i instanceof FieldInsnNode) {
-                            FieldInsnNode f = (FieldInsnNode) i;
-                            if (f.desc.equals("I") && !f.owner.matches("(I|S|B|J|Z)")) {
+                        if (i instanceof FieldInsnNode f) {
+                            if (!f.owner.equals(n.name) && f.desc.equals("I") && !f.owner.matches("([ISBJZ])")) {
                                 this.method = m;
                                 return Main.getClass(f.owner);
                             }
@@ -38,7 +37,7 @@ public class Boundary extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Boundary", node.name);
+        ClassInfo info = new ClassInfo("BoundaryObject", node.name);
         info.putField(findField(node, "ID", 9));
         info.putField(findField(node, "Flags", this.method.desc.contains("JI") ? 11 : 10));
         info.putField(findField(node, "Plane", 4));
@@ -55,9 +54,9 @@ public class Boundary extends Analyser {
         final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTFIELD};
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
-            while(i != -1) {
-                if (((VarInsnNode)method.instructions.get(i)).var == 2) {
-                    FieldInsnNode f = (FieldInsnNode)method.instructions.get(i + 5);
+            while (i != -1) {
+                if (((VarInsnNode) method.instructions.get(i)).var == 2) {
+                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 5);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("X", f.name, f.desc, multi);
                 }
@@ -71,9 +70,9 @@ public class Boundary extends Analyser {
         final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTFIELD};
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
-            while(i != -1) {
-                if (((VarInsnNode)method.instructions.get(i)).var == 3) {
-                    FieldInsnNode f = (FieldInsnNode)method.instructions.get(i + 5);
+            while (i != -1) {
+                if (((VarInsnNode) method.instructions.get(i)).var == 3) {
+                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 5);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Y", f.name, f.desc, multi);
                 }
@@ -87,9 +86,9 @@ public class Boundary extends Analyser {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.PUTFIELD};
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
-            while(i != -1) {
-                if (((VarInsnNode)method.instructions.get(i + 1)).var == 5) {
-                    FieldInsnNode f = (FieldInsnNode)method.instructions.get(i + 2);
+            while (i != -1) {
+                if (((VarInsnNode) method.instructions.get(i + 1)).var == 5) {
+                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 2);
                     return new ClassField("Renderable", f.name, f.desc);
                 }
                 i = new Finder(this.method).findPattern(pattern, i + 1);
@@ -102,9 +101,9 @@ public class Boundary extends Analyser {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.PUTFIELD};
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
-            while(i != -1) {
-                if (((VarInsnNode)method.instructions.get(i + 1)).var == 6) {
-                    FieldInsnNode f = (FieldInsnNode)method.instructions.get(i + 2);
+            while (i != -1) {
+                if (((VarInsnNode) method.instructions.get(i + 1)).var == 6) {
+                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 2);
                     return new ClassField("OldRenderable", f.name, f.desc);
                 }
                 i = new Finder(this.method).findPattern(pattern, i + 1);
@@ -118,7 +117,7 @@ public class Boundary extends Analyser {
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
             while (i != -1) {
-                if (((VarInsnNode)method.instructions.get(i)).var == index) {
+                if (((VarInsnNode) method.instructions.get(i)).var == index) {
                     FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 3);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField(fieldName, f.name, f.desc, multi);
@@ -132,7 +131,7 @@ public class Boundary extends Analyser {
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern2);
             while (i != -1) {
-                if (((VarInsnNode)method.instructions.get(i)).var == index) {
+                if (((VarInsnNode) method.instructions.get(i)).var == index) {
                     FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 3);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField(fieldName, f.name, f.desc, multi);

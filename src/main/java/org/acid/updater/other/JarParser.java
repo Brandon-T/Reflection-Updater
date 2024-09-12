@@ -19,7 +19,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 /**
- * Created by Kira on 2014-12-06.
+ * Created by Brandon on 2014-12-06.
  */
 public class JarParser {
     private ArrayList<ClassNode> classes = null;
@@ -43,12 +43,12 @@ public class JarParser {
         this.manifest = manifest;
     }
 
-    public void setClasses(ArrayList<ClassNode> classes) {
-        this.classes = classes;
-    }
-
     public ArrayList<ClassNode> getClasses() {
         return classes;
+    }
+
+    public void setClasses(ArrayList<ClassNode> classes) {
+        this.classes = classes;
     }
 
     public boolean isAndroid() {
@@ -77,8 +77,7 @@ public class JarParser {
         ArrayList<ClassNode> result = new ArrayList<>();
 
         file.stream().forEach(entry -> {
-            List<String> bad_files = Arrays.asList(new String[]{
-                    "__MACOSX",
+            List<String> bad_files = Arrays.asList("__MACOSX",
                     "android",
                     "androidx",
                     "google",
@@ -93,13 +92,12 @@ public class JarParser {
                     "com/jagex/mobilesdk",
                     "com/jagex/oldscape/android",
                     "com/jagex/oldscape/osrenderer",
-                    "org"
-            });
+                    "org");
 
-             if (bad_files.stream().anyMatch(e -> entry.getName().startsWith(e))) {
-                 this.is_android = true;
-                 return;
-             }
+            if (bad_files.stream().anyMatch(e -> entry.getName().startsWith(e))) {
+                this.is_android = true;
+                return;
+            }
 
             if (entry.getName().endsWith(".class")) {
                 try {

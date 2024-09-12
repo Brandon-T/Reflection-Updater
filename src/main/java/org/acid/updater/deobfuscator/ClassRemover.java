@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-10.
+ * Created by Brandon on 2014-12-10.
  */
 public class ClassRemover extends Deobfuscator {
-    private ArrayList<String> usedClasses;
+    private final ArrayList<String> usedClasses;
     private int class_count = 0;
 
     public ClassRemover(Collection<ClassNode> classes) {
@@ -53,16 +53,14 @@ public class ClassRemover extends Deobfuscator {
     private boolean checkInvocation(ClassNode node, MethodNode method) {
         AbstractInsnNode[] instructions = method.instructions.toArray();
         for (AbstractInsnNode n : instructions) {
-            if (n instanceof FieldInsnNode) {
-                FieldInsnNode f = (FieldInsnNode)n;
+            if (n instanceof FieldInsnNode f) {
                 if (f.owner.equals(node.name)) {
                     if (!usedClasses.contains(node.name)) {
                         usedClasses.add(node.name);
                     }
                     return true;
                 }
-            } else if (n instanceof MethodInsnNode) {
-                MethodInsnNode m = (MethodInsnNode)n;
+            } else if (n instanceof MethodInsnNode m) {
                 if (m.owner.equals(node.name)) {
                     if (!usedClasses.contains(node.name)) {
                         usedClasses.add(node.name);

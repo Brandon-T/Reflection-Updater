@@ -8,7 +8,7 @@ import org.objectweb.asm.MethodVisitor;
 import java.util.function.Consumer;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public class SimpleMethodVisitor extends AbstractMethodVisitor {
     Consumer<MethodVisitor> body;

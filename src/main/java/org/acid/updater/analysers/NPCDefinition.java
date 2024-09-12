@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by Kira on 2014-12-08.
+ * Created by Brandon on 2014-12-08.
  */
 public class NPCDefinition extends Analyser {
     @Override
@@ -102,8 +102,8 @@ public class NPCDefinition extends Analyser {
         for (MethodNode m : node.methods) {
             int i = new Finder(m).findPattern(pattern);
             while (i != -1) {
-                if (((VarInsnNode)m.instructions.get(i + 2)).var == 5) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                if (((VarInsnNode) m.instructions.get(i + 2)).var == 5) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("ModelIDs", f.name, f.desc);
                 }
                 i = new Finder(m).findPattern(pattern, i + 1);
@@ -120,7 +120,7 @@ public class NPCDefinition extends Analyser {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals(String.format("(L%s;III)V", node.name))) {
                     int i = new Finder(m).findPattern(pattern);
-                    while(i != -1) {
+                    while (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         if (f.owner.equals(node.name) && f.desc.equals("I")) {
                             long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
@@ -135,7 +135,7 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findVisible(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ILOAD, Finder.CONSTANT, Finder.COMPARISON, Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ILOAD, Finder.CONSTANT, Finder.COMPARISON, Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
@@ -155,12 +155,12 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findModelCache(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 2)).operand == 50) {
+                while (i != -1) {
+                    if (((IntInsnNode) m.instructions.get(i + 2)).operand == 50) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         return new ClassField("ModelCache", f.name, f.desc);
                     }
@@ -172,11 +172,11 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findTransformations(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.LDC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern);
-                if (i != -1 && ((VarInsnNode) m.instructions.get(i + 2)).var == 6 && (int)((LdcInsnNode) m.instructions.get(i + 4)).cst == 65535) {
+                if (i != -1 && ((VarInsnNode) m.instructions.get(i + 2)).var == 6 && (int) ((LdcInsnNode) m.instructions.get(i + 4)).cst == 65535) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Transformations", f.name, f.desc);
                 }
@@ -191,13 +191,13 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findModelScaleWidth(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
             if (m.desc.matches(String.format("\\(L%s;IL%s;IL[A-z]{0,2};\\)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
-                    int multi = (int)((LdcInsnNode)m.instructions.get(i + 3)).cst;
+                    int multi = (int) ((LdcInsnNode) m.instructions.get(i + 3)).cst;
                     return new ClassField("ModelScaleWidth", f.name, f.desc, multi);
                 }
             }
@@ -207,13 +207,13 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findModelScaleHeight(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC};
         for (MethodNode m : node.methods) {
             if (m.desc.matches(String.format("\\(L%s;IL%s;IL[A-z]{0,2};\\)L%s;", Main.get("AnimationSequence"), Main.get("AnimationSequence"), Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 6);
-                    int multi = (int)((LdcInsnNode)m.instructions.get(i + 7)).cst;
+                    int multi = (int) ((LdcInsnNode) m.instructions.get(i + 7)).cst;
                     return new ClassField("ModelScaleHeight", f.name, f.desc, multi);
                 }
             }
@@ -232,8 +232,8 @@ public class NPCDefinition extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("()L%s;", node.name))) {
                 List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
                 if (insns != null) {
-                    FieldInsnNode f = (FieldInsnNode)insns.get(3);
-                    int multi = (int)((LdcInsnNode)insns.get(4)).cst;
+                    FieldInsnNode f = (FieldInsnNode) insns.get(3);
+                    int multi = (int) ((LdcInsnNode) insns.get(4)).cst;
                     return new ClassField("TransformVarbit", f.name, f.desc, multi);
                 }
             }
@@ -248,8 +248,8 @@ public class NPCDefinition extends Analyser {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("()L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                    int multi = (int)((LdcInsnNode)m.instructions.get(i + 3)).cst;
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                    int multi = (int) ((LdcInsnNode) m.instructions.get(i + 3)).cst;
                     return new ClassField("TransformVarp", f.name, f.desc, multi);
                 }
             }
@@ -258,12 +258,12 @@ public class NPCDefinition extends Analyser {
     }
 
     private ClassField findDefinitionCache(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.BIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 2)).operand == 64) {
+                while (i != -1) {
+                    if (((IntInsnNode) m.instructions.get(i + 2)).operand == 64) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         return new ClassField("DefinitionCache", f.name, f.desc);
                     }

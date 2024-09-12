@@ -6,16 +6,16 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public abstract class AbstractClassDelegator extends ClassVisitor implements Opcodes {
-    private IClassDelegator delegator;
-    private int access;
-    private String name;
-    private String desc;
-    private String signature;
-    private String[] exceptions;
-    private boolean add;
+    private final IClassDelegator delegator;
+    private final int access;
+    private final String name;
+    private final String desc;
+    private final String signature;
+    private final String[] exceptions;
+    private final boolean add;
     private boolean fieldExists;
     private boolean methodExists;
 

@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-09.
+ * Created by Brandon on 2014-12-09.
  */
 public class AnimationSequence extends Analyser {
     @Override
@@ -57,7 +57,7 @@ public class AnimationSequence extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;I)L%s;", modelName, modelName))) {
                 int i = new Finder(m).findPattern(pattern);
-                if (((FieldInsnNode)m.instructions.get(i + 1)).desc.equals("[I") && ((VarInsnNode)m.instructions.get(i + 2)).var == 2) {
+                if (((FieldInsnNode) m.instructions.get(i + 1)).desc.equals("[I") && ((VarInsnNode) m.instructions.get(i + 2)).var == 2) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Frames", f.name, f.desc);
                 }
@@ -72,8 +72,7 @@ public class AnimationSequence extends Analyser {
             if (m.name.equals("<clinit>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (m.instructions.get(i + 4) instanceof FieldInsnNode && ((IntInsnNode) m.instructions.get(i + 2)).operand == 64) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                    if (m.instructions.get(i + 4) instanceof FieldInsnNode f && ((IntInsnNode) m.instructions.get(i + 2)).operand == 64) {
                         return new ClassField("SequenceCache", f.name, f.desc);
                     }
 

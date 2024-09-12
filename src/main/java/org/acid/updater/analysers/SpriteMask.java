@@ -20,8 +20,7 @@ public class SpriteMask extends Analyser {
             for (MethodNode m : node.methods) {
                 if (m.name.equals("<init>") && m.desc.equals("(II[I[I)V")) {
                     ++method_count;
-                }
-                else if (m.desc.equals("(II)Z") && !hasAccess(m, Opcodes.ACC_STATIC)) {
+                } else if (m.desc.equals("(II)Z") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                     ++contains_method_count;
                 }
             }

@@ -59,7 +59,7 @@ public class NodeDeque extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;)V", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.PUTFIELD});
-                FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                 return new ClassField("Head", f.name, f.desc);
             }
         }

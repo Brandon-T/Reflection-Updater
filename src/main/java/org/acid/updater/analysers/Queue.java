@@ -5,12 +5,15 @@ import org.acid.updater.other.Finder;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-23.
+ * Created by Brandon on 2014-12-23.
  */
 public class Queue extends Analyser {
     @Override
@@ -68,7 +71,7 @@ public class Queue extends Analyser {
             if (m.desc.equals(String.format("(L%s;)V", Main.get("CacheableNode")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.name.equals(Main.getInfo("CacheableNode").getField("Next").getName())) {
                         return new ClassField("*InsertHead", m.name, m.desc);
                     }
@@ -84,7 +87,7 @@ public class Queue extends Analyser {
             if (m.desc.equals(String.format("(L%s;)V", Main.get("CacheableNode")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.name.equals(Main.getInfo("CacheableNode").getField("Prev").getName())) {
                         return new ClassField("*InsertTail", m.name, m.desc);
                     }

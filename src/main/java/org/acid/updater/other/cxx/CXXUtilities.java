@@ -37,7 +37,7 @@ public class CXXUtilities {
 
         if (methodArgs.length > 0) {
             for (int i = 0; i < methodArgs.length - 1; ++i) {
-                args +=  normalizeType(methodArgs[i]) + " arg" + i + ", ";
+                args += normalizeType(methodArgs[i]) + " arg" + i + ", ";
             }
 
             args += normalizeType(methodArgs[methodArgs.length - 1]) + " arg" + (methodArgs.length - 1);

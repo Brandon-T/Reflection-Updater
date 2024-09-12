@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2015-01-11.
+ * Created by Brandon on 2015-01-11.
  */
 public class AggressiveParameterRemover extends Deobfuscator {
-    private ArrayList<Info> info;
+    private final ArrayList<Info> info;
     private int total_count = 0, removal_count = 0;
 
     public AggressiveParameterRemover(Collection<ClassNode> classes) {
@@ -31,7 +31,7 @@ public class AggressiveParameterRemover extends Deobfuscator {
         this.info.clear();
 
         int temp = removal_count;
-        while(removal_count > 0) {
+        while (removal_count > 0) {
             removal_count = 0;
             this.analyse();
             info.stream().forEach(i -> removeUnusedParameters(i.getNode(), i.getMethod()));
@@ -76,8 +76,7 @@ public class AggressiveParameterRemover extends Deobfuscator {
         classes.stream().forEach(c -> {
             c.methods.stream().forEach(m -> {
                 for (int i = 0; i < m.instructions.size(); ++i) {
-                    if (m.instructions.get(i) instanceof MethodInsnNode) {
-                        MethodInsnNode mi = (MethodInsnNode)m.instructions.get(i);
+                    if (m.instructions.get(i) instanceof MethodInsnNode mi) {
                         if (!mi.owner.startsWith("java")) {
                             if (mi.owner.equals(node.name) && mi.name.equals(method.name) && mi.desc.equals(old)) {
                                 int j = countMultiplierInstructions(m.instructions.toArray(), i - 1);
@@ -142,18 +141,20 @@ public class AggressiveParameterRemover extends Deobfuscator {
         }
 
         if (opcode >= Opcodes.IADD && opcode <= Opcodes.DDIV) {
-            while(i < 5) {
+            while (i < 5) {
                 if (instructions[index].getOpcode() == Opcodes.GETSTATIC) {
                     return i + 1;
                 } else if (instructions[index].getOpcode() == Opcodes.GETFIELD) {
-                    while(i < 10) {
+                    while (i < 10) {
                         if (instructions[index].getOpcode() == Opcodes.ALOAD) {
                             return i + 1;
                         }
-                        --index; ++i;
+                        --index;
+                        ++i;
                     }
                 }
-                --index; ++i;
+                --index;
+                ++i;
             }
         }
         return 0;
@@ -169,8 +170,8 @@ public class AggressiveParameterRemover extends Deobfuscator {
     }
 
     private class Info {
-        private ClassNode node;
-        private MethodNode method;
+        private final ClassNode node;
+        private final MethodNode method;
 
         public Info(ClassNode node, MethodNode method) {
             this.node = node;
@@ -187,8 +188,7 @@ public class AggressiveParameterRemover extends Deobfuscator {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof Info) {
-                Info info = (Info) o;
+            if (o instanceof Info info) {
                 return node.name.equals(info.node.name) && method.name.equals(info.method.name) && method.desc.equals(info.method.desc);
             }
             return false;

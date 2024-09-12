@@ -1,7 +1,7 @@
 package org.acid.updater.interpreters;
 
 /**
- * Created by Kira on 2015-01-20.
+ * Created by Brandon on 2015-01-20.
  */
 
 import org.objectweb.asm.Handle;
@@ -14,10 +14,10 @@ import org.objectweb.asm.tree.analysis.Interpreter;
 import java.util.List;
 
 /**
- * Created by Kira on 2015-01-19.
+ * Created by Brandon on 2015-01-19.
  */
 public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes {
-    private InsnList instructions;
+    private final InsnList instructions;
 
     public IndexInterpreter(MethodNode method) {
         super(Opcodes.ASM5);
@@ -60,7 +60,7 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
     @Override
     public IndexValue newOperation(AbstractInsnNode insn) throws AnalyzerException {
         int index = instructions.indexOf(insn);
-        switch(insn.getOpcode()) {
+        switch (insn.getOpcode()) {
             case ACONST_NULL:
                 return newValue(Type.getObjectType("null"), index);
             case ICONST_M1:
@@ -85,21 +85,21 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
             case SIPUSH:
                 return new IndexValue(Type.INT_TYPE, index);
             case LDC:
-                Object cst = ((LdcInsnNode)insn).cst;
-                if(cst instanceof Integer) {
+                Object cst = ((LdcInsnNode) insn).cst;
+                if (cst instanceof Integer) {
                     return new IndexValue(Type.INT_TYPE, index);
-                } else if(cst instanceof Float) {
+                } else if (cst instanceof Float) {
                     return new IndexValue(Type.FLOAT_TYPE, index);
-                } else if(cst instanceof Long) {
+                } else if (cst instanceof Long) {
                     return new IndexValue(Type.LONG_TYPE, index);
-                } else if(cst instanceof Double) {
+                } else if (cst instanceof Double) {
                     return new IndexValue(Type.DOUBLE_TYPE, index);
-                } else if(cst instanceof String) {
+                } else if (cst instanceof String) {
                     return newValue(Type.getObjectType("java/lang/String"), index);
-                } else if(cst instanceof Type) {
-                    int srt = ((Type)cst).getSort();
-                    if(srt != LCONST_0 && srt != LCONST_1) {
-                        if(srt == FCONST_0) {
+                } else if (cst instanceof Type) {
+                    int srt = ((Type) cst).getSort();
+                    if (srt != LCONST_0 && srt != LCONST_1) {
+                        if (srt == FCONST_0) {
                             return newValue(Type.getObjectType("java/lang/invoke/MethodType"), index);
                         }
                         throw new IllegalArgumentException("Illegal LDC constant " + cst);
@@ -107,7 +107,7 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
 
                     return newValue(Type.getObjectType("java/lang/Class"), index);
                 } else {
-                    if(cst instanceof Handle) {
+                    if (cst instanceof Handle) {
                         return newValue(Type.getObjectType("java/lang/invoke/MethodHandle"), index);
                     }
 
@@ -132,7 +132,7 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
     @Override
     public IndexValue unaryOperation(AbstractInsnNode insn, IndexValue indexValue) throws AnalyzerException {
         int index = instructions.indexOf(insn);
-        switch(insn.getOpcode()) {
+        switch (insn.getOpcode()) {
             case INEG:
             case IINC:
             case L2I:
@@ -175,7 +175,7 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
             case GETFIELD:
                 return newValue(Type.getType(((FieldInsnNode) insn).desc), index);
             case NEWARRAY:
-                switch(((IntInsnNode)insn).operand) {
+                switch (((IntInsnNode) insn).operand) {
                     case 4:
                         return this.newValue(Type.getType("[Z"), index);
                     case 5:
@@ -196,14 +196,14 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
                         throw new AnalyzerException(insn, "Invalid array type");
                 }
             case ANEWARRAY:
-                String desc = ((TypeInsnNode)insn).desc;
+                String desc = ((TypeInsnNode) insn).desc;
                 return newValue(Type.getType("[" + Type.getObjectType(desc)), index);
             case ARRAYLENGTH:
                 return new IndexValue(Type.INT_TYPE, index);
             case ATHROW:
                 return null;
             case CHECKCAST:
-                desc = ((TypeInsnNode)insn).desc;
+                desc = ((TypeInsnNode) insn).desc;
                 return newValue(Type.getObjectType(desc), index);
             case INSTANCEOF:
                 return new IndexValue(Type.INT_TYPE, index);
@@ -220,7 +220,7 @@ public class IndexInterpreter extends Interpreter<IndexValue> implements Opcodes
     @Override
     public IndexValue binaryOperation(AbstractInsnNode insn, IndexValue indexValue, IndexValue v1) throws AnalyzerException {
         int index = instructions.indexOf(insn);
-        switch(insn.getOpcode()) {
+        switch (insn.getOpcode()) {
             case IALOAD:
             case BALOAD:
             case CALOAD:

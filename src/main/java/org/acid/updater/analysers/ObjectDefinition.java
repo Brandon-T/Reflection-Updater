@@ -57,13 +57,13 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findID(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.BIPUSH, Opcodes.ISHL};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.BIPUSH, Opcodes.ISHL};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(II[[IIII)L%s;", Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 4)).operand == 10) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                while (i != -1) {
+                    if (((IntInsnNode) m.instructions.get(i + 4)).operand == 10) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("ID", f.name, f.desc, multi);
                     }
@@ -75,13 +75,13 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findAnimationID(ClassNode node, ClassField transformationVarp) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(L%s;I)V", Main.get("Buffer")))) {
                 int i = new Finder(m).findPattern(pattern, 0, false);
-                while(i != -1) {
-                    if ((int)((LdcInsnNode)m.instructions.get(i + 4)).cst == 65535) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                while (i != -1) {
+                    if ((int) ((LdcInsnNode) m.instructions.get(i + 4)).cst == 65535) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         if (!f.name.equals(transformationVarp.getName())) {
                             long multi = Main.findMultiplier(f.owner, f.name);
                             return new ClassField("AnimationID", f.name, f.desc, multi);
@@ -95,13 +95,13 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findCache(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.SIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.SIPUSH, Opcodes.INVOKESPECIAL, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("()V") && m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 2)).operand == 4096) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                    if (((IntInsnNode) m.instructions.get(i + 2)).operand == 4096) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         return new ClassField("DefinitionCache", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
@@ -112,12 +112,12 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findModelCache(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.LLOAD, Opcodes.INVOKEVIRTUAL};
+        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.LLOAD, Opcodes.INVOKEVIRTUAL};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(II[[IIIIL%s;I)L%s;", Main.get("AnimationSequence"), Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     return new ClassField("ModelCache", f.name, f.desc);
                 }
             }
@@ -126,11 +126,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findModelIDs(ClassNode node) {
-        int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD};
+        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD};
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()Z")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     if (((FieldInsnNode) m.instructions.get(i + 1)).desc.equals("[I")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = Main.findMultiplier(f.owner, f.name);
@@ -144,11 +144,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findModels(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.WILDCARD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Finder.WILDCARD};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("(II[[IIII)L%s;", Main.get("Model")))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     int opCode = m.instructions.get(i + 2).getOpcode();
                     if (opCode == Opcodes.IFNULL || opCode == Opcodes.IFNONNULL || opCode == Opcodes.ACONST_NULL) {
                         if (((FieldInsnNode) m.instructions.get(i + 1)).desc.equals("[I")) {
@@ -165,11 +165,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findName(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETSTATIC, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     if (((FieldInsnNode) m.instructions.get(i + 2)).desc.equals("Ljava/lang/String;")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);
@@ -183,11 +183,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findActions(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ICONST_5, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ICONST_5, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     if (((FieldInsnNode) m.instructions.get(i + 2)).desc.equals("[Ljava/lang/String;")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);
@@ -201,11 +201,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findTransformations(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ARRAYLENGTH};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ARRAYLENGTH};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("()L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     FieldInsnNode g = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.name.equals(g.name) && f.desc.equals("[I")) {
@@ -220,11 +220,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findTransformationVarbit(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("()L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     if (((FieldInsnNode) m.instructions.get(i + 1)).desc.equals("I")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = Main.findMultiplier(f.owner, f.name);
@@ -238,11 +238,11 @@ public class ObjectDefinition extends Analyser {
     }
 
     private ClassField findTransformationVarp(ClassNode node) {
-        final int pattern[] = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.IALOAD};
+        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.IALOAD};
         for (MethodNode m : node.methods) {
             if (m.desc.equals(String.format("()L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
+                while (i != -1) {
                     if (((FieldInsnNode) m.instructions.get(i + 2)).desc.equals("I")) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);

@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.FieldNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-23.
+ * Created by Brandon on 2014-12-23.
  */
 public class ClassData extends Analyser {
     @Override

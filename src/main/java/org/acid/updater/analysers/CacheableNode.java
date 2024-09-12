@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
 public class CacheableNode extends Analyser {
 
@@ -57,8 +57,7 @@ public class CacheableNode extends Analyser {
         for (MethodNode m : node.methods) {
             if (!m.name.equals("<init>") && m.desc.equals("()V")) {
                 int i = new Finder(m).findPattern(new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFNONNULL});
-                if (m.instructions.get(i + 1) instanceof FieldInsnNode) {
-                    FieldInsnNode next = (FieldInsnNode) m.instructions.get(i + 1);
+                if (m.instructions.get(i + 1) instanceof FieldInsnNode next) {
                     return new ClassField("Next", next.name, next.desc);
                 }
             }

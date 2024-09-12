@@ -8,7 +8,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-23.
+ * Created by Brandon on 2014-12-23.
  */
 public class ExceptionRemover extends Deobfuscator {
     private int exception_count = 0, removal_count = 0;
@@ -18,7 +18,7 @@ public class ExceptionRemover extends Deobfuscator {
     }
 
     public ExceptionRemover analyse() {
-        classes.stream().forEach(n -> n.methods.forEach(m -> m.instructions.iterator().forEachRemaining(a -> {
+        classes.forEach(n -> n.methods.forEach(m -> m.instructions.iterator().forEachRemaining(a -> {
             if (a.getOpcode() == Opcodes.INVOKESPECIAL) {
                 MethodInsnNode e = (MethodInsnNode) a;
                 if (e.name.contains("Exception") || e.owner.contains("Exception")) {
@@ -35,7 +35,7 @@ public class ExceptionRemover extends Deobfuscator {
     }
 
     private void removeExceptions(MethodNode method) {
-        int patterns[][] = new int[][]{
+        int[][] patterns = new int[][]{
                 {Opcodes.ILOAD, Finder.CONSTANT, Finder.COMPARISON, Opcodes.NEW, Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW}
         };
 
@@ -80,7 +80,7 @@ public class ExceptionRemover extends Deobfuscator {
     private LabelNode findNextJump(MethodNode method, int offset, int maxLength) {
         for (int i = 0; i < maxLength; ++i) {
             if (method.instructions.get(i + offset) instanceof JumpInsnNode) {
-                return ((JumpInsnNode)method.instructions.get(i + offset)).label;
+                return ((JumpInsnNode) method.instructions.get(i + offset)).label;
             }
         }
         return null;

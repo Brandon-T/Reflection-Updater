@@ -5,12 +5,12 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.*;
 
 /**
- * Created by Kira on 2015-01-13.
+ * Created by Brandon on 2015-01-13.
  */
 public class BasicFlowGraph implements Opcodes {
     String owner;
     MethodNode method;
-    private Analyzer<BasicValue> analyser;
+    private final Analyzer<BasicValue> analyser;
     private Frame<BasicValue>[] frames;
 
     public BasicFlowGraph(String owner, MethodNode method) {

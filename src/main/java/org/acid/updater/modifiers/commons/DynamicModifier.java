@@ -8,7 +8,7 @@ import org.objectweb.asm.tree.ClassNode;
 import java.util.function.Function;
 
 /**
- * Created by Kira on 2015-01-15.
+ * Created by Brandon on 2015-01-15.
  */
 public class DynamicModifier {
     public DynamicModifier(ClassNode node, Function<ClassNode, ClassVisitor> factory) {

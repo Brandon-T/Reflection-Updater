@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-16.
+ * Created by Brandon on 2014-12-16.
  */
 public class ImageRGB extends Analyser {
     @Override
@@ -27,11 +27,9 @@ public class ImageRGB extends Analyser {
             for (MethodNode m : node.methods) {
                 if (m.name.equals("<init>") && m.desc.equals("([BLjava/awt/Component;)V")) {
                     ++component_method_count;
-                }
-                else if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
+                } else if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
                     ++method_count;
-                }
-                else if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
+                } else if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                     ++method_count;
                 }
             }
@@ -63,7 +61,7 @@ public class ImageRGB extends Analyser {
             if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                     return new ClassField("Pixels", f.name, f.desc);
                 }
             }
@@ -76,9 +74,9 @@ public class ImageRGB extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 2) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Width", f.name, f.desc, multi);
                     }
@@ -94,9 +92,9 @@ public class ImageRGB extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 3) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Height", f.name, f.desc, multi);
                     }
@@ -112,9 +110,9 @@ public class ImageRGB extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 2) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("MaxWidth", f.name, f.desc, multi);
                     }
@@ -130,9 +128,9 @@ public class ImageRGB extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("([III)V")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 3) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("MaxHeight", f.name, f.desc, multi);
                     }

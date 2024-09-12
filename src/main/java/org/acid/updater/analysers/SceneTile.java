@@ -10,12 +10,12 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
 public class SceneTile extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
-        ClassInfo info = Main.getInfo("Region");
+        ClassInfo info = Main.getInfo("Scene");
         if (info != null) {
             String tile_class = info.getField("Tiles").getDesc();
             for (ClassNode n : nodes) {
@@ -30,26 +30,26 @@ public class SceneTile extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("SceneTile", node.name);
-        info.putField(findBoundary(node));
+        info.putField(findBoundaryObject(node));
         info.putField(findSceneTile(node));
-        info.putField(findInteractables(node));
+        info.putField(findGameObjects(node));
         info.putField(findWallDecoration(node));
         info.putField(findGroundDecoration(node));
         info.putField(findX(node));
         info.putField(findY(node));
         info.putField(findPlane(node));
 
-        Main.getInfo("Region").setField(findRegionTiles(node));
+        Main.getInfo("Scene").setField(findRegionTiles(node));
         return info;
     }
 
-    private ClassField findBoundary(ClassNode node) {
+    private ClassField findBoundaryObject(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals(String.format("L%s;", Main.get("Boundary")))) {
-                return new ClassField("Boundary", f.name, f.desc);
+            if (f.desc.equals(String.format("L%s;", Main.get("BoundaryObject")))) {
+                return new ClassField("BoundaryObject", f.name, f.desc);
             }
         }
-        return new ClassField("Boundary");
+        return new ClassField("BoundaryObject");
     }
 
     private ClassField findSceneTile(ClassNode node) {
@@ -61,13 +61,13 @@ public class SceneTile extends Analyser {
         return new ClassField("SceneTile");
     }
 
-    private ClassField findInteractables(ClassNode node) {
+    private ClassField findGameObjects(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals(String.format("[L%s;", Main.get("Interactable")))) {
-                return new ClassField("Interactables", f.name, f.desc);
+            if (f.desc.equals(String.format("[L%s;", Main.get("GameObject")))) {
+                return new ClassField("GameObjects", f.name, f.desc);
             }
         }
-        return new ClassField("Interactables");
+        return new ClassField("GameObjects");
     }
 
     private ClassField findWallDecoration(ClassNode node) {
@@ -93,17 +93,17 @@ public class SceneTile extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 2) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == 2) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         long multi = Main.findMultiplier(f.owner, f.name);
-                        return new ClassField("SceneX", f.name, f.desc, multi);
+                        return new ClassField("X", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("SceneX");
+        return new ClassField("X");
     }
 
     private ClassField findY(ClassNode node) {
@@ -111,17 +111,17 @@ public class SceneTile extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 3) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 4);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == 3) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
                         long multi = Main.findMultiplier(f.owner, f.name);
-                        return new ClassField("SceneY", f.name, f.desc, multi);
+                        return new ClassField("Y", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("SceneY");
+        return new ClassField("Y");
     }
 
     private ClassField findPlane(ClassNode node) {
@@ -129,8 +129,8 @@ public class SceneTile extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                if(i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField("Plane", f.name, f.desc, multi);
                 }
@@ -140,7 +140,7 @@ public class SceneTile extends Analyser {
     }
 
     private ClassField findRegionTiles(ClassNode node) {
-        for (FieldNode f : Main.getClassNode("Region").fields) {
+        for (FieldNode f : Main.getClassNode("Scene").fields) {
             if (f.desc.equals(String.format("[[[L%s;", node.name)) && !hasAccess(f, Opcodes.ACC_STATIC)) {
                 return new ClassField("Tiles", f.name, f.desc);
             }

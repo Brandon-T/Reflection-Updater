@@ -45,8 +45,7 @@ public class CXXImplementation {
 
         if (method.isStatic()) {
             builder.append("this->vm->GetStaticMethodID(this->cls.get(), ");
-        }
-        else {
+        } else {
             builder.append("this->vm->GetMethodID(this->cls.get(), ");
         }
 

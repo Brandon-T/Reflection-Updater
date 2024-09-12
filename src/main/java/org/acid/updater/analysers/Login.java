@@ -59,7 +59,7 @@ public class Login extends Analyser {
         info.putField(findButtonSprite(node));
         info.putField(findField(node, "Username", 11));
         info.putField(findField(node, "Password", 12));
-        info.putField(findField(node, "CursorField", 16));
+        info.putField(findField(node, "CursorField", 19));
 
         return info;
     }
@@ -86,7 +86,7 @@ public class Login extends Analyser {
                 if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;L%s;L%s;)V", fontName, fontName, fontName))) {
                     int i = new Finder(m).findPattern(pattern);
                     if (i != -1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("ButtonSprite", f.owner, f.name, f.desc, multi);
                     }

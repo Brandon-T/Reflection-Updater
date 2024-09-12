@@ -10,13 +10,13 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
-public class Region extends Analyser {
+public class Scene extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Animable"))) {
+            if (!n.superName.equals(Main.get("Renderable"))) {
                 continue;
             }
 
@@ -42,7 +42,7 @@ public class Region extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Region", node.name);
+        ClassInfo info = new ClassInfo("Scene", node.name);
         info.putField(findTiles(node));
         info.putField(findGameObjects(node));
         return info;
@@ -54,7 +54,7 @@ public class Region extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 5);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
                     if (f.desc.startsWith("[[[")) {
                         return new ClassField("Tiles", f.name, f.desc);
                     }
@@ -71,7 +71,7 @@ public class Region extends Analyser {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i)).operand == 100) {
+                    if (((IntInsnNode) m.instructions.get(i)).operand == 100) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         return new ClassField("GameObjects", f.name, f.desc);
                     }
@@ -82,7 +82,7 @@ public class Region extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern2);
                 while (i != -1) {
-                    if (((IntInsnNode)m.instructions.get(i + 1)).operand == 5000) {
+                    if (((IntInsnNode) m.instructions.get(i + 1)).operand == 5000) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         return new ClassField("GameObjects", f.name, f.desc);
                     }

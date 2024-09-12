@@ -1,8 +1,9 @@
 package org.acid.updater.classloaders;
 
 /**
- * Created by Kira on 2015-01-16.
+ * Created by Brandon on 2015-01-16.
  */
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -18,9 +19,9 @@ import java.util.HashMap;
 
 public class ClassNodeLoader extends ClassLoader {
 
-    private HashMap<String, ClassNode> classes = new HashMap<>();
+    private final HashMap<String, ClassNode> classes = new HashMap<>();
 
-    public static ClassNode loadClassNode(Class cls) throws IOException {
+    public static ClassNode loadClassNode(Class<?> cls) throws IOException {
         InputStream stream = cls.getResourceAsStream(cls.getSimpleName() + ".class");
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(stream);
@@ -30,7 +31,7 @@ public class ClassNodeLoader extends ClassLoader {
 
     public static ClassNode loadClassNode(String cls) throws IOException, ClassNotFoundException {
         ClassLoader loader = ClassLoader.getSystemClassLoader();
-        Class clz = loader.loadClass(cls);
+        Class<?> clz = loader.loadClass(cls);
         InputStream url = clz.getResourceAsStream(clz.getSimpleName() + ".class");
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(url);
@@ -40,7 +41,7 @@ public class ClassNodeLoader extends ClassLoader {
 
     public static ClassNode loadRelativeClassNode(String cls) throws IOException, ClassNotFoundException {
         ClassLoader loader = ClassLoader.getSystemClassLoader();
-        Class clz = loader.loadClass(cls);
+        Class<?> clz = loader.loadClass(cls);
         InputStream url = clz.getResourceAsStream(("./" + clz.getName() + ".class").replace(clz.getPackage().getName() + ".", ""));
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(url);

@@ -10,13 +10,13 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-14.
+ * Created by Brandon on 2014-12-14.
  */
 public class GameObject extends Analyser {
 
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
-        ClassInfo info = Main.getInfo("Region");
+        ClassInfo info = Main.getInfo("Scene");
         if (info != null) {
             String gameObject_class = info.getField("GameObjects").getDesc();
             for (ClassNode n : nodes) {
@@ -26,14 +26,13 @@ public class GameObject extends Analyser {
             }
         }
 
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         if (n != null) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(IIIIIIIIL%s;IZJI)Z", Main.get("Animable")))) {
+                if (m.desc.equals(String.format("(IIIIIIIIL%s;IZJI)Z", Main.get("Renderable")))) {
                     for (AbstractInsnNode i : m.instructions.toArray()) {
-                        if (i instanceof FieldInsnNode) {
-                            FieldInsnNode f = (FieldInsnNode) i;
-                            if (f.desc.equals("I") && !f.owner.matches("(I|S|B|J|Z)")) {
+                        if (i instanceof FieldInsnNode f) {
+                            if (f.desc.equals("I") && !f.owner.matches("([ISBJZ])")) {
                                 return Main.getClass(f.owner);
                             }
                         }
@@ -47,9 +46,9 @@ public class GameObject extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         boolean isLongHashes = false;
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         for (MethodNode m : n.methods) {
-            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Animable")))) {
+            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Renderable")))) {
                 if (m.desc.contains("JI")) {
                     isLongHashes = true;
                 }
@@ -57,7 +56,7 @@ public class GameObject extends Analyser {
             }
         }
 
-        ClassInfo info = new ClassInfo("Interactable", node.name);
+        ClassInfo info = new ClassInfo("GameObject", node.name);
         info.putField(findRenderable(node));
         info.putField(findField(node, "ID", 12)); //findID(node)
         info.putField(findField(node, "Flags", isLongHashes ? 14 : 13));
@@ -74,15 +73,15 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findRenderable(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.PUTFIELD};
 
         for (MethodNode m : n.methods) {
-            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Animable")))) {
+            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Renderable")))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == 9) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 9) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Renderable", f.name, f.desc, multi);
                     }
@@ -94,15 +93,15 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findID(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Finder.WILDCARD, Opcodes.ISHR};
 
         for (MethodNode m : n.methods) {
             if (m.desc.equals(String.format("(III)L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
-                    long multi = (int) ((LdcInsnNode)m.instructions.get(i + 1)).cst;
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = (int) ((LdcInsnNode) m.instructions.get(i + 1)).cst;
                     return new ClassField("ID", f.name, f.desc, multi);
                 }
             }
@@ -111,14 +110,14 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findRelativeX(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD};
 
         for (MethodNode m : n.methods) {
             if (m.desc.equals(String.format("(III)L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 2) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 2) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                         long multi = (int) ((LdcInsnNode) m.instructions.get(i + 1)).cst;
                         return new ClassField("RelativeX", f.name, f.desc, multi);
@@ -131,14 +130,14 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findRelativeY(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD};
 
         for (MethodNode m : n.methods) {
             if (m.desc.equals(String.format("(III)L%s;", node.name))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 3)).var == 3) {
+                    if (((VarInsnNode) m.instructions.get(i + 3)).var == 3) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                         long multi = (int) ((LdcInsnNode) m.instructions.get(i + 1)).cst;
                         return new ClassField("RelativeY", f.name, f.desc, multi);
@@ -151,17 +150,17 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findSizeX(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
-        final int pattern[] = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.ICONST_1, Opcodes.ISUB, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        ClassNode n = Main.getClassNode("Scene");
+        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.ICONST_1, Opcodes.ISUB, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : n.methods) {
-            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Animable")))) {
+            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Renderable")))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    VarInsnNode a = (VarInsnNode)m.instructions.get(i);
-                    VarInsnNode b = (VarInsnNode)m.instructions.get(i + 1);
+                while (i != -1) {
+                    VarInsnNode a = (VarInsnNode) m.instructions.get(i);
+                    VarInsnNode b = (VarInsnNode) m.instructions.get(i + 1);
                     if ((a.var == 2 && b.var == 4) || (a.var == 4 && b.var == 2)) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 7);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 7);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("SizeX", f.name, f.desc, multi);
                     }
@@ -173,17 +172,17 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findSizeY(ClassNode node) {
-        ClassNode n = Main.getClassNode("Region");
-        final int pattern[] = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.ICONST_1, Opcodes.ISUB, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        ClassNode n = Main.getClassNode("Scene");
+        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.ILOAD, Opcodes.IADD, Opcodes.ICONST_1, Opcodes.ISUB, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : n.methods) {
-            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Animable")))) {
+            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Renderable")))) {
                 int i = new Finder(m).findPattern(pattern);
-                while(i != -1) {
-                    VarInsnNode a = (VarInsnNode)m.instructions.get(i);
-                    VarInsnNode b = (VarInsnNode)m.instructions.get(i + 1);
+                while (i != -1) {
+                    VarInsnNode a = (VarInsnNode) m.instructions.get(i);
+                    VarInsnNode b = (VarInsnNode) m.instructions.get(i + 1);
                     if ((a.var == 3 && b.var == 5) || (a.var == 5 && b.var == 3)) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 7);
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 7);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField("SizeY", f.name, f.desc, multi);
                     }
@@ -195,15 +194,15 @@ public class GameObject extends Analyser {
     }
 
     private ClassField findField(ClassNode node, String fieldName, int index) {
-        ClassNode n = Main.getClassNode("Region");
+        ClassNode n = Main.getClassNode("Scene");
         final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
         final int[] pattern2 = new int[]{Opcodes.LLOAD, Opcodes.LDC, Opcodes.LMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : n.methods) {
-            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Animable")))) {
+            if (m.desc.matches(String.format("\\(IIIIIIIIL%s;IZ(I|J)I\\)Z", Main.get("Renderable")))) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == index) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == index) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField(fieldName, f.name, f.desc, multi);
@@ -214,7 +213,7 @@ public class GameObject extends Analyser {
                 //May 10th, 2018 - All hashes changed to Long.
                 i = new Finder(m).findPattern(pattern2);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i)).var == index) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == index) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         long multi = Main.findMultiplier(f.owner, f.name);
                         return new ClassField(fieldName, f.name, f.desc, multi);

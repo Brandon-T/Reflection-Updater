@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-23.
+ * Created by Brandon on 2014-12-23.
  */
 public class HashTable extends Analyser {
     @Override
@@ -49,7 +49,7 @@ public class HashTable extends Analyser {
         info.putField(findTail(node));
         info.putField(findCache(node));
         info.putField(findIndex(node));
-        info.putField(findCapacity(node));
+        info.putField(findSize(node));
         return info;
     }
 
@@ -59,7 +59,7 @@ public class HashTable extends Analyser {
             if (m.desc.equals(String.format("(J)L%s;", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     return new ClassField("Head", f.name, f.desc);
                 }
             }
@@ -73,7 +73,7 @@ public class HashTable extends Analyser {
             if (m.desc.equals(String.format("()L%s;", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 3);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     return new ClassField("Tail", f.name, f.desc);
                 }
             }
@@ -84,10 +84,10 @@ public class HashTable extends Analyser {
     private ClassField findCache(ClassNode node) {
         for (FieldNode f : node.fields) {
             if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals(String.format("[L%s;", Main.get("Node")))) {
-                return new ClassField("Cache|Buckets", f.name, f.desc);
+                return new ClassField("Buckets", f.name, f.desc);
             }
         }
-        return new ClassField("Cache|Buckets");
+        return new ClassField("Buckets");
     }
 
     private ClassField findIndex(ClassNode node) {
@@ -96,7 +96,7 @@ public class HashTable extends Analyser {
             if (m.desc.equals(String.format("()L%s;", Main.get("Node")))) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 1);
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     return new ClassField("Index", f.name, f.desc);
                 }
             }
@@ -104,20 +104,20 @@ public class HashTable extends Analyser {
         return new ClassField("Index");
     }
 
-    private ClassField findCapacity(ClassNode node) {
+    private ClassField findSize(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>") && m.desc.equals("(I)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 1)).var == 1) {
-                        FieldInsnNode f = (FieldInsnNode)m.instructions.get(i + 2);
-                        return new ClassField("Capacity", f.name, f.desc);
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == 1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
+                        return new ClassField("Size", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("Capacity");
+        return new ClassField("Size");
     }
 }

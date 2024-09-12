@@ -17,20 +17,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Acid {
-    public interface Map<K,V> {
-        default V replace(K key, V value) {
-            V curValue;
-            if (((curValue = get(key)) != null) || containsKey(key)) {
-                curValue = put(key, value);
-            }
-            return curValue;
-        }
-
-        boolean	containsKey(Object key);
-        V get(Object key);
-        V put(K key, V value);
+    private static ClassNode loadJVMClassNode(String cls) throws IOException, ClassNotFoundException {
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
+        Class<?> clz = loader.loadClass(cls);
+        InputStream url = clz.getResourceAsStream(clz.getSimpleName() + ".class");
+        ClassNode node = new ClassNode();
+        ClassReader reader = new ClassReader(url);
+        reader.accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        return node;
     }
 
+    private static ClassNode loadRelativeClassNode(String cls) throws IOException, ClassNotFoundException {
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
+        Class<?> clz = loader.loadClass(cls);
+        InputStream url = clz.getResourceAsStream(("./" + clz.getName() + ".class").replace(clz.getPackage().getName() + ".", ""));
+        ClassNode node = new ClassNode();
+        ClassReader reader = new ClassReader(url);
+        reader.accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        return node;
+    }
 
     public void print() {
 
@@ -64,7 +69,7 @@ public class Acid {
             node.accept(cw);
 
             ClassNodeLoader loader = new ClassNodeLoader();
-            Class ccl = loader.nodeToClass(node);
+            Class<?> ccl = loader.nodeToClass(node);
 
             ccl.newInstance();
 
@@ -73,7 +78,7 @@ public class Acid {
             cr.accept(node, 0);
 
             node.methods.stream().forEach(m -> {
-                System.out.println("\n\nMethod: " + m.name + "" + m.desc + "\n");
+                System.out.println("\n\nMethod: " + m.name + m.desc + "\n");
                 System.out.println("-------------------------------\n");
 
                 Printer printer = new Textifier();
@@ -83,7 +88,7 @@ public class Acid {
                     StringWriter writer = new StringWriter();
                     printer.print(new PrintWriter(writer));
                     printer.getText().clear();
-                    System.out.print(writer.toString());
+                    System.out.print(writer);
                 });
             });
         } catch (Exception e) {
@@ -95,7 +100,7 @@ public class Acid {
             ClassNode node = loadRelativeClassNode(Map.class.getName());
             node.methods.stream().filter(m -> m.name.equals("replace")).forEach(m -> {
 
-                System.out.println("\n\nMethod: " + m.name + "" + m.desc + "\n");
+                System.out.println("\n\nMethod: " + m.name + m.desc + "\n");
                 System.out.println("-------------------------------\n");
 
                 Printer printer = new Textifier();
@@ -105,7 +110,7 @@ public class Acid {
                     StringWriter writer = new StringWriter();
                     printer.print(new PrintWriter(writer));
                     printer.getText().clear();
-                    System.out.print(writer.toString());
+                    System.out.print(writer);
                 });
             });
 
@@ -114,23 +119,19 @@ public class Acid {
         }
     }
 
-    private static ClassNode loadJVMClassNode(String cls) throws IOException, ClassNotFoundException {
-        ClassLoader loader = ClassLoader.getSystemClassLoader();
-        Class clz = loader.loadClass(cls);
-        InputStream url = clz.getResourceAsStream(clz.getSimpleName() + ".class");
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(url);
-        reader.accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        return node;
-    }
+    public interface Map<K, V> {
+        default V replace(K key, V value) {
+            V curValue;
+            if (((curValue = get(key)) != null) || containsKey(key)) {
+                curValue = put(key, value);
+            }
+            return curValue;
+        }
 
-    private static ClassNode loadRelativeClassNode(String cls) throws IOException, ClassNotFoundException {
-        ClassLoader loader = ClassLoader.getSystemClassLoader();
-        Class clz = loader.loadClass(cls);
-        InputStream url = clz.getResourceAsStream(("./" + clz.getName() + ".class").replace(clz.getPackage().getName() + ".", ""));
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(url);
-        reader.accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        return node;
+        boolean containsKey(Object key);
+
+        V get(Object key);
+
+        V put(K key, V value);
     }
 }

@@ -6,11 +6,11 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Frame;
 
 /**
- * Created by Kira on 2015-01-16.
+ * Created by Brandon on 2015-01-16.
  */
 public class DeadCodeRemover {
-    private BasicFlowGraph graph;
-    private MethodNode method;
+    private final BasicFlowGraph graph;
+    private final MethodNode method;
 
     public DeadCodeRemover(String owner, MethodNode method) {
         this.graph = new BasicFlowGraph(owner, this.method = method);

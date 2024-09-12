@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Collection;
 
 /**
- * Created by Kira on 2014-12-07.
+ * Created by Brandon on 2014-12-07.
  */
 public class IndexedImage extends Analyser {
     @Override
@@ -63,7 +63,7 @@ public class IndexedImage extends Analyser {
             if (m.desc.equals("(IIII)V") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 2)).var == 9) {
+                    if (((VarInsnNode) m.instructions.get(i + 2)).var == 9) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = (int) Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Width", f.name, f.desc, multi);
@@ -81,7 +81,7 @@ public class IndexedImage extends Analyser {
             if (m.desc.equals("(IIII)V") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
-                    if (((VarInsnNode)m.instructions.get(i + 2)).var == 10) {
+                    if (((VarInsnNode) m.instructions.get(i + 2)).var == 10) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = (int) Main.findMultiplier(f.owner, f.name);
                         return new ClassField("Height", f.name, f.desc, multi);
