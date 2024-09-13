@@ -16,7 +16,7 @@ public class VarbitDefinition extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("CacheableNode")) || !n.interfaces.isEmpty()) {
+            if (!n.superName.equals(Main.get("CacheableNode"))) {
                 continue;
             }
 

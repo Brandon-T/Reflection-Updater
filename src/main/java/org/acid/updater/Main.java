@@ -23,11 +23,9 @@ public class Main {
 
     public static void main(String[] args) {
         String url = "http://oldschool1.runescape.com";
-        int latestRevision = getLatestRevision(url, 225);
-        analyser = new ClassAnalyser(url, String.format("%d.jar", latestRevision), true);
+        analyser = new ClassAnalyser(url, "injected-client-1.10.37.jar", true);
         analyser.printSimbaNative();
-//        analyser.printJSON();
-        //analyser.refactor(String.format("Refactor_%d.jar", 225));
+        //analyser.refactor(String.format("Refactor_RL_%d.jar", 225));
     }
 
     private static int getLatestRevision(String url, int currentVersion) {

@@ -118,7 +118,8 @@ public class JarParser {
         try (JarOutputStream jos = this.manifest != null ? new JarOutputStream(new FileOutputStream(file), this.manifest) : new JarOutputStream(new FileOutputStream(file))) {
             for (ClassNode entry : classes) {
                 ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                entry.accept(new ClassCheckWriter(Opcodes.ASM5, writer, false));
+//                entry.accept(new ClassCheckWriter(Opcodes.ASM5, writer, false));
+                entry.accept(writer);
                 byte[] bytes = writer.toByteArray();
                 jos.putNextEntry(new JarEntry(entry.name.concat(".class")));
                 jos.write(bytes);

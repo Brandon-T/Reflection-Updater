@@ -37,7 +37,7 @@ public class GameInstance extends Analyser {
                 }
             }
 
-            if (int_array_fields == 2 && int_3d_array_fields == 1 && byte_3d_array_fields == 1) {
+            if (int_array_fields == 2 && int_3d_array_fields == 2 && byte_3d_array_fields == 1) {
                 return n;
             }
         }

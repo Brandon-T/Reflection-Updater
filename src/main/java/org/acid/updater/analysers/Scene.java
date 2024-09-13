@@ -33,7 +33,7 @@ public class Scene extends Analyser {
                 }
             }
 
-            if (int_array_fields == 2 && int_fields >= 6) {
+            if (int_array_fields >= 2 && int_fields >= 6) {
                 return n;
             }
         }

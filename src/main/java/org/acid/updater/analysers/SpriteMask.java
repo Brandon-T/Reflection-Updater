@@ -25,7 +25,7 @@ public class SpriteMask extends Analyser {
                 }
             }
 
-            if (method_count == 1 && contains_method_count == 1) {
+            if (method_count == 1 && contains_method_count >= 1) {
                 return node;
             }
         }
