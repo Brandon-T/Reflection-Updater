@@ -38,48 +38,15 @@ public class BoundaryObject extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("BoundaryObject", node.name);
-        info.putField(findField(node, "ID", 9));
-        info.putField(findField(node, "Flags", this.method.desc.contains("JI") ? 11 : 10));
-        info.putField(findField(node, "Plane", 4));
-        info.putField(findField(node, "Height", 8));
-        info.putField(findX(node));
-        info.putField(findY(node));
-        info.putField(findField(node, "Orientation", 7));
-        info.putField(findRenderable(node));
-        info.putField(findOldRenderable(node));
+        info.putField(findField(node, "ID", "getHash"));
+        info.putField(findField(node, "Flags", "getConfig"));
+        info.putField(findField(node, "Plane", "getPlane"));
+        info.putField(findField(node, "Height", "getZ"));
+        info.putField(findField(node, "X", "getX"));
+        info.putField(findField(node, "Y", "getY"));
+        info.putField(findField(node, "Renderable", "getRenderable1"));
+        info.putField(findField(node, "OldRenderable", "getRenderable2"));
         return info;
-    }
-
-    private ClassField findX(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTFIELD};
-        if (this.method != null) {
-            int i = new Finder(this.method).findPattern(pattern);
-            while (i != -1) {
-                if (((VarInsnNode) method.instructions.get(i)).var == 2) {
-                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 5);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("X", f.name, f.desc, multi);
-                }
-                i = new Finder(this.method).findPattern(pattern, i + 1);
-            }
-        }
-        return new ClassField("X");
-    }
-
-    private ClassField findY(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTFIELD};
-        if (this.method != null) {
-            int i = new Finder(this.method).findPattern(pattern);
-            while (i != -1) {
-                if (((VarInsnNode) method.instructions.get(i)).var == 3) {
-                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 5);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField("Y", f.name, f.desc, multi);
-                }
-                i = new Finder(this.method).findPattern(pattern, i + 1);
-            }
-        }
-        return new ClassField("Y");
     }
 
     private ClassField findRenderable(ClassNode node) {
@@ -112,31 +79,15 @@ public class BoundaryObject extends Analyser {
         return new ClassField("OldRenderable");
     }
 
-    private ClassField findField(ClassNode node, String fieldName, int index) {
-        final int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
-        if (this.method != null) {
-            int i = new Finder(this.method).findPattern(pattern);
-            while (i != -1) {
-                if (((VarInsnNode) method.instructions.get(i)).var == index) {
-                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 3);
+    private ClassField findField(ClassNode node, String fieldName, String methodName) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(methodName)) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD});
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                     long multi = Main.findMultiplier(f.owner, f.name);
                     return new ClassField(fieldName, f.name, f.desc, multi);
                 }
-                i = new Finder(this.method).findPattern(pattern, i + 1);
-            }
-        }
-
-        //ID is now a Long - May 10th, 2018.
-        final int[] pattern2 = new int[]{Opcodes.LLOAD, Opcodes.LDC, Opcodes.LMUL, Opcodes.PUTFIELD};
-        if (this.method != null) {
-            int i = new Finder(this.method).findPattern(pattern2);
-            while (i != -1) {
-                if (((VarInsnNode) method.instructions.get(i)).var == index) {
-                    FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 3);
-                    long multi = Main.findMultiplier(f.owner, f.name);
-                    return new ClassField(fieldName, f.name, f.desc, multi);
-                }
-                i = new Finder(this.method).findPattern(pattern2, i + 1);
             }
         }
         return new ClassField(fieldName);

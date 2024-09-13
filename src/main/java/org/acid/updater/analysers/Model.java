@@ -24,9 +24,6 @@ public class Model extends Analyser {
             }
 
             for (MethodNode m : n.methods) {
-                //(IIIIIIIFFFIII)V
-                //([[IIIIZI)Lkb;
-                //(IIIIIII)V
                 if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(IIIIIIIIJ)V")) {
                     return n;
                 }
@@ -42,9 +39,9 @@ public class Model extends Analyser {
         info.putField(findIndicesY(node));
         info.putField(findIndicesZ(node));
         info.putField(findIndicesLength(node, info.getField("IndicesX")));
-        info.putField(findVerticesX(node));
-        info.putField(findVerticesY(node));
-        info.putField(findVerticesZ(node));
+        info.putField(findField(node, "VerticesX", "getVerticesX"));
+        info.putField(findField(node, "VerticesY", "getVerticesY"));
+        info.putField(findField(node, "VerticesZ", "getVerticesZ"));
         info.putField(findVerticesLength(node, info.getField("VerticesX")));
         info.putField(findTexturedIndicesX(node));
         info.putField(findTexturedIndicesY(node));
@@ -428,5 +425,19 @@ public class Model extends Analyser {
             }
         }
         return new ClassField("*RenderAtPoint");
+    }
+
+    private ClassField findField(ClassNode node, String fieldName, String methodName) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(methodName)) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD});
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField(fieldName, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField(fieldName);
     }
 }

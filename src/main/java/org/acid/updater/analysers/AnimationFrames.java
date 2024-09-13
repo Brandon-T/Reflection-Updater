@@ -36,7 +36,7 @@ public class AnimationFrames extends Analyser {
                 }
             }
 
-            if (fieldCount == 1 && methodCount == 1) {
+            if (fieldCount == 1 && methodCount >= 1) {
                 return n;
             }
         }

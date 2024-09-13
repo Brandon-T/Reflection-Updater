@@ -39,7 +39,7 @@ public class CombatInfo2 extends Analyser {
                 }
             }
 
-            if (int_count >= 10 && short_arr_count == 0 && str_count == 0 && str_arr_count == 0 && method_count == 1) {
+            if (int_count >= 10 && short_arr_count == 0 && str_count == 0 && str_arr_count == 0 && method_count >= 1) {
                 return node;
             }
         }

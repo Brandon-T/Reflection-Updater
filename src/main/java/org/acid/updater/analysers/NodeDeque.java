@@ -16,7 +16,7 @@ public class NodeDeque extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals("java/lang/Object") || n.interfaces.contains("java/lang/Iterable")) {
+            if (!n.superName.equals("java/lang/Object") || n.interfaces.contains("java/lang/Iterable") || n.interfaces.contains("java/util/Iterator")) {
                 continue;
             }
 

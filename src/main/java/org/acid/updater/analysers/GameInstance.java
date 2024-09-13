@@ -57,8 +57,8 @@ public class GameInstance extends Analyser {
         info.putField(findTileSettings(node));
         info.putField(findRegion(node));
         info.putField(findPlane(node));
-        info.putField(findBaseX(node));
-        info.putField(findBaseY(node));
+        info.putField(findField(node, "BaseX", "getBaseX"));
+        info.putField(findField(node, "BaseY", "getBaseY"));
         info.putField(findCollisionMaps(node));
         info.putField(findGroundItems(node));
         info.putField(findProjectiles(node));
@@ -322,5 +322,19 @@ public class GameInstance extends Analyser {
             }
         }
         return new ClassField("GraphicsObjects");
+    }
+
+    private ClassField findField(ClassNode node, String fieldName, String methodName) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(methodName)) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD});
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField(fieldName, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField(fieldName);
     }
 }

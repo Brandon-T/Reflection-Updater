@@ -47,7 +47,7 @@ public class Widget extends Analyser {
         info.putField(findItemID(node));
         info.putField(findItemIDs(node));
         info.putField(findItemStackSizes(node, info.getField("Items")));
-        info.putField(findItemAmount(node));
+        info.putField(findField(node, "ItemAmount", "getItemQuantity"));
         info.putField(findSpriteID(node));
         info.putField(findTextureID(node, info.getField("SpriteID")));
         info.putField(findModelID(node));
@@ -67,7 +67,7 @@ public class Widget extends Analyser {
         info.putField(findChildren(node));
         info.putField(findBoundsIndex(node));
         info.putField(findWidgetCycle(node));
-        info.putField(findOpacity(node));
+        info.putField(findField(node, "Opacity", "getOpacity"));
         info.putField(findSwapItemsMethod(node));
         return info;
     }
@@ -642,5 +642,19 @@ public class Widget extends Analyser {
             }
         }
         return new ClassField("*SwapItems");
+    }
+
+    private ClassField findField(ClassNode node, String fieldName, String methodName) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(methodName)) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD});
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField(fieldName, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField(fieldName);
     }
 }

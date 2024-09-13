@@ -53,11 +53,18 @@ public class Scene extends Analyser {
         for (MethodNode m : node.methods) {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
-                    if (f.desc.startsWith("[[[")) {
-                        return new ClassField("Tiles", f.name, f.desc);
+                while (i != -1) {
+                    int a = ((VarInsnNode)m.instructions.get(i + 1)).var;
+                    int b = ((VarInsnNode)m.instructions.get(i + 2)).var;
+                    int c = ((VarInsnNode)m.instructions.get(i + 3)).var;
+
+                    if (a == 2 && b == 3 && c == 4) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
+                        if (f.desc.startsWith("[[[")) {
+                            return new ClassField("Tiles", f.name, f.desc);
+                        }
                     }
+                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }

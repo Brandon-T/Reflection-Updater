@@ -45,7 +45,7 @@ public class Client extends Analyser {
         info.putField(findCameraVertex(node, "Z", 7));
         info.putField(findCameraRotation(node, "Pitch", 8, 9));
         info.putField(findCameraRotation(node, "Yaw", 10, 11));
-        info.putField(findIsRegionInstanced(node));
+        info.putField(findField(node, "IsRegionInstanced", "isInInstancedRegion"));
         info.putField(findRegionInstances(node));
         info.putField(findDestX(node));
         info.putField(findDestY(node));
@@ -1883,4 +1883,18 @@ public class Client extends Analyser {
         }
         return new ClassField("CombatCycle");
     }*/
+
+    private ClassField findField(ClassNode node, String fieldName, String methodName) {
+        for (MethodNode m : node.methods) {
+            if (m.name.equals(methodName)) {
+                int i = new Finder(m).findPattern(new int[]{Opcodes.GETFIELD});
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField(fieldName, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField(fieldName);
+    }
 }

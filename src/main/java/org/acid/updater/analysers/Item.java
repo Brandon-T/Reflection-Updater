@@ -17,14 +17,19 @@ public class Item extends Analyser {
     @Override
     public ClassNode find(Collection<ClassNode> nodes) {
         for (ClassNode n : nodes) {
-            if (!n.superName.equals(Main.get("Renderable"))) {
+            if (!n.superName.equals(Main.get("Renderable")) || !n.interfaces.contains("net/runelite/api/TileItem")) {
                 continue;
             }
 
             int int_count = 0;
+            int int_array_count = 0;
             for (FieldNode f : n.fields) {
                 if (f.desc.equals("I") && !hasAccess(f, Opcodes.ACC_STATIC) && !hasAccess(f, Opcodes.ACC_FINAL)) {
                     ++int_count;
+                }
+
+                if (f.desc.equals("[I") && !hasAccess(f, Opcodes.ACC_STATIC)) {
+                    ++int_array_count;
                 }
             }
 
@@ -40,7 +45,7 @@ public class Item extends Analyser {
                 }
             }
 
-            if (int_count >= 2 && method_count == 1 && constructor_count == 1) {
+            if (int_count >= 2 && int_array_count == 0 && method_count >= 1 && constructor_count == 1) {
                 return n;
             }
         }

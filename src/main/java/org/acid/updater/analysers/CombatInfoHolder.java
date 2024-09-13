@@ -36,7 +36,7 @@ public class CombatInfoHolder extends Analyser {
                 }
             }
 
-            if (combatInfo2_count == 1 && combatInfo1_MethodCount == 1) {
+            if (combatInfo2_count == 1 && combatInfo1_MethodCount >= 1) {
                 return node;
             }
         }
