@@ -40,9 +40,9 @@ public class GroundDecoration extends Analyser {
         ClassInfo info = new ClassInfo("GroundDecoration", node.name);
         info.putField(findField(node, "ID", "getHash"));
         info.putField(findField(node, "Flags", "getConfig"));
-        info.putField(findField(node, "Flags", "getX"));
-        info.putField(findField(node, "Flags", "getY"));
-        info.putField(findField(node, "Flags", "getPlane"));
+        info.putField(findField(node, "X", "getX"));
+        info.putField(findField(node, "Y", "getY"));
+        info.putField(findField(node, "Plane", "getPlane"));
         info.putField(findRenderable(node));
         return info;
     }
