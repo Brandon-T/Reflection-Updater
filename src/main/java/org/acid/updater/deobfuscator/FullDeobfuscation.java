@@ -14,6 +14,7 @@ public class FullDeobfuscation {
 
     public FullDeobfuscation(Collection<ClassNode> classes, boolean is_android) {
         this.deobfuscators = new ArrayList<>();
+        this.deobfuscators.add(new NamedAnnotationRemover(classes));
         this.deobfuscators.add(is_android ? new AndroidMethodRemover(classes) : new MethodRemover(classes));
         this.deobfuscators.add(new FieldRemover(classes));
         this.deobfuscators.add(new ClassRemover(classes));

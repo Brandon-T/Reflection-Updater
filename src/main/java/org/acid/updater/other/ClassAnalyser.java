@@ -162,7 +162,7 @@ public class ClassAnalyser {
         analysers.add(new Typeface());
         analysers.add(new IndexedImage());
         analysers.add(new ImageRGB());
-        analysers.add(new GraphicsBuffer());
+//        analysers.add(new GraphicsBuffer());
         analysers.add(new Font());
         analysers.add(new SpriteMask());
         analysers.add(new PacketWriter());
@@ -170,7 +170,7 @@ public class ClassAnalyser {
         analysers.add(new GameShell());
         analysers.add(new Buffer());
         analysers.add(new PacketBuffer());
-        analysers.add(new BufferedConnection());
+//        analysers.add(new BufferedConnection());
         analysers.add(new CollisionMap());
         analysers.add(new NameInfo());
         analysers.add(new Renderable());
