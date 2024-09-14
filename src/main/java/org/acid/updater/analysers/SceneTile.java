@@ -34,7 +34,7 @@ public class SceneTile extends Analyser {
         info.putField(findSceneTile(node));
         info.putField(findGameObjects(node));
         info.putField(findWallDecoration(node));
-        info.putField(findGroundDecoration(node));
+        info.putField(findFloorDecoration(node));
         info.putField(findX(node));
         info.putField(findY(node));
         info.putField(findPlane(node));
@@ -79,13 +79,13 @@ public class SceneTile extends Analyser {
         return new ClassField("WallDecoration");
     }
 
-    private ClassField findGroundDecoration(ClassNode node) {
+    private ClassField findFloorDecoration(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals(String.format("L%s;", Main.get("GroundDecoration")))) {
-                return new ClassField("GroundDecoration", f.name, f.desc);
+            if (f.desc.equals(String.format("L%s;", Main.get("FloorDecoration")))) {
+                return new ClassField("FloorDecoration", f.name, f.desc);
             }
         }
-        return new ClassField("GroundDecoration");
+        return new ClassField("FloorDecoration");
     }
 
     private ClassField findX(ClassNode node) {

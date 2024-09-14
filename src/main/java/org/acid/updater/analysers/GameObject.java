@@ -57,7 +57,6 @@ public class GameObject extends Analyser {
         }
 
         ClassInfo info = new ClassInfo("GameObject", node.name);
-        info.putField(findRenderable(node));
         info.putField(findField(node, "ID", 12)); //findID(node)
         info.putField(findField(node, "Flags", isLongHashes ? 14 : 13));
         info.putField(findField(node, "Orientation", 10));
@@ -69,6 +68,7 @@ public class GameObject extends Analyser {
         info.putField(findRelativeY(node));
         info.putField(findSizeX(node));
         info.putField(findSizeY(node));
+        info.putField(findRenderable(node));
         return info;
     }
 
