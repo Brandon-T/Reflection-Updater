@@ -178,7 +178,7 @@ public class ClassAnalyser {
         analysers.add(new Scene());
         analysers.add(new BoundaryObject());
         analysers.add(new WallDecoration());
-        analysers.add(new GroundDecoration());
+        analysers.add(new FloorDecoration());
         analysers.add(new GameObject());
         analysers.add(new GraphicsObject());
         analysers.add(new SceneTile());

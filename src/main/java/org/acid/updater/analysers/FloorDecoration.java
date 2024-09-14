@@ -12,7 +12,7 @@ import java.util.Collection;
 /**
  * Created by Brandon on 2014-12-14.
  */
-public class GroundDecoration extends Analyser {
+public class FloorDecoration extends Analyser {
     private MethodNode method = null;
 
     @Override
@@ -37,7 +37,7 @@ public class GroundDecoration extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GroundDecoration", node.name);
+        ClassInfo info = new ClassInfo("FloorDecoration", node.name);
         info.putField(findField(node, "ID", 6));
         info.putField(findField(node, "Flags", this.method.desc.contains("JI") ? 8 : 7));
         info.putField(findX(node));

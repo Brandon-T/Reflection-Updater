@@ -37,7 +37,7 @@ public class NPC extends Analyser {
         Main.getInfo("Actor").setField(findEntityAnimationID(node));
         Main.getInfo("Actor").setField(findEntityAnimationDelay(node));
         Main.getInfo("Actor").setField(findEntityQueueTraversed(node));
-        Main.getInfo("Actor").setField(findEntityQueueLength(node));
+        Main.getInfo("Actor").setField(findEntityQueueSize(node));
         Main.getInfo("Actor").setField(findEntityAnimationFrame(node));
         Main.getInfo("Actor").setField(findEntityMovementSequence(node));
         Main.getInfo("Actor").setField(findEntityMovementFrame(node));
@@ -146,8 +146,8 @@ public class NPC extends Analyser {
         return Main.getInfo("Actor").getField("QueueTraversed");
     }
 
-    private ClassField findEntityQueueLength(ClassNode node) {
-        if (Main.getInfo("Actor").getField("QueueLength").getName().equals("N/A")) {
+    private ClassField findEntityQueueSize(ClassNode node) {
+        if (Main.getInfo("Actor").getField("QueueSize").getName().equals("N/A")) {
             final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.BIPUSH};
             for (MethodNode m : node.methods) {
                 if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
@@ -156,16 +156,16 @@ public class NPC extends Analyser {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         if (((IntInsnNode) m.instructions.get(i + 4)).operand == 0x9) {
                             long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                            return new ClassField("QueueLength", f.name, f.desc, multi);
+                            return new ClassField("QueueSize", f.name, f.desc, multi);
                         }
                         i = new Finder(m).findPattern(pattern, i + 1);
                     }
                 }
             }
-            return new ClassField("QueueLength");
+            return new ClassField("QueueSize");
         }
 
-        return Main.getInfo("Actor").getField("QueueLength");
+        return Main.getInfo("Actor").getField("QueueSize");
     }
 
     private ClassField findEntityAnimationFrame(ClassNode node) {

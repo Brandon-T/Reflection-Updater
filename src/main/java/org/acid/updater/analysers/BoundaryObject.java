@@ -46,7 +46,7 @@ public class BoundaryObject extends Analyser {
         info.putField(findY(node));
         info.putField(findField(node, "Orientation", 7));
         info.putField(findRenderable(node));
-        info.putField(findOldRenderable(node));
+        info.putField(findRenderable2(node));
         return info;
     }
 
@@ -97,19 +97,19 @@ public class BoundaryObject extends Analyser {
         return new ClassField("Renderable");
     }
 
-    private ClassField findOldRenderable(ClassNode node) {
+    private ClassField findRenderable2(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.PUTFIELD};
         if (this.method != null) {
             int i = new Finder(this.method).findPattern(pattern);
             while (i != -1) {
                 if (((VarInsnNode) method.instructions.get(i + 1)).var == 6) {
                     FieldInsnNode f = (FieldInsnNode) method.instructions.get(i + 2);
-                    return new ClassField("OldRenderable", f.name, f.desc);
+                    return new ClassField("Renderable2", f.name, f.desc);
                 }
                 i = new Finder(this.method).findPattern(pattern, i + 1);
             }
         }
-        return new ClassField("OldRenderable");
+        return new ClassField("Renderable2");
     }
 
     private ClassField findField(ClassNode node, String fieldName, int index) {

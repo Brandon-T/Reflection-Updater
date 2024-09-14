@@ -54,7 +54,7 @@ public class Actor extends Analyser {
         info.putField(findQueueX(node));
         info.putField(findQueueY(node));
         info.putField(findQueueTraversed(node));
-        info.putField(findQueueLength(node));
+        info.putField(findQueueSize(node));
         info.putField(findLocalX(node, info.getField("QueueX")));
         info.putField(findLocalY(node, info.getField("QueueY")));
         //info.putField(findCombatCycle(node));
@@ -441,7 +441,7 @@ public class Actor extends Analyser {
         return new ClassField("QueueTraversed");
     }
 
-    private ClassField findQueueLength(ClassNode node) {
+    private ClassField findQueueSize(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.BIPUSH};
         for (MethodNode m : node.methods) {
             if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
@@ -450,13 +450,13 @@ public class Actor extends Analyser {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                     if (((IntInsnNode) m.instructions.get(i + 4)).operand == 0x9) {
                         long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                        return new ClassField("QueueLength", f.name, f.desc, multi);
+                        return new ClassField("QueueSize", f.name, f.desc, multi);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
-        return new ClassField("QueueLength");
+        return new ClassField("QueueSize");
     }
 
     private ClassField findCombatCycle(ClassNode node) {

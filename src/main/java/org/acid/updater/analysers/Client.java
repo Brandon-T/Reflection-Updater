@@ -47,8 +47,8 @@ public class Client extends Analyser {
         info.putField(findCameraRotation(node, "Yaw", 10, 11));
         info.putField(findIsRegionInstanced(node));
         info.putField(findRegionInstances(node));
-        info.putField(findDestX(node));
-        info.putField(findDestY(node));
+        info.putField(findDestinationX(node));
+        info.putField(findDestinationY(node));
         info.putField(findSineTable(node));
         info.putField(findCosineTable(node));
         info.putField(findItemNodeCache(node));
@@ -705,7 +705,7 @@ public class Client extends Analyser {
         return new ClassField("BaseY");
     }
 
-    private ClassField findDestX(ClassNode node) {
+    private ClassField findDestinationX(ClassNode node) {
         int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, Opcodes.GETSTATIC};
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
@@ -744,7 +744,7 @@ public class Client extends Analyser {
         return new ClassField("DestinationX");
     }
 
-    private ClassField findDestY(ClassNode node) {
+    private ClassField findDestinationY(ClassNode node) {
         int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, Opcodes.GETSTATIC};
         Collection<ClassNode> nodes = Main.getClasses();
         for (ClassNode n : nodes) {
