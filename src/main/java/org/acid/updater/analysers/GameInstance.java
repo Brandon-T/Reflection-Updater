@@ -53,16 +53,18 @@ public class GameInstance extends Analyser {
         info.putField(findNPCCount(node));
         info.putField(findNPCs(node));
         info.putField(findNPCIndices(node));
-        info.putField(findTileHeights(node));
-        info.putField(findTileSettings(node));
+        info.putField(findField(node, "TileHeights", "getTileHeights"));
+        info.putField(findField(node, "TileSettings", "getTileSettings"));
         info.putField(findRegion(node));
-        info.putField(findPlane(node));
+        info.putField(findField(node, "Plane", "getPlane"));
         info.putField(findField(node, "BaseX", "getBaseX"));
         info.putField(findField(node, "BaseY", "getBaseY"));
         info.putField(findCollisionMaps(node));
         info.putField(findGroundItems(node));
-        info.putField(findProjectiles(node));
-        info.putField(findGraphicsObjects(node));
+        info.putField(findField(node, "Projectiles", "getProjectiles"));
+        info.putField(findField(node, "IsRegionInstanced", "isInstance"));
+        info.putField(findField(node, "RegionInstances", "getInstanceTemplateChunks"));
+        info.putField(findField(node, "GraphicsObjects", "getGraphicsObjects"));
         return info;
     }
 

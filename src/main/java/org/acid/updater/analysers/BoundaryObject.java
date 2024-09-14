@@ -44,6 +44,7 @@ public class BoundaryObject extends Analyser {
         info.putField(findField(node, "Height", "getZ"));
         info.putField(findField(node, "X", "getX"));
         info.putField(findField(node, "Y", "getY"));
+        info.putField(findField(node, "Orientation", "getOrientationA"));
         info.putField(findField(node, "Renderable", "getRenderable1"));
         info.putField(findField(node, "OldRenderable", "getRenderable2"));
         return info;
