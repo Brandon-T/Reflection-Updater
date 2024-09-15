@@ -82,7 +82,8 @@ public class GameInstance extends Analyser {
                     if (((VarInsnNode) m.instructions.get(i)).var == 0) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
                         if (f.desc.equals("I")) {
-                            return new ClassField("NPCCount", f.name, f.desc);
+                            long multi = Main.findMultiplier(f.owner, f.name);
+                            return new ClassField("NPCCount", f.name, f.desc, multi);
                         }
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
