@@ -47,9 +47,7 @@ public class GameInstance extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("GameInstance", node.name);
-        info.putField(findPlayerCount(node));
         info.putField(findPlayers(node));
-        info.putField(findPlayerIndices(node));
         info.putField(findNPCCount(node));
         info.putField(findNPCs(node));
         info.putField(findNPCIndices(node));
@@ -66,30 +64,6 @@ public class GameInstance extends Analyser {
         return info;
     }
 
-    private ClassField findPlayerCount(ClassNode node) {
-        String npcCountName = "";
-        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ICONST_0, Opcodes.PUTFIELD};
-        for (MethodNode m : node.methods) {
-            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (((VarInsnNode) m.instructions.get(i)).var == 0) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
-                        if (f.desc.equals("I") && !f.name.equals(npcCountName)) {
-                            if (npcCountName.isEmpty()) {
-                                npcCountName = f.name;
-                                continue;
-                            }
-                            return new ClassField("PlayerCount", f.name, f.desc);
-                        }
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
-                }
-            }
-        }
-        return new ClassField("PlayerCount");
-    }
-
     private ClassField findPlayers(ClassNode node) {
         for (FieldNode f : node.fields) {
             if (f.desc.equals(String.format("[L%s;", Main.get("Player")))) {
@@ -97,24 +71,6 @@ public class GameInstance extends Analyser {
             }
         }
         return new ClassField("Players");
-    }
-
-    private ClassField findPlayerIndices(ClassNode node) {
-        int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.SIPUSH, Opcodes.NEWARRAY, Opcodes.PUTFIELD};
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>")) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    int length = ((IntInsnNode) m.instructions.get(i + 1)).operand;
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
-                    if (length == 2048 && f.desc.equals("[I")) {
-                        return new ClassField("PlayerIndices", f.name, f.desc);
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
-                }
-            }
-        }
-        return new ClassField("PlayerIndices");
     }
 
     private ClassField findNPCCount(ClassNode node) {

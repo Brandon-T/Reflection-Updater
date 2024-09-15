@@ -26,8 +26,9 @@ public class Main {
         int latestRevision = getLatestRevision(url, 225);
         analyser = new ClassAnalyser(url, String.format("%d.jar", latestRevision), true);
         analyser.printSimbaNative();
+//        analyser.printPython();
 //        analyser.printJSON();
-        //analyser.refactor(String.format("Refactor_%d.jar", 225));
+//        analyser.refactor(String.format("Refactor_%d.jar", 225));
     }
 
     private static int getLatestRevision(String url, int currentVersion) {
