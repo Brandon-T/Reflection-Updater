@@ -31,6 +31,7 @@ public class Client extends Analyser {
         info.putField(findVersion(node));
         info.putField(findClient(node));
         info.putField(findGameInstance(node));
+        info.putField(findPlayerUpdateManager(node));
         info.putField(findLocalPlayer(node));
         info.putField(findPlayerIndex(node));
         info.putField(findGameCycle(node));
@@ -133,6 +134,20 @@ public class Client extends Analyser {
             }
         }
         return new ClassField("GameInstance");
+    }
+
+    private ClassField findPlayerUpdateManager(ClassNode node) {
+        Collection<ClassNode> nodes = Main.getClasses();
+        for (ClassNode n : nodes) {
+            for (FieldNode fn : n.fields) {
+                if (hasAccess(fn, Opcodes.ACC_STATIC)) {
+                    if (fn.desc.equals(String.format("L%s;", Main.get("PlayerUpdateManager")))) {
+                        return new ClassField("PlayerUpdateManager", n.name, fn.name, fn.desc);
+                    }
+                }
+            }
+        }
+        return new ClassField("PlayerUpdateManager");
     }
 
     private ClassField findLocalNPCs(ClassNode node) {

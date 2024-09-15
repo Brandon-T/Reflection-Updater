@@ -210,6 +210,7 @@ public class ClassAnalyser {
         analysers.add(new Varcs());
         analysers.add(new VarbitDefinition());
         analysers.add(new GameInstance());
+        analysers.add(new PlayerUpdateManager());
         analysers.add(new Menu());
         analysers.add(new Client());
         analysers.add(new Other());
