@@ -1406,6 +1406,95 @@ public class Client extends Analyser {
         return new ClassField("Menu");
     }
 
+    private ClassField findMenuCount(ClassNode node) {
+        int[] pattern = new int[]{Opcodes.ILOAD, Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Finder.COMPARISON};
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                        if (f.owner.equals("client")) {
+                            long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+                            return new ClassField("MenuCount", f.owner, f.name, f.desc, multi);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new ClassField("MenuCount");
+    }
+
+    private ClassField findMenuActions(ClassNode node) {
+        int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.ASTORE};
+
+        for (ClassNode n : new ClassNode[]{node}) {
+            for (MethodNode m : n.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuActions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.ARETURN};
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)Ljava/lang/String;")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuActions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new ClassField("MenuActions");
+    }
+
+    private ClassField findMenuOptions(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.GETSTATIC, Opcodes.ILOAD, Opcodes.AALOAD, Opcodes.INVOKEVIRTUAL, Finder.COMPARISON2};
+
+        for (ClassNode n : new ClassNode[]{node}) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuOptions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(I)Ljava/lang/String;")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                        if (f.desc.equals("[Ljava/lang/String;") && f.owner.equals("client")) {
+                            return new ClassField("MenuOptions", f.owner, f.name, f.desc);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new ClassField("MenuOptions");
+    }
+
     private ClassField findIsMenuOpen(ClassNode node) {
         int[] pattern = new int[]{Opcodes.ICONST_1, Opcodes.PUTSTATIC};
         for (MethodNode m : node.methods) {
@@ -1421,6 +1510,185 @@ public class Client extends Analyser {
             }
         }
         return new ClassField("IsMenuOpen");
+    }
+
+    private ClassField findMenuX(ClassNode node) {
+        int[] pattern = new int[]{
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuWidth
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
+        };
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    while (i != -1) {
+                        if (m.instructions.get(i) instanceof VarInsnNode) {
+                            int j = new Finder(m).findNextInstruction(i, Opcodes.PUTSTATIC, 0);
+                            if (j != -1) {
+                                FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("MenuX", f.owner, f.name, f.desc, multi);
+                            }
+                        }
+                        i = new Finder(m).findPattern(pattern, i + 1, false);
+                    }
+                }
+            }
+        }
+
+        //May 5th, 2018
+        final int[] pattern2 = new int[]{
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu X
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Y
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Width
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE //Menu Height
+        };
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
+                int i = new Finder(m).findPattern(pattern2);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("MenuX", f.owner, f.name, f.desc, multi);
+                }
+            }
+        }
+
+        return new ClassField("MenuX");
+    }
+
+    private ClassField findMenuY(ClassNode node) {
+        int[] pattern = new int[]{
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuWidth
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
+        };
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    while (i != -1) {
+                        if (m.instructions.get(i) instanceof VarInsnNode) {
+                            int j = new Finder(m).findNextInstruction(i, Opcodes.PUTSTATIC, 1);
+                            if (j != -1) {
+                                FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("MenuY", f.owner, f.name, f.desc, multi);
+                            }
+                        }
+                        i = new Finder(m).findPattern(pattern, i + 1, false);
+                    }
+                }
+            }
+        }
+
+        //May 5th, 2018
+        final int[] pattern2 = new int[]{
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu X
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Y
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Width
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE //Menu Height
+        };
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
+                int i = new Finder(m).findPattern(pattern2);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("MenuY", f.owner, f.name, f.desc, multi);
+                }
+            }
+        }
+
+        return new ClassField("MenuY");
+    }
+
+    private ClassField findMenuWidth(ClassNode node) {
+        int[] pattern = new int[]{
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuX
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuY
+                Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTSTATIC, //MenuWidth
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC    //MenuHeight
+        };
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern, 0, false);
+                    while (i != -1) {
+                        if (m.instructions.get(i) instanceof VarInsnNode) {
+                            int j = new Finder(m).findNextInstruction(i, Opcodes.PUTSTATIC, 2);
+                            if (j != -1) {
+                                FieldInsnNode f = (FieldInsnNode) m.instructions.get(j);
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("MenuWidth", f.owner, f.name, f.desc, multi);
+                            }
+                        }
+                        i = new Finder(m).findPattern(pattern, i + 1);
+                    }
+                }
+            }
+        }
+
+        //May 5th, 2018
+        final int[] pattern2 = new int[]{
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu X
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Y
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Width
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE //Menu Height
+        };
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
+                int i = new Finder(m).findPattern(pattern2);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 8);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("MenuWidth", f.owner, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField("MenuWidth");
+    }
+
+    private ClassField findMenuHeight(ClassNode node) {
+        int[] pattern = new int[]{Opcodes.LDC, Opcodes.IMUL, Opcodes.LDC, Opcodes.IADD, Opcodes.PUTSTATIC};
+
+        for (ClassNode n : Main.getClasses()) {
+            for (MethodNode m : n.methods) {
+                if (m.desc.equals("(II)V")) {
+                    int i = new Finder(m).findPattern(pattern);
+                    if (i != -1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + pattern.length - 1);
+                        long multi = Main.findMultiplier(f.owner, f.name);
+                        return new ClassField("MenuHeight", f.owner, f.name, f.desc, multi);
+                    }
+                }
+            }
+        }
+
+        //May 5th, 2018
+        final int[] pattern2 = new int[]{
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu X
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Y
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE, //Menu Width
+                Opcodes.GETSTATIC, Opcodes.LDC, Opcodes.IMUL, Opcodes.ISTORE //Menu Height
+        };
+        for (MethodNode m : node.methods) {
+            if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("()V")) {
+                int i = new Finder(m).findPattern(pattern2);
+                if (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 12);
+                    long multi = Main.findMultiplier(f.owner, f.name);
+                    return new ClassField("MenuHeight", f.owner, f.name, f.desc, multi);
+                }
+            }
+        }
+        return new ClassField("MenuHeight");
     }
 
     private ClassField findIsResizable(ClassNode node) {
@@ -1585,29 +1853,20 @@ public class Client extends Analyser {
     }
 
     private ClassField findIsItemSelected(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.IF_ICMPLE};
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<clinit>") && m.desc.equals("()V")) {
-                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTSTATIC, 155);
-                if (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
-                    if (f.desc.equals("I")) {
-                        long multi = Main.findMultiplier(f.owner, f.desc);
-                        return new ClassField("IsItemSelected", f.owner, f.name, f.desc, multi);
-                    }
-                }
-            }
-        }
+//        for (MethodNode m : node.methods) {
+//            if (m.name.equals("<clinit>") && m.desc.equals("()V")) {
+//                int i = new Finder(m).findNextInstruction(0, Opcodes.PUTSTATIC, 155);
+//                if (i != -1) {
+//                    FieldInsnNode f = (FieldInsnNode)m.instructions.get(i);
+//                    if (f.desc.equals("I")) {
+//                        long multi = Main.findMultiplier(f.owner, f.desc);
+//                        return new ClassField("IsItemSelected", f.owner, f.name, f.desc, multi);
+//                    }
+//                }
+//            }
+//        }
         return new ClassField("IsItemSelected");
     }
-
-//    GETSTATIC client.nn : Lvl;
-//    GETFIELD vl.ae : I
-//    LDC 2098117423
-//    IMUL
-//    ICONST_2
-//    IF_ICMPGE L0
-//    GOTO L1
 
     private ClassField findIsSpellSelected(ClassNode node) {
         return new ClassField("IsSpellSelected");
