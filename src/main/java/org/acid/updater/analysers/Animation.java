@@ -32,7 +32,7 @@ public class Animation extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Animation", node.name);
+        ClassInfo info = new ClassInfo("Animation", node);
         Arrays.asList(fieldFields(node)).forEach(info::putField);
         info.putField(findSkeleton(node));
         return info;

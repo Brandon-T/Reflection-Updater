@@ -40,7 +40,7 @@ public class Font extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Font", node.name);
+        ClassInfo info = new ClassInfo("Font", node);
         info.putField(findDrawGlyphsMethod(node));
         info.putField(findDrawGlyphsAlphaMethod(node));
         return info;

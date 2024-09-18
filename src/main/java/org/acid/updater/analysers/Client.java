@@ -27,7 +27,7 @@ public class Client extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Client", node.name);
+        ClassInfo info = new ClassInfo("Client", node);
         info.putField(findVersion(node));
         info.putField(findClient(node));
         info.putField(findGameInstance(node));

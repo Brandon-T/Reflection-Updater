@@ -40,7 +40,7 @@ public class PlayerUpdateManager extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("PlayerUpdateManager", node.name);
+        ClassInfo info = new ClassInfo("PlayerUpdateManager", node);
         info.putField(findPlayerCount(node));
         info.putField(findPlayerIndices(node));
         return info;

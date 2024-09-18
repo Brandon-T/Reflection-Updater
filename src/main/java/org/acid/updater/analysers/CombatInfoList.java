@@ -38,7 +38,7 @@ public class CombatInfoList extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo classInfo = new ClassInfo("CombatInfoList", node.name);
+        ClassInfo classInfo = new ClassInfo("CombatInfoList", node);
         classInfo.putField(findHead(node));
         classInfo.putField(findCurrent(node, classInfo.getField("Head")));
         return classInfo;

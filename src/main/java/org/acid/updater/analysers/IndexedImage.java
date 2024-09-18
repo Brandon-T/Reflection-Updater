@@ -31,7 +31,7 @@ public class IndexedImage extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("IndexedRGB", node.name);
+        ClassInfo info = new ClassInfo("IndexedRGB", node);
         info.putField(findPixels(node));
         info.putField(findPalette(node));
         info.putField(findWidth(node));

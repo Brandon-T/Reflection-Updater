@@ -38,7 +38,7 @@ public class WidgetNode extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("WidgetNode", node.name);
+        ClassInfo info = new ClassInfo("WidgetNode", node);
         info.putField(findID(node));
         return info;
     }

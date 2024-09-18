@@ -34,7 +34,7 @@ public class SpriteMask extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("SpriteMask", node.name);
+        ClassInfo info = new ClassInfo("SpriteMask", node);
         return info;
     }
 }

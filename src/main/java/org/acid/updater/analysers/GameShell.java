@@ -27,7 +27,7 @@ public class GameShell extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GameShell", node.name);
+        ClassInfo info = new ClassInfo("GameShell", node);
         info.putField(findErrorMethod(node));
         info.putField(findStartMethod(node));
         info.putField(findStopMethod(node));

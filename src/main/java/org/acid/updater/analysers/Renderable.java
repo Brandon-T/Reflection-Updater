@@ -48,7 +48,7 @@ public class Renderable extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Renderable", node.name);
+        ClassInfo info = new ClassInfo("Renderable", node);
         info.putField(findModelHeight(node));
         return info;
     }

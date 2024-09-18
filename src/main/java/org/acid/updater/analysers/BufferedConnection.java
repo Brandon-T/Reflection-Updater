@@ -37,7 +37,7 @@ public class BufferedConnection extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("BufferedConnection", node.name);
+        ClassInfo info = new ClassInfo("BufferedConnection", node);
         info.putField(findInputStream(node));
         info.putField(findOutputStream(node));
         info.putField(findSocket(node));

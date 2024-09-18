@@ -35,7 +35,7 @@ public class Model extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Model", node.name);
+        ClassInfo info = new ClassInfo("Model", node);
         info.putField(findIndicesX(node));
         info.putField(findIndicesY(node));
         info.putField(findIndicesZ(node));

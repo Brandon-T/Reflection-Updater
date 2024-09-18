@@ -30,7 +30,7 @@ public class Projectile extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Projectile", node.name);
+        ClassInfo info = new ClassInfo("Projectile", node);
         info.putField(findField(node, "ID", 1));
         info.putField(findField(node, "Plane", 2));
         info.putField(findField(node, "SourceX", 3));

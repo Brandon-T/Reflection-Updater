@@ -44,7 +44,7 @@ public class AnimationSequence extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("AnimationSequence", node.name);
+        ClassInfo info = new ClassInfo("AnimationSequence", node);
         info.putField(findAnimationFrames(node));
         info.putField(findAnimationSequenceCache(node));
         info.putField(findAnimationFrameCache(node));

@@ -46,7 +46,7 @@ public class GameInstance extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GameInstance", node.name);
+        ClassInfo info = new ClassInfo("GameInstance", node);
         info.putField(findPlayers(node));
         info.putField(findNPCCount(node));
         info.putField(findNPCs(node));

@@ -50,7 +50,7 @@ public class Login extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Login", node.name);
+        ClassInfo info = new ClassInfo("Login", node);
         info.putField(findField(node, "XPadding", 0));
         info.putField(findField(node, "BoxXOffset", 1));
         info.putField(findField(node, "LoadingPercent", 2));

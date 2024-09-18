@@ -41,7 +41,7 @@ public class IterableHashTable extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("IterableHashTable", node.name);
+        ClassInfo info = new ClassInfo("IterableHashTable", node);
         info.putField(findHead(node));
         info.putField(findTail(node));
         info.putField(findCache(node));

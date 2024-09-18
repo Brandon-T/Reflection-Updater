@@ -26,7 +26,7 @@ public class GraphicsBuffer extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GraphicsBuffer", node.name);
+        ClassInfo info = new ClassInfo("GraphicsBuffer", node);
         info.putField(findColourModel(node));
         info.putField(findImageConsumer(node));
         info.putField(findCreateGraphicsBuffer(node));

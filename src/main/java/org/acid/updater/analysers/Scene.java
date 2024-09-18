@@ -42,7 +42,7 @@ public class Scene extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Scene", node.name);
+        ClassInfo info = new ClassInfo("Scene", node);
         info.putField(findTiles(node));
         info.putField(findGameObjects(node));
         return info;

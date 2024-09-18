@@ -38,7 +38,7 @@ public class Player extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Player", node.name);
+        ClassInfo info = new ClassInfo("Player", node);
         info.putField(findName(node));
         info.putField(findModel(node));
         info.putField(findIsHidden(node));
