@@ -56,7 +56,6 @@ public class GrandExchangeOffer extends Analyser {
         info.putField(findQuantity(node));
         info.putField(findTransferred(node));
         info.putField(findSpent(node));
-        info.putField(findQueryIDs(node));
         return info;
     }
 

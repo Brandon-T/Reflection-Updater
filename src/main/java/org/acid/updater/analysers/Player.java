@@ -148,14 +148,14 @@ public class Player extends Analyser {
 
     private ClassField findIndex(ClassNode node) {
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ICONST_0, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC, Opcodes.LSTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
-                if (m.desc.equals(String.format("(L%s;Z)V", Main.get("PacketBuffer")))) {
+                if (m.desc.endsWith(";IZ)V")) {
                     int i = new Finder(m).findPattern(pattern);
                     if (i != -1) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
-                        long multi = Main.findMultiplier(f.owner, f.name);
+                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 6)).cst;
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
                         return new ClassField("Index", f.name, f.desc, multi);
                     }
                 }
@@ -182,23 +182,22 @@ public class Player extends Analyser {
     }
 
     private ClassField findOverheadPKIcon(ClassNode node) {
-        final int[] pattern = new int[]{
-                //                                                      PK Icon
-                Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD, Opcodes.ALOAD,
-                //                                                                  Prayer Icon
-                Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD
-        };
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
-                    if (f.desc.equals("I")) {
-                        long multi = Main.findMultiplier(f.owner, f.name);
-                        return new ClassField("OverheadSkulledIcon", f.name, f.desc, multi);
+                for (int i = 0; i < m.instructions.size(); i++) {
+                    List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, i, false);
+                    if (insns != null) {
+                        MethodInsnNode m2 = (MethodInsnNode) insns.get(2);
+                        if (m2.desc.equals("()B")) {
+                            FieldInsnNode f = (FieldInsnNode) insns.get(5);
+                            if (f.desc.equals("I")) {
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("OverheadSkulledIcon", f.name, f.desc, multi);
+                            }
+                        }
                     }
-                    i = new Finder(m).findPattern(pattern, i + 1);
                 }
             }
         }
@@ -206,16 +205,20 @@ public class Player extends Analyser {
     }
 
     private ClassField findOverheadPrayerIcon(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD, Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
 
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(L%s;)V", Main.get("Buffer")))) {
-                List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, 0, false);
-                if (insns != null) {
-                    if (insns.get(6) instanceof FieldInsnNode f) {
-                        if (f.desc.equals("I")) {
-                            long multi = Main.findMultiplier(f.owner, f.name);
-                            return new ClassField("OverheadPrayerIcon", f.name, f.desc, multi);
+                for (int i = 0; i < m.instructions.size(); i++) {
+                    List<AbstractInsnNode> insns = new DeprecatedFinder(m).findPatternInstructions(pattern, i, false);
+                    if (insns != null) {
+                        MethodInsnNode m2 = (MethodInsnNode) insns.get(8);
+                        if (m2.desc.equals("()B")) {
+                            FieldInsnNode f = (FieldInsnNode) insns.get(11);
+                            if (f.desc.equals("I")) {
+                                long multi = Main.findMultiplier(f.owner, f.name);
+                                return new ClassField("OverheadPrayerIcon", f.name, f.desc, multi);
+                            }
                         }
                     }
                 }
