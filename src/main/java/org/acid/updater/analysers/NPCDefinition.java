@@ -42,7 +42,7 @@ public class NPCDefinition extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("NPCDefinition", node.name);
+        ClassInfo info = new ClassInfo("NPCDefinition", node);
         info.putField(findID(node));
         info.putField(findName(node));
         info.putField(findActions(node));

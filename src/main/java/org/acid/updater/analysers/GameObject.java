@@ -56,7 +56,7 @@ public class GameObject extends Analyser {
             }
         }
 
-        ClassInfo info = new ClassInfo("GameObject", node.name);
+        ClassInfo info = new ClassInfo("GameObject", node);
         info.putField(findField(node, "ID", 12)); //findID(node)
         info.putField(findField(node, "Flags", isLongHashes ? 14 : 13));
         info.putField(findField(node, "Orientation", 10));

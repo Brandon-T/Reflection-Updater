@@ -42,7 +42,7 @@ public class Node extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Node", node.name);
+        ClassInfo info = new ClassInfo("Node", node);
         info.putField(findID(node));
         info.putField(findPrev(node));
         info.putField(findNext(node, info.getField("Prev")));

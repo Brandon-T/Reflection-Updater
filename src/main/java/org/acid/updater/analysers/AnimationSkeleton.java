@@ -44,7 +44,7 @@ public class AnimationSkeleton extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("AnimationSkeleton", node.name);
+        ClassInfo info = new ClassInfo("AnimationSkeleton", node);
         info.putField(findId(node));
         info.putField(findTransformationCount(node));
         info.putField(findTransformationTypes(node));

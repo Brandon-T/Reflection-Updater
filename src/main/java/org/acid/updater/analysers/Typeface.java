@@ -34,7 +34,7 @@ public class Typeface extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Typeface", node.name);
+        ClassInfo info = new ClassInfo("Typeface", node);
         info.putField(findCharacterPixels(node));
         info.putField(findStringWidthMethod(node));
         info.putField(findDrawStringWaveYMethod(node));

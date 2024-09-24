@@ -36,7 +36,7 @@ public class Buffer extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Buffer", node.name);
+        ClassInfo info = new ClassInfo("Buffer", node);
         info.putField(findPayload(node));
         info.putField(findCRCTable(node));
         info.putField(findApplyRSAMethod(node));

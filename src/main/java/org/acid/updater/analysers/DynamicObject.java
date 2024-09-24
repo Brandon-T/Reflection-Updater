@@ -39,7 +39,7 @@ public class DynamicObject extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("DynamicObject", node.name);
+        ClassInfo info = new ClassInfo("DynamicObject", node);
         info.putField(findField(node, "ID", 2));
         info.putField(findAnimationSequence(node));
         info.putField(findField(node, "Flags", 3));

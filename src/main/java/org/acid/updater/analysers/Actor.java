@@ -40,7 +40,7 @@ public class Actor extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Actor", node.name);
+        ClassInfo info = new ClassInfo("Actor", node);
         info.putField(findAnimationID(node));
         info.putField(findAnimationDelay(node));
         info.putField(findAnimationFrame(node));

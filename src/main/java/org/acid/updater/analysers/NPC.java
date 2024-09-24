@@ -31,7 +31,7 @@ public class NPC extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("NPC", node.name);
+        ClassInfo info = new ClassInfo("NPC", node);
         info.putField(findDefinition(node));
         Main.getInfo("Actor").putField(findEntityHeight(node));
         Main.getInfo("Actor").setField(findEntityAnimationID(node));

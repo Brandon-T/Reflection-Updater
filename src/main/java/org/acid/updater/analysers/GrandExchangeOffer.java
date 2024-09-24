@@ -49,14 +49,13 @@ public class GrandExchangeOffer extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GrandExchangeOffer", node.name);
+        ClassInfo info = new ClassInfo("GrandExchangeOffer", node);
         info.putField(findStatus(node));
         info.putField(findItemID(node));
         info.putField(findPrice(node));
         info.putField(findQuantity(node));
         info.putField(findTransferred(node));
         info.putField(findSpent(node));
-        info.putField(findQueryIDs(node));
         return info;
     }
 

@@ -29,7 +29,7 @@ public class SceneTile extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("SceneTile", node.name);
+        ClassInfo info = new ClassInfo("SceneTile", node);
         info.putField(findBoundaryObject(node));
         info.putField(findSceneTile(node));
         info.putField(findGameObjects(node));

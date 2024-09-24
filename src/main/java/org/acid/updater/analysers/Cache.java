@@ -43,7 +43,7 @@ public class Cache extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Cache", node.name);
+        ClassInfo info = new ClassInfo("Cache", node);
         info.putField(findHashTable(node));
         info.putField(findQueue(node));
         info.putField(findRemaining(node));

@@ -31,7 +31,7 @@ public class GraphicsObject extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GraphicsObject", node.name);
+        ClassInfo info = new ClassInfo("GraphicsObject", node);
         info.putField(findField(node, "ID", 1));
         info.putField(findField(node, "X", 3));
         info.putField(findField(node, "Y", 4));

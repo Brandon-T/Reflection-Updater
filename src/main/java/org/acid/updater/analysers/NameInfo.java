@@ -39,7 +39,7 @@ public class NameInfo extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("NameInfo", node.name);
+        ClassInfo info = new ClassInfo("NameInfo", node);
         info.putField(findName(node));
         info.putField(findDecodedName(node));
         return info;

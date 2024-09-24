@@ -54,7 +54,7 @@ public class VarbitDefinition extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("VarbitDefinition", node.name);
+        ClassInfo info = new ClassInfo("VarbitDefinition", node);
         info.putField(findCache(node));
         info.putField(findBase(node));
         info.putField(findStartBit(node));

@@ -47,7 +47,7 @@ public class LinkedList extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("LinkedList", node.name);
+        ClassInfo info = new ClassInfo("LinkedList", node);
         info.putField(findHead(node));
         info.putField(findCurrent(node, info.getField("Head")));
         return info;

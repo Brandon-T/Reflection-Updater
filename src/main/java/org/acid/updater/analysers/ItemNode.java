@@ -38,7 +38,7 @@ public class ItemNode extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("ItemNode", node.name);
+        ClassInfo info = new ClassInfo("ItemNode", node);
         info.putField(findItemIDs(node));
         info.putField(findQuantities(node));
         info.putField(findCache(node));

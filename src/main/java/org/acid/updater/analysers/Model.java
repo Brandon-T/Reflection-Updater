@@ -1,14 +1,12 @@
 package org.acid.updater.analysers;
 
 import org.acid.updater.Main;
+import org.acid.updater.other.DeprecatedFinder;
 import org.acid.updater.other.Finder;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
 import java.util.Collection;
 
@@ -37,7 +35,7 @@ public class Model extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Model", node.name);
+        ClassInfo info = new ClassInfo("Model", node);
         info.putField(findIndicesX(node));
         info.putField(findIndicesY(node));
         info.putField(findIndicesZ(node));
@@ -54,6 +52,8 @@ public class Model extends Analyser {
         info.putField(findTextureVerticesZ(node));
         info.putField(findTexturedVerticesLength(node, info.getField("TexVerticesX")));
         info.putField(findVertexSkins(node));
+        info.putField(findFaceColors1(node));
+        info.putField(findFaceColors2(node));
         info.putField(findFaceColors3(node));
         info.putField(findShadowIntensity(node));
         info.putField(findFitsSingleTile(node));
@@ -343,17 +343,81 @@ public class Model extends Analyser {
         return new ClassField("Skins");
     }
 
-    private ClassField findFaceColors3(ClassNode node) {
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ILOAD, Opcodes.IALOAD, Opcodes.IASTORE};
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals(String.format("([L%s;I)V", node.name))) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (((FieldInsnNode) m.instructions.get(i + 5)).desc.equals("[I") && ((VarInsnNode) m.instructions.get(i + 6)).var == 9) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
-                        return new ClassField("FaceColors3", f.name, f.desc);
+    private ClassField findFaceColors1(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ASTORE,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD};
+        var classes = Main.getClasses();
+        for (var c: classes) {
+            for (var m: c.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(IIIII)L%s;", node.name))) {
+                    for (int i = 0; i < m.instructions.size(); i++) {
+                        var instructions = new DeprecatedFinder(m).findPatternInstructions(pattern, i, false);
+                        if (instructions != null) {
+                            TypeInsnNode model = (TypeInsnNode) instructions.getFirst();
+                            if (model.desc.equals(node.name)) {
+                                FieldInsnNode f = (FieldInsnNode) instructions.get(8);
+                                if (f.desc.equals("[I")) {
+                                    return new ClassField("FaceColors1", f.owner, f.name, f.desc);
+                                }
+                            }
+                        }
                     }
-                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+        return new ClassField("FaceColors1");
+    }
+
+    private ClassField findFaceColors2(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ASTORE,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD};
+        var classes = Main.getClasses();
+        for (var c: classes) {
+            for (var m: c.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(IIIII)L%s;", node.name))) {
+                    for (int i = 0; i < m.instructions.size(); i++) {
+                        var instructions = new DeprecatedFinder(m).findPatternInstructions(pattern, i, false);
+                        if (instructions != null) {
+                            TypeInsnNode model = (TypeInsnNode) instructions.getFirst();
+                            if (model.desc.equals(node.name)) {
+                                FieldInsnNode f = (FieldInsnNode) instructions.get(13);
+                                if (f.desc.equals("[I")) {
+                                    return new ClassField("FaceColors2", f.owner, f.name, f.desc);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return new ClassField("FaceColors2");
+    }
+
+    private ClassField findFaceColors3(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.NEW, Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ASTORE,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD,
+                Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.NEWARRAY, Opcodes.PUTFIELD};
+        var classes = Main.getClasses();
+        for (var c: classes) {
+            for (var m: c.methods) {
+                if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals(String.format("(IIIII)L%s;", node.name))) {
+                    for (int i = 0; i < m.instructions.size(); i++) {
+                        var instructions = new DeprecatedFinder(m).findPatternInstructions(pattern, i, false);
+                        if (instructions != null) {
+                            TypeInsnNode model = (TypeInsnNode) instructions.getFirst();
+                            if (model.desc.equals(node.name)) {
+                                FieldInsnNode f = (FieldInsnNode) instructions.get(18);
+                                if (f.desc.equals("[I")) {
+                                    return new ClassField("FaceColors3", f.owner, f.name, f.desc);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

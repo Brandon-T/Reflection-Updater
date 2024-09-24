@@ -38,7 +38,7 @@ public class ObjectDefinition extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("ObjectDefinition", node.name);
+        ClassInfo info = new ClassInfo("ObjectDefinition", node);
         info.putField(findID(node));
         info.putField(new ClassField("AnimationID"));
         info.putField(findCache(node));

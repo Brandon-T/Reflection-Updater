@@ -37,7 +37,7 @@ public class BoundaryObject extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("BoundaryObject", node.name);
+        ClassInfo info = new ClassInfo("BoundaryObject", node);
         info.putField(findField(node, "ID", 9));
         info.putField(findField(node, "Flags", this.method.desc.contains("JI") ? 11 : 10));
         info.putField(findField(node, "Plane", 4));

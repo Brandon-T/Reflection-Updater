@@ -38,7 +38,7 @@ public class Widget extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Widget", node.name);
+        ClassInfo info = new ClassInfo("Widget", node);
         info.putField(findName(node));
         info.putField(findText(node));
         info.putField(findID(node));
@@ -67,7 +67,6 @@ public class Widget extends Analyser {
         info.putField(findChildren(node));
         info.putField(findBoundsIndex(node));
         info.putField(findWidgetCycle(node));
-        info.putField(findOpacity(node));
         info.putField(findSwapItemsMethod(node));
         return info;
     }

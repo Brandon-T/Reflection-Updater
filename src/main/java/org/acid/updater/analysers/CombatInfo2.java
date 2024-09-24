@@ -48,7 +48,7 @@ public class CombatInfo2 extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo classInfo = new ClassInfo("CombatInfo2", node.name);
+        ClassInfo classInfo = new ClassInfo("CombatInfo2", node);
         //classInfo.putField(findHealthScale(node)); Found in Entity Analyser.
         return classInfo;
     }

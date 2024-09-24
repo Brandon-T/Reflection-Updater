@@ -50,7 +50,7 @@ public class Menu extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Menu", node.name);
+        ClassInfo info = new ClassInfo("Menu", node);
         info.putField(findMenuCount(node));
         info.putField(findMenuActions(node));
         info.putField(findMenuOptions(node));

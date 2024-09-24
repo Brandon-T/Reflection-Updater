@@ -37,7 +37,7 @@ public class CollisionMap extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("CollisionMap", node.name);
+        ClassInfo info = new ClassInfo("CollisionMap", node);
         info.putField(findField(node, "Width", 1));
         info.putField(findField(node, "Height", 2));
         info.putField(findAdjacency(node));
