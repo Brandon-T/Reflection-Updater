@@ -59,6 +59,7 @@ public class Normaliser extends Deobfuscator {
                 {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.CONSTANT, Finder.ARITHMETIC, Opcodes.GETSTATIC, Opcodes.LDC, Finder.MULTIPLY, Finder.VARIABLE, Finder.MULTIPLY, Finder.VARIABLE, Finder.ARITHMETIC, Finder.ARITHMETIC, Finder.MULTIPLY},
                 {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2D, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DSUB, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.DLOAD, Opcodes.DMUL, Opcodes.DSUB, Opcodes.DMUL},
+                {Opcodes.LDC, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.I2F, Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.FALOAD, Opcodes.FMUL, Opcodes.F2I, Opcodes.IMUL}
         };
 
         for (int[] pattern : patterns) {
