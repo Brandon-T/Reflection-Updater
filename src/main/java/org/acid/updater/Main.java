@@ -23,12 +23,13 @@ public class Main {
 
     public static void main(String[] args) {
         String url = "http://oldschool1.runescape.com";
-        int latestRevision = getLatestRevision(url, 225);
+        int latestRevision = getLatestRevision(url, 226);
         analyser = new ClassAnalyser(url, String.format("%d.jar", latestRevision), true);
-//        analyser.printSimbaNative();
+        analyser.printSimbaNative();
 //        analyser.printPython();
-        analyser.printJSON();
-//        analyser.refactor(String.format("Refactor_%d.jar", 225));
+//        analyser.printJSON();
+//        analyser.refactor(String.format("Refactor_%d.jar", 226));
+
     }
 
     private static int getLatestRevision(String url, int currentVersion) {

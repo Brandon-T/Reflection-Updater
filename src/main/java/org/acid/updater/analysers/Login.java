@@ -41,7 +41,7 @@ public class Login extends Analyser {
                 }
             }
 
-            if (indexedRGB_count >= 2 && string_count >= 4 && string_array_count >= 2 && bool_count >= 4) {
+            if (indexedRGB_count >= 1 && string_count >= 4 && string_array_count >= 2 && bool_count >= 4) {
                 return node;
             }
         }
