@@ -36,7 +36,7 @@ public class ClassRemover extends Deobfuscator {
     public void remove() {
         classes.removeIf((entry) -> {
             if (!usedClasses.contains(entry.name)) {
-                System.out.println(entry.name);
+//                System.out.println(entry.name);
                 return true;
             }
             return false;
