@@ -3,6 +3,7 @@ package org.acid.updater.analysers;
 import org.acid.updater.Main;
 import org.acid.updater.structures.ClassField;
 import org.acid.updater.structures.ClassInfo;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 
@@ -30,7 +31,7 @@ public class IndexedCacheableNodeIterable extends Analyser {
                 }
             }
 
-            if (int_count == 1 && node_count == 2 && node_arr_count == 1) {
+            if (int_count == 1 && node_count == 1 && node_arr_count == 1) {
                 return n;
             }
         }
@@ -45,7 +46,6 @@ public class IndexedCacheableNodeIterable extends Analyser {
         info.putField(findNodes(node));
         info.putField(findIterator(node));
         return info;
-
     }
 
     private ClassField findSize(ClassNode node) {
@@ -77,10 +77,10 @@ public class IndexedCacheableNodeIterable extends Analyser {
 
     private ClassField findIterator(ClassNode node) {
         for (FieldNode f : node.fields) {
-            if (f.desc.equals(String.format("[L%s;", Main.get("IndexedCacheableNode")))) {
-                return new ClassField("Nodes", f.name, f.desc);
+            if (hasAccess(f, Opcodes.ACC_FINAL) && !f.desc.equals(String.format("L%s;", Main.get("IndexedCacheableNode")))) {
+                return new ClassField("Iterator", f.name, f.desc);
             }
         }
-        return new ClassField("Nodes");
+        return new ClassField("Iterator");
     }
 }
