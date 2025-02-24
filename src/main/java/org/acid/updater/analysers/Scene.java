@@ -66,7 +66,7 @@ public class Scene extends Analyser {
 
     private ClassField findGameObjects(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.BIPUSH, Opcodes.ANEWARRAY, Opcodes.PUTSTATIC};
-        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.SIPUSH, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.ICONST_5, Opcodes.ANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
             if (m.name.equals("<clinit>")) {
                 int i = new Finder(m).findPattern(pattern);
@@ -82,7 +82,7 @@ public class Scene extends Analyser {
             if (m.name.equals("<init>")) {
                 int i = new Finder(m).findPattern(pattern2);
                 while (i != -1) {
-                    if (((IntInsnNode) m.instructions.get(i + 1)).operand == 5000) {
+                    if (((VarInsnNode) m.instructions.get(i)).var == 0) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                         return new ClassField("GameObjects", f.name, f.desc);
                     }
