@@ -43,7 +43,7 @@ public class ImageRGB extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("ImageRGB", node.name);
+        ClassInfo info = new ClassInfo("ImageRGB", node);
         info.putField(findPixels(node));
         info.putField(findWidth(node));
         info.putField(findHeight(node));

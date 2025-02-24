@@ -44,7 +44,7 @@ public class HashTable extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("HashTable", node.name);
+        ClassInfo info = new ClassInfo("HashTable", node);
         info.putField(findHead(node));
         info.putField(findTail(node));
         info.putField(findCache(node));

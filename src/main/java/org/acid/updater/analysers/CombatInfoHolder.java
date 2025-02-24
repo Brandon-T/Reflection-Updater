@@ -45,7 +45,7 @@ public class CombatInfoHolder extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo classInfo = new ClassInfo("CombatInfoHolder", node.name);
+        ClassInfo classInfo = new ClassInfo("CombatInfoHolder", node);
         classInfo.putField(findLinkedList(node));
         classInfo.putField(findHealthBarDefinition(node));
         return classInfo;

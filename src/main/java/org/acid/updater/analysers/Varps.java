@@ -48,7 +48,7 @@ public class Varps extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Varps", node.name);
+        ClassInfo info = new ClassInfo("Varps", node);
         info.putField(findMasks(node));
         info.putField(findMain(node));
         return info;

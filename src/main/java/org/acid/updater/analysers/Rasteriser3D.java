@@ -48,7 +48,7 @@ public class Rasteriser3D extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Rasteriser3D", node.name);
+        ClassInfo info = new ClassInfo("Rasteriser3D", node);
         info.putField(findShadowDecay(node));
         info.putField(findSineTable(node));
         info.putField(findCosTable(node));

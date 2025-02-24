@@ -34,7 +34,7 @@ public class PacketWriter extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("PacketWriter", node.name);
+        ClassInfo info = new ClassInfo("PacketWriter", node);
         info.putField(findStream(node));
         info.putField(findPacketBuffer(node));
         return info;

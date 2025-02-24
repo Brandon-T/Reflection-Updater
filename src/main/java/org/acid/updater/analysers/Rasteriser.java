@@ -49,7 +49,7 @@ public class Rasteriser extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Rasteriser", node.name);
+        ClassInfo info = new ClassInfo("Rasteriser", node);
         info.putField(findPixels(node));
         info.putField(findWidth(node));
         info.putField(findHeight(node));

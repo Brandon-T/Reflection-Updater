@@ -49,7 +49,7 @@ public class NodeDeque extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("NodeDeque", node.name);
+        ClassInfo info = new ClassInfo("NodeDeque", node);
         info.putField(findHead(node));
         info.putField(findCurrent(node, info.getField("Head")));
         return info;

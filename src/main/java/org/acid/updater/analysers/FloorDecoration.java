@@ -37,7 +37,7 @@ public class FloorDecoration extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("FloorDecoration", node.name);
+        ClassInfo info = new ClassInfo("FloorDecoration", node);
         info.putField(findField(node, "ID", 6));
         info.putField(findField(node, "Flags", this.method.desc.contains("JI") ? 8 : 7));
         info.putField(findX(node));

@@ -45,7 +45,7 @@ public class AnimationFrames extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("AnimationFrames", node.name);
+        ClassInfo info = new ClassInfo("AnimationFrames", node);
         info.putField(findFrames(node));
         return info;
     }

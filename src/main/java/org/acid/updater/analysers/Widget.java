@@ -38,7 +38,7 @@ public class Widget extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Widget", node.name);
+        ClassInfo info = new ClassInfo("Widget", node);
         info.putField(findName(node));
         info.putField(findText(node));
         info.putField(findID(node));
@@ -67,7 +67,6 @@ public class Widget extends Analyser {
         info.putField(findChildren(node));
         info.putField(findBoundsIndex(node));
         info.putField(findWidgetCycle(node));
-        info.putField(findOpacity(node));
         info.putField(findSwapItemsMethod(node));
         return info;
     }
@@ -353,6 +352,7 @@ public class Widget extends Analyser {
 
     private ClassField findActions(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.IFNULL};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.ACONST_NULL, Finder.COMPARISON};
         for (MethodNode m : node.methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(ILjava/lang/String;)V")) {
                 int i = new Finder(m).findPattern(pattern);
@@ -362,6 +362,15 @@ public class Widget extends Analyser {
                         return new ClassField("Actions", f.name, f.desc);
                     }
                     i = new Finder(m).findPattern(pattern, i + 1);
+                }
+
+                i = new Finder(m).findPattern(pattern2);
+                while (i != -1) {
+                    FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
+                    if (f.desc.equals("[Ljava/lang/String;")) {
+                        return new ClassField("Actions", f.name, f.desc);
+                    }
+                    i = new Finder(m).findPattern(pattern2, i + 1);
                 }
             }
         }

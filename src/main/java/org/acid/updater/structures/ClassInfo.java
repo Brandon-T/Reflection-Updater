@@ -16,14 +16,18 @@ import java.util.function.Function;
  */
 public class ClassInfo {
     private static LinkedHashMap<String, String> simbaMap;
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
+    private final String parent;
+    private final String interfaces;
     private final ArrayList<ClassField> fields;
 
 
-    public ClassInfo(String id, String name) {
+    public ClassInfo(String id, ClassNode node) {
         this.id = id;
-        this.name = name;
+        this.name = node.name;
+        this.parent = node.superName;
+        this.interfaces = String.join(",", node.interfaces);
         this.fields = new ArrayList<>();
     }
 
@@ -31,16 +35,16 @@ public class ClassInfo {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getParent() {
+        return parent;
+    }
+
+    public String getInterfaces() {
+        return interfaces;
     }
 
     public void setField(ClassField field) {
@@ -229,10 +233,14 @@ public class ClassInfo {
                         {
                             "name": "%s",
                             "cls": "%s",
+                            "parent": "%s",
+                            "interfaces": "%s",
                             "fields": [%s]
                         }""",
                 this.getId(),
                 this.getName(),
+                this.getParent(),
+                this.getInterfaces(),
                 fields);
 
         return result;

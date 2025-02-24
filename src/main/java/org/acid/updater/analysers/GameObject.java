@@ -33,7 +33,10 @@ public class GameObject extends Analyser {
                     for (AbstractInsnNode i : m.instructions.toArray()) {
                         if (i instanceof FieldInsnNode f) {
                             if (f.desc.equals("I") && !f.owner.matches("([ISBJZ])")) {
-                                return Main.getClass(f.owner);
+                                ClassNode nn = Main.getClass(f.owner);
+                                if (nn.superName.equals("java/lang/Object")) {
+                                    return nn;
+                                }
                             }
                         }
                     }
@@ -56,7 +59,7 @@ public class GameObject extends Analyser {
             }
         }
 
-        ClassInfo info = new ClassInfo("GameObject", node.name);
+        ClassInfo info = new ClassInfo("GameObject", node);
         info.putField(findField(node, "ID", 12)); //findID(node)
         info.putField(findField(node, "Flags", isLongHashes ? 14 : 13));
         info.putField(findField(node, "Orientation", 10));

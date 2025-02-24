@@ -38,7 +38,7 @@ public class PlayerDefinition extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("PlayerDefinition", node.name);
+        ClassInfo info = new ClassInfo("PlayerDefinition", node);
         info.putField(findNpcTransformID(node));
         info.putField(findGender(node));
         info.putField(findAnimatedModelID(node));

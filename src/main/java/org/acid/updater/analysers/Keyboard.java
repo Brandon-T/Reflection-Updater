@@ -29,7 +29,7 @@ public class Keyboard extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Keyboard", node.name);
+        ClassInfo info = new ClassInfo("Keyboard", node);
         info.putField(findKeyPressed(node));
         info.putField(findKeyReleased(node));
         info.putField(findKeyTyped(node));

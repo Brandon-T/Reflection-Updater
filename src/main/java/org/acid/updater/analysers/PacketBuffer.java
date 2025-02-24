@@ -31,7 +31,7 @@ public class PacketBuffer extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("PacketBuffer", node.name);
+        ClassInfo info = new ClassInfo("PacketBuffer", node);
         info.putField(findNewIsaacCipher(node));
         return info;
     }

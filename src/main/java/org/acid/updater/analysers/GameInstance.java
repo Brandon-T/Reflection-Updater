@@ -46,7 +46,7 @@ public class GameInstance extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("GameInstance", node.name);
+        ClassInfo info = new ClassInfo("GameInstance", node);
         info.putField(findPlayers(node));
         info.putField(findNPCCount(node));
         info.putField(findNPCs(node));
@@ -148,6 +148,7 @@ public class GameInstance extends Analyser {
     }
 
     private ClassField findPlane(ClassNode node) {
+        // Always found in (Lde;IIIII)V +1 int if not deob
         final int[] pattern = new int[]{Opcodes.GETFIELD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ILOAD};
 
         for (MethodNode m : Main.getClass("client").methods) {

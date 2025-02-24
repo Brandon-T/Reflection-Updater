@@ -43,7 +43,7 @@ public class CombatInfo1 extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo classInfo = new ClassInfo("CombatInfo1", node.name);
+        ClassInfo classInfo = new ClassInfo("CombatInfo1", node);
         classInfo.putField(findHealth(node));
         classInfo.putField(findHealthRatio(node));
         return classInfo;

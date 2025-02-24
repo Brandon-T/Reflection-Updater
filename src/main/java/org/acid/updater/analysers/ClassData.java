@@ -40,7 +40,7 @@ public class ClassData extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("ClassData", node.name);
+        ClassInfo info = new ClassInfo("ClassData", node);
         info.putField(findBytes(node));
         info.putField(findMethods(node));
         info.putField(findFields(node));

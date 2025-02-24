@@ -40,7 +40,7 @@ public class ItemDefinition extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("ItemDefinition", node.name);
+        ClassInfo info = new ClassInfo("ItemDefinition", node);
         info.putField(findID(node));
         info.putField(findName(node));
         info.putField(findIsMembers(node));

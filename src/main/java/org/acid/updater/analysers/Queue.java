@@ -49,7 +49,7 @@ public class Queue extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Queue", node.name);
+        ClassInfo info = new ClassInfo("Queue", node);
         info.putField(findHead(node));
         info.putField(findInsertHead(node));
         info.putField(findInsertTail(node));
