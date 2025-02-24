@@ -153,7 +153,7 @@ public class GameInstance extends Analyser {
 
         for (MethodNode m : Main.getClass("client").methods) {
             if (!hasAccess(m, Opcodes.ACC_STATIC) && m.desc.equals("(II)V")) {
-                System.out.printf("%s%s%n", m.name, m.desc);
+//                System.out.printf("%s%s%n", m.name, m.desc);
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);

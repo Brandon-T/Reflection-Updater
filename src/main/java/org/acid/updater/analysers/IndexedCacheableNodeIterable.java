@@ -40,7 +40,7 @@ public class IndexedCacheableNodeIterable extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("IndexedCacheableNodeIterable", node.name);
+        ClassInfo info = new ClassInfo("IndexedCacheableNodeIterable", node);
         info.putField(findSize(node));
         info.putField(findCurrentNode(node));
         info.putField(findNodes(node));

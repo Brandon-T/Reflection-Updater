@@ -38,7 +38,7 @@ public class Model extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Model", node.name);
+        ClassInfo info = new ClassInfo("Model", node);
         info.putField(findIndicesX(node));
         info.putField(findIndicesY(node));
         info.putField(findIndicesZ(node));
@@ -176,7 +176,7 @@ public class Model extends Analyser {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     if (((VarInsnNode) m.instructions.get(i + 3)).var == 3) {
-                        System.out.printf("%s.%s%n", node.name, m.name);
+//                        System.out.printf("%s.%s%n", node.name, m.name);
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i);
                         return new ClassField("VerticesZ", f.name, f.desc);
                     }
@@ -355,8 +355,8 @@ public class Model extends Analyser {
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 3);
                     if (f.desc.equals("[I") && ((VarInsnNode) m.instructions.get(i + 1)).var == 2) {
-                        System.out.printf("%s.%s:%s%n", f.owner, f.name, f.desc);
-//                        return new ClassField("FaceColors1", f.name, f.desc);
+//                        System.out.printf("%s.%s:%s%n", f.owner, f.name, f.desc);
+                        return new ClassField("FaceColors1", f.name, f.desc);
                     }
                     i = new DeprecatedFinder(m).findPattern(pattern, i + 1, true);
                 }

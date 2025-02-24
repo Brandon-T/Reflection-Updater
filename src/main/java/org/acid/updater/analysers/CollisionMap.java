@@ -23,7 +23,7 @@ public class CollisionMap extends Analyser {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals("(IIIIZ)V")) {
                     ++method_count;
-                } else if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
+                } else if (m.name.equals("<init>") && m.desc.equals("(IIZ)V")) {
                     ++con_count;
                 }
             }

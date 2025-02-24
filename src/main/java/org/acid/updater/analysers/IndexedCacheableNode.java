@@ -45,7 +45,7 @@ public class IndexedCacheableNode extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("IndexedCacheableNode", node.name);
+        ClassInfo info = new ClassInfo("IndexedCacheableNode", node);
         info.putField(findNext(node));
         info.putField(findPrev(node, info.getField("Next")));
         return info;

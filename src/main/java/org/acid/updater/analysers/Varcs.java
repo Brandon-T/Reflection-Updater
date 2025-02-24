@@ -73,7 +73,7 @@ public class Varcs extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("Varcs", node.name);
+        ClassInfo info = new ClassInfo("Varcs", node);
         info.putField(findMap(node));
 //        info.putField(findStrings(node));
         info.putField(findVarcMap(node));
