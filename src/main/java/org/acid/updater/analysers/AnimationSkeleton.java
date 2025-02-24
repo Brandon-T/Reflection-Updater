@@ -35,7 +35,7 @@ public class AnimationSkeleton extends Analyser {
                 }
             }
 
-            if (int_count == 2 && int_array_count == 1 && int_2d_array_count == 1) {
+            if (int_count == 1 && int_array_count == 1 && int_2d_array_count == 1) {
                 return n;
             }
         }
@@ -45,30 +45,30 @@ public class AnimationSkeleton extends Analyser {
     @Override
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("AnimationSkeleton", node);
-        info.putField(findId(node));
+//        info.putField(findId(node));
         info.putField(findTransformationCount(node));
         info.putField(findTransformationTypes(node));
         info.putField(findTransformations(node));
         return info;
     }
 
-    private ClassField findId(ClassNode node) {
-        int[] pattern = {Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
-        for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(I[B)V")) {
-                int i = new Finder(m).findPattern(pattern);
-                while (i != -1) {
-                    if (((FieldInsnNode) m.instructions.get(i + 4)).desc.equals("I") && ((VarInsnNode) m.instructions.get(i + 1)).var == 1) {
-                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
-                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
-                        return new ClassField("ID", f.name, f.desc, multi);
-                    }
-                    i = new Finder(m).findPattern(pattern, i + 1);
-                }
-            }
-        }
-        return new ClassField("ID");
-    }
+//    private ClassField findId(ClassNode node) {
+//        int[] pattern = {Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+//        for (MethodNode m : node.methods) {
+//            if (m.name.equals("<init>") && m.desc.equals("(I[B)V")) {
+//                int i = new Finder(m).findPattern(pattern);
+//                while (i != -1) {
+//                    if (((FieldInsnNode) m.instructions.get(i + 4)).desc.equals("I") && ((VarInsnNode) m.instructions.get(i + 1)).var == 1) {
+//                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+//                        long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
+//                        return new ClassField("ID", f.name, f.desc, multi);
+//                    }
+//                    i = new Finder(m).findPattern(pattern, i + 1);
+//                }
+//            }
+//        }
+//        return new ClassField("ID");
+//    }
 
     private ClassField findTransformationCount(ClassNode node) {
         int[] pattern = {Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.INVOKEVIRTUAL, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};

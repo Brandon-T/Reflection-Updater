@@ -39,9 +39,9 @@ public class Varcs extends Analyser {
                     ++boolean_array_count;
                 }
 
-                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[Ljava/lang/String;")) {
-                    ++string_array_count;
-                }
+//                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[Ljava/lang/String;")) {
+//                    ++string_array_count;
+//                }
 
                 if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("Ljava/util/Map;")) {
                     ++map_count;
@@ -58,10 +58,13 @@ public class Varcs extends Analyser {
                 }
             }
 
+//            if (method_get_string_count > 0 && method_get_int_count > 0 &&
+//                    long_count == 1 && boolean_count == 1 &&
+//                    boolean_array_count == 1 && string_array_count == 1 &&
+//                    map_count == 1) {
             if (method_get_string_count > 0 && method_get_int_count > 0 &&
                     long_count == 1 && boolean_count == 1 &&
-                    boolean_array_count == 1 &&
-                    map_count == 1) {
+                    boolean_array_count == 1 && map_count == 1) {
                 return n;
             }
         }
@@ -72,7 +75,7 @@ public class Varcs extends Analyser {
     public ClassInfo analyse(ClassNode node) {
         ClassInfo info = new ClassInfo("Varcs", node);
         info.putField(findMap(node));
-        info.putField(findStrings(node));
+//        info.putField(findStrings(node));
         info.putField(findVarcMap(node));
         return info;
     }
@@ -86,14 +89,14 @@ public class Varcs extends Analyser {
         return new ClassField("Map");
     }
 
-    private ClassField findStrings(ClassNode node) {
-        for (FieldNode f : node.fields) {
-            if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[Ljava/lang/String;")) {
-                return new ClassField("Strings", f.name, f.desc);
-            }
-        }
-        return new ClassField("Strings");
-    }
+//    private ClassField findStrings(ClassNode node) {
+//        for (FieldNode f : node.fields) {
+//            if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[Ljava/lang/String;")) {
+//                return new ClassField("Strings", f.name, f.desc);
+//            }
+//        }
+//        return new ClassField("Strings");
+//    }
 
     private ClassField findVarcMap(ClassNode node) {
         Collection<ClassNode> nodes = Main.getClasses();

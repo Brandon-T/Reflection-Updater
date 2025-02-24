@@ -151,6 +151,9 @@ public class ClassAnalyser {
         analysers.add(new Node());
         analysers.add(new NodeDeque());
         analysers.add(new CacheableNode());
+        analysers.add(new IndexedCacheableNode());
+        analysers.add(new IndexedCacheableNodeIterable());
+        analysers.add(new IndexedCacheableNodeIterator());
         analysers.add(new LinkedList());
         analysers.add(new HashTable());
         analysers.add(new IterableHashTable());
