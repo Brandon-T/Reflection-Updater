@@ -48,7 +48,7 @@ public class CollisionMap extends Analyser {
     private ClassField findField(ClassNode node, String fieldName, int index) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
+            if (!m.name.equals("<init>") && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
@@ -66,7 +66,7 @@ public class CollisionMap extends Analyser {
     private ClassField findAdjacency(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.MULTIANEWARRAY, Opcodes.PUTFIELD};
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
+            if (!m.name.equals("<init>") && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findPattern(pattern);
                 if (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
@@ -79,7 +79,7 @@ public class CollisionMap extends Analyser {
 
     private ClassField findResetMethod(ClassNode node) {
         for (MethodNode m : node.methods) {
-            if (m.name.equals("<init>") && m.desc.equals("(II)V")) {
+            if (!m.name.equals("<init>") && m.desc.equals("(IIII)V")) {
                 int i = new Finder(m).findNext(0, Opcodes.INVOKEVIRTUAL);
                 while (i != -1) {
                     MethodInsnNode n = (MethodInsnNode) m.instructions.get(i);
