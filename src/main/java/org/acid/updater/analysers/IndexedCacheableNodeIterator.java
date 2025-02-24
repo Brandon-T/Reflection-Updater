@@ -43,7 +43,7 @@ public class IndexedCacheableNodeIterator extends Analyser {
 
     @Override
     public ClassInfo analyse(ClassNode node) {
-        ClassInfo info = new ClassInfo("IndexedCacheableNodeIterator", node.name);
+        ClassInfo info = new ClassInfo("IndexedCacheableNodeIterator", node);
         info.putField(findSize(node));
         var lastVisitedNode = findLastVisitedNode(node);
         info.putField(lastVisitedNode);
