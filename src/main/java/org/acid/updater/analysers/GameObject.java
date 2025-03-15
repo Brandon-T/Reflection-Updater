@@ -33,7 +33,10 @@ public class GameObject extends Analyser {
                     for (AbstractInsnNode i : m.instructions.toArray()) {
                         if (i instanceof FieldInsnNode f) {
                             if (f.desc.equals("I") && !f.owner.matches("([ISBJZ])")) {
-                                return Main.getClass(f.owner);
+                                ClassNode nn = Main.getClass(f.owner);
+                                if (nn.superName.equals("java/lang/Object")) {
+                                    return nn;
+                                }
                             }
                         }
                     }

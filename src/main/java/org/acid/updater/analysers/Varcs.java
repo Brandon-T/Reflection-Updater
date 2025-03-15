@@ -60,7 +60,7 @@ public class Varcs extends Analyser {
 
             if (method_get_string_count > 0 && method_get_int_count > 0 &&
                     long_count == 1 && boolean_count == 1 &&
-                    boolean_array_count == 1 && string_array_count == 1 &&
+                    boolean_array_count == 1 &&
                     map_count == 1) {
                 return n;
             }
