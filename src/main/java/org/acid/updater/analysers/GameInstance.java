@@ -17,15 +17,15 @@ public class GameInstance extends Analyser {
                 continue;
             }
 
-            int int_array_fields = 0;
+            int int_2d_array_fields  = 0;
             int int_3d_array_fields = 0;
             int byte_3d_array_fields = 0;
 
             for (FieldNode f : n.fields) {
                 // [[[NodeDequeue; = GroundItems
 
-                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[I")) {
-                    ++int_array_fields;
+                if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[[I")) {
+                    ++int_2d_array_fields ;
                 }
 
                 if (!hasAccess(f, Opcodes.ACC_STATIC) && f.desc.equals("[[[I")) {
@@ -37,7 +37,7 @@ public class GameInstance extends Analyser {
                 }
             }
 
-            if (int_array_fields == 2 && int_3d_array_fields == 1 && byte_3d_array_fields == 1) {
+            if (int_2d_array_fields  == 1 && int_3d_array_fields == 1 && byte_3d_array_fields == 1) {
                 return n;
             }
         }

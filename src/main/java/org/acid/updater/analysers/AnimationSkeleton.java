@@ -35,7 +35,7 @@ public class AnimationSkeleton extends Analyser {
                 }
             }
 
-            if (int_count == 2 && int_array_count == 1 && int_2d_array_count == 1) {
+            if (int_count == 1 && int_array_count == 1 && int_2d_array_count == 1) {
                 return n;
             }
         }

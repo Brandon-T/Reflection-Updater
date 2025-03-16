@@ -213,7 +213,7 @@ public class Actor extends Analyser {
         if (queueX != null) {
             final int[] pattern = new int[]{Opcodes.IMUL, Opcodes.IADD, Opcodes.PUTFIELD};
             for (MethodNode m : node.methods) {
-                if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
+                if (m.desc.equals("(II)V") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                     int i = new Finder(m).findPattern(pattern);
                     int j = i;
                     while (i != -1 && j != -1) {
@@ -232,47 +232,6 @@ public class Actor extends Analyser {
                     }
                 }
             }
-
-            //April 29th, 2017.
-            for (ClassNode n : Main.getClasses()) {
-                if (n.superName.equals(node.name)) {
-                    for (MethodNode m : n.methods) {
-                        if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
-                            int i = new Finder(m).findPattern(pattern);
-                            int j = i;
-                            while (i != -1 && j != -1) {
-                                j = new Finder(m).findPrev(j - 1, Opcodes.GETFIELD);
-                                FieldInsnNode q = ((FieldInsnNode) m.instructions.get(j));
-
-                                if (q.desc.equals("[I")) {
-                                    if (q.name.equals(queueX.getName())) {
-                                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
-                                        long multi = Main.findMultiplier(f.owner, f.name);
-                                        return new ClassField("LocalX", f.name, f.desc, multi);
-                                    } else {
-                                        i = j = new Finder(m).findPattern(pattern, i + 1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            //April 29th, 2017.
-            final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC};
-            for (ClassNode n : Main.getClasses()) {
-                for (MethodNode m : n.methods) {
-                    if (m.desc.equals(String.format("(L%s;)V", node.name)) && hasAccess(m, Opcodes.ACC_STATIC)) {
-                        int i = new Finder(m).findPattern(pattern);
-                        if (i != -1) {
-                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
-                            long multi = Main.findMultiplier(f.owner, f.name);
-                            return new ClassField("LocalX", f.name, f.desc, multi);
-                        }
-                    }
-                }
-            }
         }
         return new ClassField("LocalX");
     }
@@ -281,7 +240,7 @@ public class Actor extends Analyser {
         if (queueY != null) {
             final int[] pattern = new int[]{Opcodes.IMUL, Opcodes.IADD, Opcodes.PUTFIELD};
             for (MethodNode m : node.methods) {
-                if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
+                if (m.desc.equals("(II)V") && !hasAccess(m, Opcodes.ACC_STATIC)) {
                     int i = new Finder(m).findPattern(pattern);
                     int j = i;
                     while (i != -1 && j != -1) {
@@ -296,47 +255,6 @@ public class Actor extends Analyser {
                             } else {
                                 i = j = new Finder(m).findPattern(pattern, i + 1);
                             }
-                        }
-                    }
-                }
-            }
-
-            //April 29th, 2017.
-            for (ClassNode n : Main.getClasses()) {
-                if (n.superName.equals(node.name)) {
-                    for (MethodNode m : n.methods) {
-                        if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
-                            int i = new Finder(m).findPattern(pattern);
-                            int j = i;
-                            while (i != -1 && j != -1) {
-                                j = new Finder(m).findPrev(j - 1, Opcodes.GETFIELD);
-                                FieldInsnNode q = ((FieldInsnNode) m.instructions.get(j));
-
-                                if (q.desc.equals("[I")) {
-                                    if (q.name.equals(queueY.getName())) {
-                                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 2);
-                                        long multi = Main.findMultiplier(f.owner, f.name);
-                                        return new ClassField("LocalY", f.name, f.desc, multi);
-                                    } else {
-                                        i = j = new Finder(m).findPattern(pattern, i + 1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            //April 29th, 2017.
-            final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.INVOKESTATIC};
-            for (ClassNode n : Main.getClasses()) {
-                for (MethodNode m : n.methods) {
-                    if (m.desc.equals(String.format("(L%s;)V", node.name)) && hasAccess(m, Opcodes.ACC_STATIC)) {
-                        int i = new Finder(m).findPattern(pattern);
-                        if (i != -1) {
-                            FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 5);
-                            long multi = Main.findMultiplier(f.owner, f.name);
-                            return new ClassField("LocalY", f.name, f.desc, multi);
                         }
                     }
                 }
@@ -444,7 +362,7 @@ public class Actor extends Analyser {
     private ClassField findQueueSize(ClassNode node) {
         final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.BIPUSH};
         for (MethodNode m : node.methods) {
-            if (m.desc.equals("(IIZ)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
+            if (m.desc.equals("(II)V") && hasAccess(m, Opcodes.ACC_FINAL)) {
                 int i = new Finder(m).findPattern(pattern);
                 while (i != -1) {
                     FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
@@ -483,17 +401,33 @@ public class Actor extends Analyser {
     }
 
     private ClassField findInteractingIndex(ClassNode node) {
+        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.ILOAD, Opcodes.LDC, Opcodes.IMUL, Opcodes.PUTFIELD};
+        for (MethodNode m : node.methods) {
+            if (m.name.equals("<init>") && m.desc.equals("(I)V")) {
+                int i = new Finder(m).findPattern(pattern);
+                while (i != -1) {
+                    if (((VarInsnNode) m.instructions.get(i + 1)).var == 1) {
+                        FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 4);
+                        long multi = Main.findMultiplier(f.owner, f.desc);
+                        return new ClassField("InteractingIndex", f.name, f.desc, multi);
+                    }
+                    i = new Finder(m).findPattern(pattern, i + 1);
+                }
+            }
+        }
+
+
         ClassNode gameInstance = new GameInstance().find(Main.getClasses());
         if (gameInstance == null) {
             return new ClassField("InteractingIndex");
         }
 
         Collection<ClassNode> nodes = Main.getClasses();
-        final int[] pattern = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.AALOAD, Opcodes.ASTORE};
+        final int[] pattern2 = new int[]{Opcodes.ALOAD, Opcodes.GETFIELD, Opcodes.LDC, Opcodes.IMUL, Opcodes.AALOAD, Opcodes.ASTORE};
         for (ClassNode n : nodes) {
             for (MethodNode m : n.methods) {
                 if (m.desc.equals(String.format("(L%s;L%s;)V", gameInstance.name, node.name))) {
-                    int i = new Finder(m).findPattern(pattern);
+                    int i = new Finder(m).findPattern(pattern2);
                     if (i != -1) {
                         FieldInsnNode f = (FieldInsnNode) m.instructions.get(i + 1);
                         long multi = (int) ((LdcInsnNode) m.instructions.get(i + 2)).cst;
